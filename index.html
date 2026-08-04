@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mesada do Leo · Placar da Semana</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#063D25">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mesada Leo">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=Chivo+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --verde:#0B5C38; --verde-escuro:#063D25; --verde-claro:#E8F2EC;
+  --campo:#0E6B42; --creme:#FAFAF6; --tinta:#14231B;
+  --ouro:#D9A410; --vermelho:#C0392B; --vermelho-claro:#FBEAE8;
+  --cinza:#6B7A71; --borda:#DCE5DF; --radius:14px;
+  --sombra:0 2px 10px rgba(6,61,37,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Archivo',sans-serif;background:var(--creme);color:var(--tinta);-webkit-font-smoothing:antialiased;padding-bottom:60px}
+.wrap{max-width:520px;margin:0 auto;padding:0 16px}
+
+/* ---------- Header ---------- */
+header{background:var(--verde-escuro);color:#fff;padding:18px 0 90px;position:relative}
+header .wrap{display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:10px}
+.escudo{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#128a55,var(--verde) 70%);display:flex;align-items:center;justify-content:center;font-family:'Archivo Black';font-size:16px;color:#fff;border:2px solid rgba(255,255,255,.35)}
+.brand h1{font-family:'Archivo Black';font-size:17px;letter-spacing:.5px;line-height:1.1}
+.brand small{display:block;font-family:'Archivo';font-weight:500;font-size:11px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.nivel-chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+.nivel-chip .estrela{color:var(--ouro)}
+
+/* ---------- Placar (hero) ---------- */
+.placar{margin-top:-72px;background:linear-gradient(160deg,#0F2C1E,#0B4A2F);border-radius:18px;box-shadow:0 10px 30px rgba(6,61,37,.35);color:#fff;padding:22px 20px 18px;position:relative;overflow:hidden}
+.placar::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 46px,rgba(255,255,255,.03) 46px 92px)}
+.placar-label{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;opacity:.65;font-weight:600}
+.saldo{font-family:'Chivo Mono',monospace;font-weight:700;font-size:46px;letter-spacing:1px;margin:4px 0 2px;transition:transform .15s}
+.saldo.pulse{transform:scale(1.06)}
+.saldo .moeda{font-size:20px;vertical-align:super;opacity:.7;margin-right:4px}
+.semana-atual{font-size:11.5px;opacity:.7;letter-spacing:.5px;position:relative}
+.placar-linha{display:flex;gap:8px;margin-top:14px;position:relative}
+.stat{flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:8px 10px;text-align:center}
+.stat b{display:block;font-family:'Chivo Mono';font-size:17px}
+.stat span{font-size:10px;letter-spacing:1px;text-transform:uppercase;opacity:.6}
+.stat.streak b{color:var(--ouro)}
+
+/* ---------- Potes ---------- */
+.secao-titulo{font-family:'Archivo Black';font-size:14px;letter-spacing:1px;text-transform:uppercase;color:var(--verde-escuro);margin:26px 0 10px;display:flex;align-items:center;gap:8px}
+.secao-titulo::after{content:"";flex:1;height:2px;background:var(--borda);border-radius:2px}
+.potes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pote{background:#fff;border:1px solid var(--borda);border-radius:var(--radius);padding:12px 10px;text-align:center;box-shadow:var(--sombra)}
+.pote .icone{font-size:20px}
+.pote b{display:block;font-family:'Chivo Mono';font-size:15px;margin:4px 0 1px}
+.pote span{font-size:10.5px;color:var(--cinza);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.pote small{display:block;font-size:10px;color:var(--cinza);margin-top:2px}
+
+/* ---------- Botões de ação ---------- */
+.acoes{display:flex;flex-direction:column;gap:8px}
+.btn-acao{display:flex;justify-content:space-between;align-items:center;width:100%;background:#fff;border:1px solid var(--borda);border-radius:var(--radius);padding:13px 14px;font-family:'Archivo';font-size:14.5px;font-weight:600;color:var(--tinta);cursor:pointer;box-shadow:var(--sombra);transition:transform .08s,background .15s;text-align:left}
+.btn-acao:active{transform:scale(.98)}
+.btn-acao .valor{font-family:'Chivo Mono';font-weight:700;border-radius:8px;padding:4px 10px;font-size:13.5px;white-space:nowrap}
+.ganho .valor{background:var(--verde-claro);color:var(--verde)}
+.ganho:active{background:var(--verde-claro)}
+.pena .valor{background:var(--vermelho-claro);color:var(--vermelho)}
+.pena:active{background:var(--vermelho-claro)}
+.btn-mesada{width:100%;margin-top:10px;background:var(--verde);color:#fff;border:none;border-radius:var(--radius);padding:15px;font-family:'Archivo Black';font-size:15px;letter-spacing:.5px;cursor:pointer;box-shadow:0 4px 14px rgba(11,92,56,.35)}
+.btn-mesada:active{transform:scale(.98)}
+.btn-semana{width:100%;margin-top:8px;background:#fff;color:var(--verde-escuro);border:2px solid var(--verde);border-radius:var(--radius);padding:13px;font-family:'Archivo Black';font-size:13.5px;letter-spacing:.5px;cursor:pointer}
+.btn-semana:active{transform:scale(.98)}
+.mes-bloco{margin-bottom:14px}
+.mes-nome{font-family:'Archivo Black';font-size:12.5px;text-transform:uppercase;letter-spacing:1px;color:var(--verde-escuro);margin-bottom:6px}
+.sem-linha{display:flex;justify-content:space-between;align-items:center;background:var(--creme);border:1px solid var(--borda);border-radius:10px;padding:9px 11px;font-size:12.5px;margin-bottom:5px}
+.sem-linha .rot b{display:block;font-weight:700;font-size:13px}
+.sem-linha .rot small{color:var(--cinza);font-size:11px}
+.sem-linha .net{font-family:'Chivo Mono';font-weight:700}
+.mes-total{display:flex;justify-content:space-between;background:var(--verde-claro);border-radius:10px;padding:9px 11px;font-size:12.5px;font-weight:700;color:var(--verde-escuro)}
+.mes-total span{font-family:'Chivo Mono'}
+.hint{font-size:12px;color:var(--cinza);margin-top:6px;text-align:center}
+
+/* ---------- Histórico ---------- */
+.historico{display:flex;flex-direction:column;gap:6px}
+.mov{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--borda);border-radius:10px;padding:10px 12px;font-size:13px}
+.mov .desc b{display:block;font-weight:600}
+.mov .desc small{color:var(--cinza);font-size:11px}
+.mov .val{font-family:'Chivo Mono';font-weight:700}
+.mov .val.pos{color:var(--verde)}
+.mov .val.neg{color:var(--vermelho)}
+.vazio{text-align:center;color:var(--cinza);font-size:13px;padding:20px;background:#fff;border:1px dashed var(--borda);border-radius:var(--radius)}
+
+/* ---------- Config ---------- */
+details.config{margin-top:26px;background:#fff;border:1px solid var(--borda);border-radius:var(--radius);box-shadow:var(--sombra)}
+details.config summary{padding:14px;font-weight:700;font-size:14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.hist{margin-top:26px}
+.hist-badge{margin-left:auto;margin-right:8px;background:var(--verde-claro);color:var(--verde);font-family:'Chivo Mono';font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px}
+details.config summary::after{content:"▾"}
+details[open].config summary::after{content:"▴"}
+.config-body{padding:0 14px 14px;display:flex;flex-direction:column;gap:14px}
+.campo label{font-size:12px;font-weight:600;color:var(--cinza);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
+.campo input{width:100%;border:1px solid var(--borda);border-radius:8px;padding:10px;font-family:'Chivo Mono';font-size:15px}
+.lista-edit{display:flex;flex-direction:column;gap:6px}
+.lista-edit .item{display:flex;gap:6px}
+.lista-edit input.nome{flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px;font-family:'Archivo'}
+.lista-edit input.val{width:70px;border:1px solid var(--borda);border-radius:8px;padding:8px;font-family:'Chivo Mono';font-size:13px;text-align:right}
+.lista-edit button{border:none;background:var(--vermelho-claro);color:var(--vermelho);border-radius:8px;width:34px;cursor:pointer;font-size:15px}
+.mini-btn{border:1px dashed var(--borda);background:none;border-radius:8px;padding:8px;font-size:13px;color:var(--verde);font-weight:600;cursor:pointer}
+.btn-salvar{background:var(--verde-escuro);color:#fff;border:none;border-radius:10px;padding:12px;font-weight:700;font-size:14px;cursor:pointer}
+.btn-zerar{background:none;border:none;color:var(--vermelho);font-size:12px;cursor:pointer;text-decoration:underline;margin-top:4px}
+.log-cfg{display:flex;flex-direction:column;gap:4px;max-height:180px;overflow-y:auto}
+.log-cfg .linha{font-size:12px;color:var(--tinta);background:var(--verde-claro);border-radius:8px;padding:7px 10px;line-height:1.35}
+.log-cfg .linha small{display:block;color:var(--cinza);font-size:10.5px;margin-top:1px}
+.log-cfg .vazio-log{font-size:12px;color:var(--cinza);padding:8px 0}
+
+/* ---------- PIN ---------- */
+#pinOverlay{position:fixed;inset:0;background:rgba(6,40,25,.75);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:100}
+#pinOverlay[hidden]{display:none}
+.pin-box{background:#fff;border-radius:16px;padding:24px 22px;width:min(300px,86vw);text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.pin-box .cadeado{font-size:30px}
+.pin-box h3{font-family:'Archivo Black';font-size:15px;color:var(--verde-escuro);margin:8px 0 2px}
+.pin-box p{font-size:12px;color:var(--cinza);margin-bottom:14px}
+.pin-box input{width:100%;border:2px solid var(--borda);border-radius:10px;padding:12px;font-family:'Chivo Mono';font-size:22px;text-align:center;letter-spacing:10px}
+.pin-box input:focus{outline:none;border-color:var(--verde)}
+.pin-box.erro input{border-color:var(--vermelho);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.pin-erro{color:var(--vermelho);font-size:12px;font-weight:600;min-height:16px;margin-top:6px}
+.pin-acoes{display:flex;gap:8px;margin-top:12px}
+.pin-acoes button{flex:1;border:none;border-radius:10px;padding:12px;font-weight:700;font-size:14px;cursor:pointer}
+.pin-entrar{background:var(--verde);color:#fff}
+.pin-cancelar{background:var(--verde-claro);color:var(--verde-escuro)}
+#gastoOverlay{position:fixed;inset:0;background:rgba(6,40,25,.75);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:100}
+#gastoOverlay[hidden]{display:none}
+.gasto-potes{display:flex;gap:6px;margin-top:10px}
+.gasto-potes .gp{flex:1;border:2px solid var(--borda);background:#fff;border-radius:10px;padding:9px 4px;font-size:12px;font-weight:700;cursor:pointer;color:var(--tinta)}
+.gasto-potes .gp.ativo{border-color:var(--verde);background:var(--verde-claro);color:var(--verde-escuro)}
+.btn-gasto{width:100%;margin-top:8px;background:#fff;color:var(--tinta);border:1px solid var(--borda);border-radius:var(--radius);padding:12px;font-family:'Archivo';font-weight:700;font-size:13.5px;cursor:pointer;box-shadow:var(--sombra)}
+.btn-gasto:active{transform:scale(.98)}
+.meta-card{margin-top:10px;background:#fff;border:1px solid var(--borda);border-radius:var(--radius);padding:13px 14px;box-shadow:var(--sombra)}
+.meta-card[hidden]{display:none}
+.meta-topo{display:flex;justify-content:space-between;font-size:13px;margin-bottom:7px}
+.meta-pct{font-family:'Chivo Mono';font-weight:700;color:var(--verde)}
+.meta-barra{height:10px;background:var(--verde-claro);border-radius:99px;overflow:hidden}
+.meta-fill{height:100%;width:0;background:linear-gradient(90deg,var(--verde),#12A05F);border-radius:99px;transition:width .4s}
+.meta-info{font-size:11.5px;color:var(--cinza);margin-top:6px}
+.xp-linha{margin-top:12px;position:relative}
+.xp-barra{height:6px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden}
+.xp-fill{height:100%;width:0;background:var(--ouro);border-radius:99px;transition:width .4s}
+.xp-texto{font-size:10.5px;opacity:.65;margin-top:5px;letter-spacing:.5px}
+.grafico-sem{display:flex;align-items:flex-end;gap:5px;height:70px;margin-bottom:14px;padding:0 2px}
+.grafico-sem .col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+.grafico-sem .bar{width:100%;border-radius:4px 4px 0 0;background:var(--verde);min-height:3px}
+.grafico-sem .bar.neg{background:var(--vermelho)}
+.grafico-sem small{font-size:8.5px;color:var(--cinza);margin-top:3px;white-space:nowrap}
+
+/* ---------- Toast ---------- */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--verde-escuro);color:#fff;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.25);transition:transform .25s;z-index:99;white-space:nowrap}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.gol{background:var(--verde)}
+#toast.cartao{background:var(--vermelho)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <div class="escudo">L</div>
+      <h1>MESADA DO LEO<small>Placar da semana</small></h1>
+    </div>
+    <div class="nivel-chip"><span class="estrela">★</span><span id="nivelNome">Base</span></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- PLACAR -->
+  <div class="placar">
+    <div class="placar-label">Saldo total</div>
+    <div class="saldo" id="saldo"><span class="moeda">R$</span>0,00</div>
+    <div class="semana-atual" id="semanaAtual"></div>
+    <div class="placar-linha">
+      <div class="stat"><b id="ganhosSem">+0</b><span>Ganhos da semana</span></div>
+      <div class="stat"><b id="penasSem">0</b><span>Cartões da semana</span></div>
+      <div class="stat streak"><b id="streak">0 🔥</b><span>Semanas limpas</span></div>
+    </div>
+    <div class="xp-linha">
+      <div class="xp-barra"><div class="xp-fill" id="xpFill"></div></div>
+      <div class="xp-texto" id="xpTexto"></div>
+    </div>
+  </div>
+
+  <!-- POTES -->
+  <div class="secao-titulo">Potes do dinheiro</div>
+  <div class="potes">
+    <div class="pote"><div class="icone">🛍️</div><b id="pGastar">R$ 0</b><span>Gastar</span><small>recebe 50%</small></div>
+    <div class="pote"><div class="icone">🐷</div><b id="pPoupar">R$ 0</b><span>Poupar</span><small>recebe 30%</small></div>
+    <div class="pote"><div class="icone">📈</div><b id="pInvestir">R$ 0</b><span>Investir</span><small>recebe 20% + 1% a.m.</small></div>
+  </div>
+  <button class="btn-gasto" id="btnGasto">💸 Registrar gasto do Leo</button>
+
+  <!-- META -->
+  <div class="meta-card" id="metaCard" hidden>
+    <div class="meta-topo"><span>🎯 <b id="metaNome"></b></span><span class="meta-pct" id="metaPct">0%</span></div>
+    <div class="meta-barra"><div class="meta-fill" id="metaFill"></div></div>
+    <div class="meta-info" id="metaInfo"></div>
+  </div>
+
+  <!-- GANHOS -->
+  <div class="secao-titulo">⚽ Ganhos</div>
+  <div class="acoes" id="listaGanhos"></div>
+
+  <!-- PENALIDADES -->
+  <div class="secao-titulo">🟥 Penalidades</div>
+  <div class="acoes" id="listaPenas"></div>
+
+  <!-- MESADA -->
+  <button class="btn-mesada" id="btnMesada">💰 PAGAR MESADA DA SEMANA</button>
+  <button class="btn-semana" id="btnSemana">🗓️ INICIAR NOVA SEMANA</button>
+  <p class="hint">Semana sem cartão = bônus de 10% · Pague a mesada e depois inicie a nova semana</p>
+
+  <!-- RESUMO DO MÊS -->
+  <details class="config hist">
+    <summary>📅 Resumo do mês<span class="hist-badge" id="mesQtd">0</span></summary>
+    <div class="config-body">
+      <div id="resumoMes"></div>
+    </div>
+  </details>
+
+  <!-- HISTÓRICO -->
+  <details class="config hist">
+    <summary>📋 Súmula (histórico)<span class="hist-badge" id="histQtd">0</span></summary>
+    <div class="config-body">
+      <div class="historico" id="historico"></div>
+    </div>
+  </details>
+
+  <!-- CONFIG -->
+  <details class="config" id="painelConfig">
+    <summary>🔒 Ajustes (modo dos pais)</summary>
+    <div class="config-body">
+      <div class="campo">
+        <label>Mesada base semanal (R$)</label>
+        <input type="number" id="cfgMesada" min="0" step="1">
+      </div>
+      <div class="campo">
+        <label>Alterar senha dos ajustes (4 dígitos)</label>
+        <input type="password" id="cfgPin" inputmode="numeric" maxlength="4" placeholder="deixe em branco para manter">
+      </div>
+      <div class="campo">
+        <label>🎯 Meta de poupança (nome e valor · 0 desativa)</label>
+        <div class="item" style="display:flex;gap:6px">
+          <input class="nome" id="cfgMetaNome" style="flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px">
+          <input class="val" id="cfgMetaValor" type="number" min="0" step="1" style="width:80px;border:1px solid var(--borda);border-radius:8px;padding:8px;font-family:'Chivo Mono';font-size:13px;text-align:right">
+        </div>
+      </div>
+      <div class="campo">
+        <label>Ganhos</label>
+        <div class="lista-edit" id="editGanhos"></div>
+        <button class="mini-btn" id="btnAddGanho" type="button">+ adicionar ganho</button>
+      </div>
+      <div class="campo">
+        <label>Penalidades</label>
+        <div class="lista-edit" id="editPenas"></div>
+        <button class="mini-btn" id="btnAddPena" type="button">+ adicionar penalidade</button>
+      </div>
+      <button class="btn-salvar" id="btnSalvarCfg" type="button">Salvar ajustes</button>
+      <div class="campo">
+        <label>📋 Log de alterações</label>
+        <div class="log-cfg" id="logCfg"></div>
+      </div>
+      <button class="mini-btn" id="btnExportar" type="button">⬇️ Exportar histórico (CSV)</button>
+      <button class="btn-zerar" id="btnZerar" type="button">Zerar tudo e recomeçar temporada</button>
+    </div>
+  </details>
+
+</div>
+
+<div id="gastoOverlay" hidden>
+  <div class="pin-box">
+    <div class="cadeado">💸</div>
+    <h3>Registrar gasto</h3>
+    <p>Quanto o Leo usou e de qual pote?</p>
+    <input type="number" id="gastoValor" inputmode="decimal" min="0" step="0.5" placeholder="Valor (R$)" style="letter-spacing:0;font-size:18px">
+    <input type="text" id="gastoDesc" placeholder="Com o quê? (ex.: lanche, figurinhas)" style="letter-spacing:0;font-size:14px;margin-top:8px">
+    <div class="gasto-potes">
+      <button type="button" class="gp ativo" data-pote="g">🛍️ Gastar</button>
+      <button type="button" class="gp" data-pote="p">🐷 Poupar</button>
+      <button type="button" class="gp" data-pote="i">📈 Investir</button>
+    </div>
+    <div class="pin-erro" id="gastoErro"></div>
+    <div class="pin-acoes">
+      <button type="button" class="pin-cancelar" id="gastoCancelar">Cancelar</button>
+      <button type="button" class="pin-entrar" id="gastoConfirmar">Descontar</button>
+    </div>
+  </div>
+</div>
+
+<div id="pinOverlay" hidden>
+  <div class="pin-box" id="pinBox">
+    <div class="cadeado">🔒</div>
+    <h3>Modo dos pais</h3>
+    <p>Digite a senha de 4 dígitos</p>
+    <input type="password" id="pinInput" inputmode="numeric" maxlength="4" autocomplete="off">
+    <div class="pin-erro" id="pinErro"></div>
+    <div class="pin-acoes">
+      <button type="button" class="pin-cancelar" id="pinCancelar">Cancelar</button>
+      <button type="button" class="pin-entrar" id="pinEntrar">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const KEY='mesada-leo-v1';
+const NIVEIS=[[0,'Base'],[100,'Titular'],[250,'Capitão'],[500,'Craque'],[1000,'Lenda']];
+const DEFAULT={
+  saldo:0, xp:0, streak:0, ganhosSem:0, penasSem:0,
+  semGV:0, semPV:0, semMes:0, semIni:null, semanas:[],
+  potes:{g:0,p:0,i:0}, jurosMes:null,
+  historico:[], logCfg:[], pin:'MTIzNA==',
+  config:{
+    mesada:25,
+    meta:{n:'Meta de poupança',v:100},
+    ganhos:[
+      {n:'Semana de estudos completa',v:5},
+      {n:'Nota ≥ 8 em prova',v:10},
+      {n:'Arrumar o quarto sem pedir',v:3},
+      {n:'Ajudar em casa (louça, lixo)',v:2},
+      {n:'Ler 30 minutos',v:3},
+      {n:'Estudar 30 minutos no dia',v:2},
+      {n:'Dormir antes das 22h',v:2}
+    ],
+    penas:[
+      {n:'Esquecer lição ou tarefa',v:3},
+      {n:'Passar do limite de tela',v:5},
+      {n:'Nota abaixo de 6',v:10},
+      {n:'Quarto bagunçado após aviso',v:2},
+      {n:'Deixar sapatos espalhados na sala',v:2},
+      {n:'Não guardar mochila e material',v:2},
+      {n:'Deixar louça ou copo fora do lugar',v:2},
+      {n:'Desrespeito ou discussão',v:5}
+    ]
+  }
+};
+const clone=o=>JSON.parse(JSON.stringify(o));
+let S=clone(DEFAULT);
+let cfgBase=null;
+const temStorage=()=>{try{return window.storage&&typeof window.storage.get==='function';}catch(e){return false;}};
+const temLocal=()=>{try{localStorage.setItem('_t','1');localStorage.removeItem('_t');return true;}catch(e){return false;}};
+
+async function lerSalvo(){
+  if(temStorage()){
+    try{const r=await window.storage.get(KEY);if(r&&r.value)return r.value;}catch(e){}
+  }
+  if(temLocal()){
+    try{const v=localStorage.getItem(KEY);if(v)return v;}catch(e){}
+  }
+  return null;
+}
+async function load(){
+  const bruto=await lerSalvo();
+  if(bruto){
+    try{
+      const salvo=JSON.parse(bruto);
+        S={...clone(DEFAULT),...salvo};
+        S.config={...clone(DEFAULT.config),...(salvo.config||{})};
+        // migrações: novos itens padrão para quem já tinha dados salvos
+        if(!S.cfgVer||S.cfgVer<3){
+          ['Deixar sapatos espalhados na sala','Não guardar mochila e material','Deixar louça ou copo fora do lugar'].forEach(n=>{
+            if(!S.config.penas.some(p=>p.n===n))S.config.penas.push({n:n,v:2});
+          });
+          if(!S.config.ganhos.some(g=>g.n==='Dormir antes das 22h'))S.config.ganhos.push({n:'Dormir antes das 22h',v:2});
+          S.cfgVer=3;
+        }
+        if(S.cfgVer<4){
+          if(!S.config.ganhos.some(g=>g.n==='Estudar 30 minutos no dia'))S.config.ganhos.push({n:'Estudar 30 minutos no dia',v:2});
+          S.cfgVer=4;
+        }
+        if(S.cfgVer<5){
+          if(typeof S.semGV!=='number')S.semGV=0;
+          if(typeof S.semPV!=='number')S.semPV=0;
+          if(typeof S.semMes!=='number')S.semMes=0;
+          if(!Array.isArray(S.semanas))S.semanas=[];
+          S.cfgVer=5;
+        }
+        if(S.cfgVer<6){
+          // converte o saldo antigo em potes reais (50/30/20)
+          if(!S.potes||typeof S.potes.g!=='number'){
+            const s=S.saldo||0;
+            S.potes={g:Math.round(s*50)/100,p:Math.round(s*30)/100,i:0};
+            S.potes.i=Math.round((s-S.potes.g-S.potes.p)*100)/100;
+          }
+          if(!S.config.meta)S.config.meta={n:'Meta de poupança',v:100};
+          S.cfgVer=6;
+        }
+        save();
+        if(!S.pin)S.pin='MTIzNA==';
+    }catch(e){/* dado corrompido — usa padrão */}
+  }
+  if(!S.semIni)S.semIni=new Date().toISOString();
+  if(!S.jurosMes)S.jurosMes=new Date().getFullYear()+'-'+String(new Date().getMonth()+1).padStart(2,'0');
+  aplicarJuros();
+  cfgBase=clone(S.config);
+  render(); renderConfig();
+}
+async function save(){
+  const dados=JSON.stringify(S);
+  if(temStorage()){try{await window.storage.set(KEY,dados);}catch(e){}}
+  if(temLocal()){try{localStorage.setItem(KEY,dados);}catch(e){}}
+}
+
+const fmt=v=>'R$ '+v.toFixed(2).replace('.',',');
+const cur=v=>{const x=Math.round(v*100)/100;return 'R$'+x.toFixed(2).replace('.',',').replace(/,00$/,'');};
+const r2=v=>Math.round(v*100)/100;
+function syncSaldo(){S.saldo=r2(S.potes.g+S.potes.p+S.potes.i);}
+function depositar(v){
+  S.potes.g=r2(S.potes.g+v*0.5);
+  S.potes.p=r2(S.potes.p+v*0.3);
+  S.potes.i=r2(S.potes.i+v*0.2);
+  syncSaldo();
+}
+function debitarGastar(v){S.potes.g=r2(S.potes.g-v);syncSaldo();}
+function aplicarJuros(){
+  const chave=new Date().getFullYear()+'-'+String(new Date().getMonth()+1).padStart(2,'0');
+  if(S.jurosMes===chave)return;
+  if(S.jurosMes&&S.potes.i>0){
+    const j=r2(S.potes.i*0.01);
+    if(j>0){
+      S.potes.i=r2(S.potes.i+j);syncSaldo();
+      S.historico.unshift({d:'💹 Rendimento do pote Investir (1% a.m.)',v:j,t:agora()});
+      if(S.historico.length>60)S.historico.pop();
+    }
+  }
+  S.jurosMes=chave;save();
+}
+function nivel(){let nome=NIVEIS[0][1];for(const[x,n]of NIVEIS){if(S.xp>=x)nome=n;}return nome;}
+
+function render(){
+  const el=document.getElementById('saldo');
+  el.innerHTML='<span class="moeda">R$</span>'+S.saldo.toFixed(2).replace('.',',');
+  el.classList.add('pulse');setTimeout(()=>el.classList.remove('pulse'),160);
+  document.getElementById('ganhosSem').textContent='+'+cur(S.semGV||0);
+  document.querySelector('#ganhosSem+span').textContent='Ganhos ('+S.ganhosSem+'×)';
+  document.getElementById('penasSem').textContent='−'+cur(S.semPV||0);
+  document.querySelector('#penasSem+span').textContent='Cartões ('+S.penasSem+'×)';
+  document.getElementById('streak').textContent=S.streak+' 🔥';
+  if(S.semIni){
+    document.getElementById('semanaAtual').textContent='Semana atual: '+dataCurta(S.semIni)+' até '+ddmm(new Date());
+  }
+  const nAtual=nivel();
+  document.getElementById('nivelNome').textContent=nAtual;
+  // barra de XP até o próximo nível
+  const prox=NIVEIS.find(([x])=>x>S.xp);
+  const ant=[...NIVEIS].reverse().find(([x])=>x<=S.xp)||NIVEIS[0];
+  if(prox){
+    const pct=Math.min(100,Math.round((S.xp-ant[0])/(prox[0]-ant[0])*100));
+    document.getElementById('xpFill').style.width=pct+'%';
+    document.getElementById('xpTexto').textContent=`${S.xp} XP · faltam ${prox[0]-S.xp} XP para ${prox[1]}`;
+  }else{
+    document.getElementById('xpFill').style.width='100%';
+    document.getElementById('xpTexto').textContent=`${S.xp} XP · nível máximo: Lenda 👑`;
+  }
+  // potes com saldos reais
+  document.getElementById('pGastar').textContent=cur(S.potes.g);
+  document.getElementById('pPoupar').textContent=cur(S.potes.p);
+  document.getElementById('pInvestir').textContent=cur(S.potes.i);
+  // meta de poupança (usa o pote Poupar)
+  const meta=S.config.meta;
+  const card=document.getElementById('metaCard');
+  if(meta&&meta.v>0){
+    card.hidden=false;
+    const pct=Math.min(100,Math.round(S.potes.p/meta.v*100));
+    document.getElementById('metaNome').textContent=meta.n||'Meta de poupança';
+    document.getElementById('metaPct').textContent=pct+'%';
+    document.getElementById('metaFill').style.width=pct+'%';
+    document.getElementById('metaInfo').textContent=pct>=100
+      ? '🏆 Meta alcançada! Pote Poupar: '+fmt(S.potes.p)
+      : 'Pote Poupar: '+fmt(S.potes.p)+' de '+fmt(meta.v)+' · faltam '+fmt(r2(meta.v-S.potes.p));
+  }else{card.hidden=true;}
+
+  // botões
+  const lg=document.getElementById('listaGanhos');lg.innerHTML='';
+  S.config.ganhos.forEach((g,i)=>{
+    const b=document.createElement('button');b.className='btn-acao ganho';
+    b.innerHTML=`<span>${g.n}</span><span class="valor">+ ${fmt(g.v)}</span>`;
+    b.onclick=()=>lancar(g.n,g.v,'gol');lg.appendChild(b);
+  });
+  const lp=document.getElementById('listaPenas');lp.innerHTML='';
+  S.config.penas.forEach((p,i)=>{
+    const b=document.createElement('button');b.className='btn-acao pena';
+    b.innerHTML=`<span>${p.n}</span><span class="valor">− ${fmt(p.v)}</span>`;
+    b.onclick=()=>lancar(p.n,-p.v,'cartao');lp.appendChild(b);
+  });
+
+  // histórico
+  document.getElementById('histQtd').textContent=S.historico.length;
+  if(typeof renderMes==='function')renderMes();
+  const h=document.getElementById('historico');h.innerHTML='';
+  if(!S.historico.length){h.innerHTML='<div class="vazio">Nenhum lançamento ainda. Primeiro gol vem aí! ⚽</div>';}
+  S.historico.slice(0,20).forEach(m=>{
+    const d=document.createElement('div');d.className='mov';
+    d.innerHTML=`<div class="desc"><b>${m.d}</b><small>${m.t}</small></div>
+      <span class="val ${m.v>=0?'pos':'neg'}">${m.v>=0?'+':'−'} ${fmt(Math.abs(m.v))}</span>`;
+    h.appendChild(d);
+  });
+}
+
+function toast(msg,tipo){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='show '+(tipo||'');
+  clearTimeout(t._x);t._x=setTimeout(()=>t.className='',3500);
+}
+
+function agora(){return new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' · '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});}
+
+function lancar(desc,valor,tipo){
+  if(valor>0)depositar(valor);else debitarGastar(-valor);
+  S.historico.unshift({d:desc,v:valor,t:agora()});
+  if(S.historico.length>60)S.historico.pop();
+  if(valor>0){S.ganhosSem++;S.xp+=10;S.semGV=r2(S.semGV+valor);toast('⚽ GOOOL! '+fmt(valor),'gol');}
+  else{S.penasSem++;S.semPV=r2(S.semPV-valor);toast('🟥 Cartão: '+fmt(-valor),'cartao');}
+  render();save();
+}
+
+let mesadaArmada=false,mesadaTimer=null;
+const btnMesada=document.getElementById('btnMesada');
+btnMesada.onclick=()=>{
+  const base=S.config.mesada;
+  const temBonus=S.penasSem===0;
+  const bonus=temBonus?Math.round(base*0.1*100)/100:0;
+  const total=Math.round((base+bonus)*100)/100;
+
+  // 1º toque: mostra o cálculo e pede confirmação
+  if(!mesadaArmada){
+    mesadaArmada=true;
+    btnMesada.innerHTML=temBonus
+      ? `✅ CONFIRMAR: ${fmt(base)} + bônus ${fmt(bonus)} = <u>${fmt(total)}</u>`
+      : `✅ CONFIRMAR PAGAMENTO DE ${fmt(total)} (sem bônus)`;
+    clearTimeout(mesadaTimer);
+    mesadaTimer=setTimeout(()=>{mesadaArmada=false;btnMesada.textContent='💰 PAGAR MESADA DA SEMANA';},6000);
+    return;
+  }
+
+  // 2º toque: paga
+  clearTimeout(mesadaTimer);mesadaArmada=false;
+  btnMesada.textContent='💰 PAGAR MESADA DA SEMANA';
+  if(temBonus){S.streak++;}else{S.streak=0;}
+  depositar(total);
+  S.semMes=r2(S.semMes+total);
+  S.historico.unshift({
+    d:temBonus?`Mesada semanal (${fmt(base)} + bônus ${fmt(bonus)})`:'Mesada semanal',
+    v:total,t:agora()
+  });
+  if(S.historico.length>60)S.historico.pop();
+  S.xp+=15;
+  toast((temBonus?'💰🔥 Pago com bônus: ':'💰 Mesada paga: ')+fmt(total)+' — agora inicie a nova semana','gol');
+  render();save();
+};
+
+/* ---------- Nova semana + resumo do mês ---------- */
+const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+// sempre usa a data LOCAL do aparelho (nunca UTC)
+const ddmm=d=>String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');
+const mesKey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+const dataCurta=iso=>ddmm(new Date(iso));
+
+function renderMes(){
+  const box=document.getElementById('resumoMes');box.innerHTML='';
+  document.getElementById('mesQtd').textContent=S.semanas.length;
+  if(!S.semanas.length){box.innerHTML='<div class="vazio">Nenhuma semana fechada ainda. Ao final da semana, pague a mesada e toque em "Iniciar nova semana".</div>';return;}
+  // gráfico das últimas 8 semanas (saldo líquido)
+  const ult=S.semanas.slice(0,8).reverse();
+  const maxAbs=Math.max(...ult.map(s=>Math.abs(s.gv-s.pv+s.mes)),1);
+  const graf=document.createElement('div');graf.className='grafico-sem';
+  ult.forEach(s=>{
+    const net=r2(s.gv-s.pv+s.mes);
+    const col=document.createElement('div');col.className='col';
+    const bar=document.createElement('div');bar.className='bar'+(net<0?' neg':'');
+    bar.style.height=Math.max(5,Math.round(Math.abs(net)/maxAbs*58))+'px';
+    bar.title=fmt(net);
+    const lb=document.createElement('small');lb.textContent=s.rot.split(' a ')[0];
+    col.appendChild(bar);col.appendChild(lb);graf.appendChild(col);
+  });
+  box.appendChild(graf);
+  // agrupa por mês (mais recente primeiro), mostra até 3 meses
+  const grupos={};
+  S.semanas.forEach(s=>{(grupos[s.m]=grupos[s.m]||[]).push(s);});
+  Object.keys(grupos).sort().reverse().slice(0,3).forEach(mkey=>{
+    const sems=grupos[mkey];
+    const [ano,mes]=mkey.split('-');
+    const bloco=document.createElement('div');bloco.className='mes-bloco';
+    const nome=document.createElement('div');nome.className='mes-nome';
+    nome.textContent=MESES[+mes-1]+' '+ano;bloco.appendChild(nome);
+    let tG=0,tP=0,tM=0;
+    sems.forEach(s=>{
+      tG+=s.gv;tP+=s.pv;tM+=s.mes;
+      const net=Math.round((s.gv-s.pv+s.mes)*100)/100;
+      const l=document.createElement('div');l.className='sem-linha';
+      const rot=document.createElement('div');rot.className='rot';
+      const b=document.createElement('b');b.textContent='Semana '+s.rot;
+      const sm=document.createElement('small');
+      sm.textContent=`⚽ ${s.g} ganhos (${fmt(s.gv)}) · 🟥 ${s.p} cartões (${fmt(s.pv)}) · 💰 mesada ${fmt(s.mes)}`;
+      rot.appendChild(b);rot.appendChild(sm);
+      const netEl=document.createElement('span');netEl.className='net';
+      netEl.style.color=net>=0?'var(--verde)':'var(--vermelho)';
+      netEl.textContent=(net>=0?'+ ':'− ')+fmt(Math.abs(net));
+      l.appendChild(rot);l.appendChild(netEl);bloco.appendChild(l);
+    });
+    const totNet=Math.round((tG-tP+tM)*100)/100;
+    const tot=document.createElement('div');tot.className='mes-total';
+    const t1=document.createElement('span');t1.textContent=`Total do mês (${sems.length} semana${sems.length>1?'s':''})`;
+    const t2=document.createElement('span');t2.textContent=(totNet>=0?'+ ':'− ')+fmt(Math.abs(totNet));
+    tot.appendChild(t1);tot.appendChild(t2);
+    bloco.appendChild(tot);
+    box.appendChild(bloco);
+  });
+}
+
+let semanaArmada=false,semanaTimer=null;
+const btnSemana=document.getElementById('btnSemana');
+btnSemana.onclick=()=>{
+  if(!semanaArmada){
+    semanaArmada=true;
+    btnSemana.textContent='✅ CONFIRMAR: fechar a semana e guardar no mês';
+    clearTimeout(semanaTimer);
+    semanaTimer=setTimeout(()=>{semanaArmada=false;btnSemana.textContent='🗓️ INICIAR NOVA SEMANA';},6000);
+    return;
+  }
+  clearTimeout(semanaTimer);semanaArmada=false;
+  btnSemana.textContent='🗓️ INICIAR NOVA SEMANA';
+  const hoje=new Date();
+  const ini=S.semIni?dataCurta(S.semIni):ddmm(hoje);
+  S.semanas.unshift({
+    m:mesKey(hoje),
+    rot:ini+' a '+ddmm(hoje),
+    g:S.ganhosSem,p:S.penasSem,
+    gv:S.semGV,pv:S.semPV,mes:S.semMes
+  });
+  if(S.semanas.length>30)S.semanas.pop();
+  S.ganhosSem=0;S.penasSem=0;S.semGV=0;S.semPV=0;S.semMes=0;
+  S.semIni=hoje.toISOString();
+  aplicarJuros();
+  toast('🗓️ Nova semana iniciada — anterior guardada no mês','gol');
+  render();save();
+};
+
+/* ---------- Config ---------- */
+function renderConfig(){
+  document.getElementById('cfgMesada').value=S.config.mesada;
+  document.getElementById('cfgMetaNome').value=(S.config.meta&&S.config.meta.n)||'';
+  document.getElementById('cfgMetaValor').value=(S.config.meta&&S.config.meta.v)||0;
+  ['ganhos','penas'].forEach(tipo=>{
+    const box=document.getElementById(tipo==='ganhos'?'editGanhos':'editPenas');
+    box.innerHTML='';
+    S.config[tipo].forEach((it,i)=>{
+      const row=document.createElement('div');row.className='item';
+      row.innerHTML=`<input class="nome" data-t="${tipo}" data-i="${i}" data-f="n">
+        <input class="val" type="number" min="0" step="0.5" value="${it.v}" data-t="${tipo}" data-i="${i}" data-f="v">
+        <button type="button" class="rm" data-t="${tipo}" data-i="${i}">✕</button>`;
+      row.querySelector('.nome').value=it.n;
+      row.querySelector('.rm').addEventListener('click',()=>{S.config[tipo].splice(i,1);renderConfig();});
+      box.appendChild(row);
+    });
+  });
+  if(typeof renderLog==='function')renderLog();
+}
+function logCfg(msg){
+  if(!S.logCfg)S.logCfg=[];
+  S.logCfg.unshift({m:msg,t:agora()});
+  if(S.logCfg.length>50)S.logCfg.pop();
+}
+function renderLog(){
+  const box=document.getElementById('logCfg');box.innerHTML='';
+  if(!S.logCfg||!S.logCfg.length){box.innerHTML='<div class="vazio-log">Nenhuma alteração registrada ainda.</div>';return;}
+  S.logCfg.slice(0,20).forEach(l=>{
+    const d=document.createElement('div');d.className='linha';
+    const b=document.createElement('b');b.textContent=l.m;
+    const s=document.createElement('small');s.textContent=l.t;
+    d.appendChild(b);d.appendChild(s);box.appendChild(d);
+  });
+}
+function diffConfig(antes,depois){
+  const mudancas=[];
+  if(antes.mesada!==depois.mesada)mudancas.push(`Mesada base: ${fmt(antes.mesada)} → ${fmt(depois.mesada)}`);
+  const mA=antes.meta||{n:'',v:0},mD=depois.meta||{n:'',v:0};
+  if(mA.n!==mD.n||mA.v!==mD.v)mudancas.push(`Meta: "${mD.n}" (${fmt(mD.v)})`);
+  [['ganhos','Ganho'],['penas','Penalidade']].forEach(([tipo,rotulo])=>{
+    const mapA={},mapD={};
+    antes[tipo].forEach(it=>mapA[it.n]=it.v);
+    depois[tipo].forEach(it=>mapD[it.n]=it.v);
+    Object.keys(mapD).forEach(n=>{
+      if(!(n in mapA))mudancas.push(`${rotulo} adicionado: "${n}" (${fmt(mapD[n])})`);
+      else if(mapA[n]!==mapD[n])mudancas.push(`${rotulo} "${n}": ${fmt(mapA[n])} → ${fmt(mapD[n])}`);
+    });
+    Object.keys(mapA).forEach(n=>{
+      if(!(n in mapD))mudancas.push(`${rotulo} removido: "${n}"`);
+    });
+  });
+  return mudancas;
+}
+/* ---------- PIN do modo dos pais ---------- */
+let desbloqueado=false;
+const painel=document.getElementById('painelConfig');
+const overlay=document.getElementById('pinOverlay');
+const pinInput=document.getElementById('pinInput');
+const pinErro=document.getElementById('pinErro');
+painel.querySelector('summary').addEventListener('click',e=>{
+  if(!desbloqueado&&!painel.open){
+    e.preventDefault();
+    pinInput.value='';pinErro.textContent='';
+    overlay.hidden=false;
+    setTimeout(()=>pinInput.focus(),50);
+  }
+});
+painel.addEventListener('toggle',()=>{if(!painel.open)desbloqueado=false;});
+function tentarPin(){
+  if(btoa(pinInput.value)===S.pin){
+    desbloqueado=true;overlay.hidden=true;painel.open=true;
+  }else{
+    pinErro.textContent='Senha incorreta';
+    const box=document.getElementById('pinBox');
+    box.classList.add('erro');setTimeout(()=>box.classList.remove('erro'),350);
+    pinInput.value='';pinInput.focus();
+  }
+}
+document.getElementById('pinEntrar').addEventListener('click',tentarPin);
+pinInput.addEventListener('keydown',e=>{if(e.key==='Enter')tentarPin();});
+pinInput.addEventListener('input',()=>{if(pinInput.value.length===4)tentarPin();});
+document.getElementById('pinCancelar').addEventListener('click',()=>{overlay.hidden=true;});
+overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.hidden=true;});
+
+/* ---------- Registrar gasto ---------- */
+const gastoOverlay=document.getElementById('gastoOverlay');
+let poteSel='g';
+const NOMEPOTE={g:'Gastar',p:'Poupar',i:'Investir'};
+document.getElementById('btnGasto').addEventListener('click',()=>{
+  document.getElementById('gastoValor').value='';
+  document.getElementById('gastoDesc').value='';
+  document.getElementById('gastoErro').textContent='';
+  poteSel='g';
+  document.querySelectorAll('.gp').forEach(b=>b.classList.toggle('ativo',b.dataset.pote==='g'));
+  gastoOverlay.hidden=false;
+});
+document.querySelectorAll('.gp').forEach(b=>b.addEventListener('click',()=>{
+  poteSel=b.dataset.pote;
+  document.querySelectorAll('.gp').forEach(x=>x.classList.toggle('ativo',x===b));
+}));
+document.getElementById('gastoCancelar').addEventListener('click',()=>{gastoOverlay.hidden=true;});
+gastoOverlay.addEventListener('click',e=>{if(e.target===gastoOverlay)gastoOverlay.hidden=true;});
+document.getElementById('gastoConfirmar').addEventListener('click',()=>{
+  const v=parseFloat(document.getElementById('gastoValor').value);
+  const erro=document.getElementById('gastoErro');
+  if(!v||v<=0){erro.textContent='Informe um valor válido';return;}
+  if(v>S.potes[poteSel]){erro.textContent='O pote '+NOMEPOTE[poteSel]+' só tem '+fmt(S.potes[poteSel]);return;}
+  const desc=document.getElementById('gastoDesc').value.trim()||'Gasto';
+  S.potes[poteSel]=r2(S.potes[poteSel]-v);syncSaldo();
+  S.historico.unshift({d:'💸 '+desc+' (pote '+NOMEPOTE[poteSel]+')',v:-v,t:agora()});
+  if(S.historico.length>60)S.historico.pop();
+  gastoOverlay.hidden=true;
+  toast('💸 Descontado '+fmt(v)+' do pote '+NOMEPOTE[poteSel],'cartao');
+  render();save();
+});
+
+document.getElementById('btnAddGanho').addEventListener('click',()=>{S.config.ganhos.push({n:'Novo item',v:1});renderConfig();});
+document.getElementById('btnAddPena').addEventListener('click',()=>{S.config.penas.push({n:'Novo item',v:1});renderConfig();});
+document.getElementById('btnSalvarCfg').addEventListener('click',()=>{
+  const antes=clone(S.config);
+  S.config.mesada=parseFloat(document.getElementById('cfgMesada').value)||0;
+  S.config.meta={
+    n:document.getElementById('cfgMetaNome').value.trim()||'Meta de poupança',
+    v:parseFloat(document.getElementById('cfgMetaValor').value)||0
+  };
+  document.querySelectorAll('.lista-edit input').forEach(inp=>{
+    const t=inp.getAttribute('data-t'),i=+inp.getAttribute('data-i'),f=inp.getAttribute('data-f');
+    if(S.config[t]&&S.config[t][i])S.config[t][i][f]=f==='v'?(parseFloat(inp.value)||0):inp.value;
+  });
+  const mudancas=diffConfig(cfgBase||antes,S.config);
+  const novoPin=document.getElementById('cfgPin').value.trim();
+  if(novoPin){
+    if(/^\d{4}$/.test(novoPin)){S.pin=btoa(novoPin);mudancas.push('Senha dos ajustes alterada');}
+    else{toast('⚠️ A senha deve ter 4 números');return;}
+  }
+  document.getElementById('cfgPin').value='';
+  mudancas.forEach(m=>logCfg(m));
+  cfgBase=clone(S.config);
+  render();renderConfig();save();
+  toast(mudancas.length?`✅ ${mudancas.length} alteração(ões) salva(s)`:'✅ Nada mudou');
+});
+document.getElementById('btnExportar').addEventListener('click',()=>{
+  if(!S.historico.length){toast('Nada para exportar ainda');return;}
+  let csv='Data;Descricao;Valor (R$);Saldo apos\n';
+  // reconstrói o saldo após cada lançamento (histórico está do mais novo ao mais antigo)
+  let acum=S.saldo;
+  const linhas=S.historico.map(m=>{
+    const linha=`${m.t};"${m.d.replace(/"/g,'""')}";${m.v.toFixed(2).replace('.',',')};${acum.toFixed(2).replace('.',',')}`;
+    acum=Math.round((acum-m.v)*100)/100;
+    return linha;
+  });
+  csv+=linhas.join('\n');
+  try{
+    const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='historico-mesada-leo.csv';
+    document.body.appendChild(a);a.click();a.remove();
+    toast('⬇️ Histórico exportado');
+  }catch(e){toast('Não foi possível baixar aqui — abra o arquivo no navegador');}
+});
+
+let zerarArmado=false;
+document.getElementById('btnZerar').addEventListener('click',function(){
+  if(!zerarArmado){zerarArmado=true;this.textContent='Tem certeza? Toque de novo para confirmar';
+    setTimeout(()=>{zerarArmado=false;this.textContent='Zerar tudo e recomeçar temporada';},4000);return;}
+  const cfg=S.config;const logAntigo=S.logCfg||[];
+  S=clone(DEFAULT);S.config=cfg;S.logCfg=logAntigo;
+  logCfg('Temporada zerada (saldo, histórico e streak reiniciados)');
+  cfgBase=clone(S.config);zerarArmado=false;
+  this.textContent='Zerar tudo e recomeçar temporada';
+  render();renderConfig();save();toast('🔄 Nova temporada iniciada');
+});
+
+load();
+
+// PWA: service worker (ignorado silenciosamente fora de um servidor HTTPS)
+try{
+  if('serviceWorker' in navigator && location.protocol==='https:'){
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  }
+}catch(e){}
+
+</script>
+</body>
+</html>
