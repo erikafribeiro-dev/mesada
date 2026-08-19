@@ -1001,144 +1001,91 @@ document.getElementById('btnLogout').addEventListener('click',()=>{
   }
 });
 
-// ===== GOOGLE DRIVE SYNC =====
-const GOOGLE_CLIENT_ID='1234567890-abcdefg.apps.googleusercontent.com'; // Configure com seu Client ID
-const GOOGLE_API_KEY='AIzaSyD_YOUR_API_KEY'; // Configure com sua API Key
-let googleAccessToken=null;
-let googleDriveFolderId=null;
+// ===== GOOGLE DRIVE SYNC (Arquivo compartilhado) =====
 const SYNC_KEY='mesada-leo-google-sync';
 
-async function initGoogleSignIn(){
+function atualizarStatusGoogle(){
   const statusEl=document.getElementById('googleStatus');
   const btnGoogle=document.getElementById('btnSincGoogle');
-
-  // Verificar se já está sincronizado
   const syncData=localStorage.getItem(SYNC_KEY);
+
   if(syncData){
     try{
-      const {token,folderId}=JSON.parse(syncData);
-      if(token){
-        googleAccessToken=token;
-        googleDriveFolderId=folderId;
-        statusEl.innerHTML='✅ Conectado ao Google Drive<br><small>Dados sincronizados automaticamente</small>';
-        btnGoogle.textContent='🔄 Ressincronizar agora';
-        // Sincronizar automaticamente ao carregar
-        await sincronizarGoogleDrive();
-        return;
-      }
+      const {dataUltimoSync}=JSON.parse(syncData);
+      statusEl.innerHTML=`✅ Último backup: ${dataUltimoSync}<br><small>Cole um novo JSON para atualizar</small>`;
+      btnGoogle.innerHTML='📤 Exportar para Google Drive<br>📥 Importar do Google Drive';
+      return;
     }catch(e){}
   }
 
-  statusEl.innerHTML='⏳ Clique para conectar ao Google Drive';
+  statusEl.innerHTML='⏳ Clique para exportar/importar';
 }
-
-async function sincronizarGoogleDrive(){
-  if(!googleAccessToken)return false;
-
-  try{
-    // Salvar dados como arquivo JSON no Google Drive
-    const fileContent=JSON.stringify(S,null,2);
-    const fileName=`mesada-leo-backup-${usuarioLogado}.json`;
-
-    // Procurar arquivo existente
-    const searchUrl=`https://www.googleapis.com/drive/v3/files?q=name='${fileName}' and trashed=false&spaces=drive&access_token=${googleAccessToken}`;
-    const searchRes=await fetch(searchUrl);
-    const searchData=await searchRes.json();
-
-    let fileId=searchData.files?.[0]?.id;
-
-    if(fileId){
-      // Atualizar arquivo existente
-      const updateUrl=`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media&access_token=${googleAccessToken}`;
-      await fetch(updateUrl,{method:'PATCH',body:fileContent,headers:{'Content-Type':'application/json'}});
-    }else{
-      // Criar novo arquivo
-      const metadata={name:fileName,mimeType:'application/json',parents:[googleDriveFolderId]};
-      const createUrl=`https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&access_token=${googleAccessToken}`;
-      const formData=new FormData();
-      formData.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
-      formData.append('file',new Blob([fileContent],{type:'application/json'}));
-      await fetch(createUrl,{method:'POST',body:formData});
-    }
-
-    return true;
-  }catch(e){
-    console.error('Erro ao sincronizar:',e);
-    return false;
-  }
-}
-
-// Sincronizar automaticamente ao salvar dados
-const saveOriginal=save;
-window.save=async function(){
-  await saveOriginal();
-  if(googleAccessToken){
-    sincronizarGoogleDrive();
-  }
-};
 
 document.getElementById('btnSincGoogle').addEventListener('click',async()=>{
-  if(!usuarioLogado){
-    alert('⚠️ Faça login primeiro para sincronizar com Google Drive');
-    return;
-  }
+  const opcao=confirm('📤 Exportar dados para Google Drive?\n\n(Cancelar para importar dados existentes)');
 
-  if(!googleAccessToken){
-    // Abrir login do Google
-    toast('🔗 Abrindo Google Sign-In...','gol');
+  if(opcao){
+    // EXPORTAR: criar arquivo JSON para download
+    const dados={...S,dataExporto:new Date().toLocaleString('pt-BR')};
+    const json=JSON.stringify(dados,null,2);
+    const blob=new Blob([json],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`mesada-leo-${usuarioLogado}-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 
-    // Usar gapi.auth2 para login
-    try{
-      // Simulação: usar redirect para OAuth
-      const redirectUrl=window.location.origin+window.location.pathname+'?oauth_callback=true';
-      const authUrl=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUrl)}&response_type=token&scope=https://www.googleapis.com/auth/drive.file`;
-
-      alert('⚠️ Configure seu Google Client ID e API Key no código para ativar sincronização.\n\nPor enquanto, use Export CSV para backup.');
-    }catch(e){
-      toast('❌ Erro ao conectar Google Drive','cartao');
-    }
+    toast('📥 Arquivo baixado! Salve no Google Drive','gol');
+    localStorage.setItem(SYNC_KEY,JSON.stringify({dataUltimoSync:new Date().toLocaleString('pt-BR')}));
+    atualizarStatusGoogle();
   }else{
-    // Ressincronizar
-    toast('💾 Sincronizando com Google Drive...','gol');
-    const sucesso=await sincronizarGoogleDrive();
-    if(sucesso){
-      toast('✅ Backup salvo no Google Drive','gol');
-    }else{
-      toast('❌ Erro ao sincronizar','cartao');
-    }
+    // IMPORTAR: pedir arquivo JSON
+    const input=document.createElement('input');
+    input.type='file';
+    input.accept='.json';
+    input.addEventListener('change',(e)=>{
+      const file=e.target.files[0];
+      if(!file)return;
+
+      const reader=new FileReader();
+      reader.onload=(event)=>{
+        try{
+          const dadosCloud=JSON.parse(event.target.result);
+
+          // Validar se é um backup válido
+          if(!dadosCloud.saldo&&!dadosCloud.historico){
+            toast('❌ Arquivo não é um backup válido','cartao');
+            return;
+          }
+
+          // Perguntar se quer sobrescrever
+          if(confirm(`📥 Importar backup de ${dadosCloud.dataExporto||(new Date().toLocaleString('pt-BR'))}?\n\nIsso vai sobrescrever os dados locais.`)){
+            // Mesclar: dados da nuvem sobrescrevem dados locais
+            S={...clone(DEFAULT),...dadosCloud};
+            S.config={...clone(DEFAULT.config),...(dadosCloud.config||{})};
+            save();
+            render();
+            renderConfig();
+
+            localStorage.setItem(SYNC_KEY,JSON.stringify({dataUltimoSync:new Date().toLocaleString('pt-BR')}));
+            atualizarStatusGoogle();
+            toast('✅ Dados importados com sucesso!','gol');
+          }
+        }catch(erro){
+          toast('❌ Erro ao ler arquivo','cartao');
+          console.error(erro);
+        }
+      };
+      reader.readAsText(file);
+    });
+    input.click();
   }
 });
 
-// Carregar dados do Google Drive ao inicializar (se conectado)
-async function carregarGoogleDrive(){
-  if(!googleAccessToken||!usuarioLogado)return false;
-
-  try{
-    const fileName=`mesada-leo-backup-${usuarioLogado}.json`;
-    const searchUrl=`https://www.googleapis.com/drive/v3/files?q=name='${fileName}' and trashed=false&spaces=drive&access_token=${googleAccessToken}`;
-    const searchRes=await fetch(searchUrl);
-    const searchData=await searchRes.json();
-
-    if(searchData.files?.[0]){
-      const fileId=searchData.files[0].id;
-      const downloadUrl=`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&access_token=${googleAccessToken}`;
-      const res=await fetch(downloadUrl);
-      const cloudData=await res.json();
-
-      // Mesclar dados (nuvem sobrescreve local se mais recente)
-      if(cloudData.saldo!==undefined){
-        S={...S,...cloudData};
-        render();
-        return true;
-      }
-    }
-  }catch(e){
-    console.error('Erro ao carregar Google Drive:',e);
-  }
-  return false;
-}
-
-initGoogleSignIn();
+atualizarStatusGoogle();
 
 // PWA: service worker (ignorado silenciosamente fora de um servidor HTTPS)
 try{
