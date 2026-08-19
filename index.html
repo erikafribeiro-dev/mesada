@@ -471,10 +471,15 @@ function inicializarLogin(){
 }
 
 // Verificar autenticação ao carregar
-if(!verificarAutenticacao()){
-  inicializarLogin();
-  document.getElementById('loginOverlay').hidden=false;
-}
+window.addEventListener('DOMContentLoaded', ()=>{
+  if(!verificarAutenticacao()){
+    inicializarLogin();
+    document.getElementById('loginOverlay').hidden=false;
+  }else{
+    document.getElementById('loginOverlay').hidden=true;
+    load();
+  }
+});
 
 const KEY='mesada-leo-v1';
 const NIVEIS=[[0,'Base'],[100,'Titular'],[250,'Capitão'],[500,'Craque'],[1000,'Lenda']];
@@ -989,8 +994,6 @@ document.getElementById('btnLogout').addEventListener('click',()=>{
     fazerLogout();
   }
 });
-
-load();
 
 // PWA: service worker (ignorado silenciosamente fora de um servidor HTTPS)
 try{
