@@ -178,9 +178,9 @@ details[open].config summary::after{content:"▴"}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
-<body hidden>
+<body>
 
-<div id="loginOverlay">
+<div id="loginOverlay" hidden>
   <div class="login-box">
     <div class="logo">🔒</div>
     <h2 id="loginTitulo">Mesada do Leo</h2>
@@ -473,9 +473,7 @@ function inicializarLogin(){
 // Verificar autenticação ao carregar
 if(!verificarAutenticacao()){
   inicializarLogin();
-}else{
-  document.body.hidden=false;
-  document.getElementById('loginOverlay').hidden=true;
+  document.getElementById('loginOverlay').hidden=false;
 }
 
 const KEY='mesada-leo-v1';
