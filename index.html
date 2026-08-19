@@ -310,10 +310,11 @@ details[open].config summary::after{content:"▴"}
       </div>
       <button class="mini-btn" id="btnExportar" type="button">⬇️ Exportar histórico (CSV)</button>
       <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--borda)">
-        <label style="font-size:12px;font-weight:600;color:var(--cinza);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px">🔗 Sincronizar entre dispositivos</label>
-        <button class="mini-btn" id="btnGerarLink" type="button">📤 Gerar Link de Compartilhamento</button>
-        <button class="mini-btn" id="btnCarregarLink" type="button">📥 Carregar de Link</button>
-        <div id="syncStatus" style="font-size:12px;color:var(--cinza);margin-top:6px"></div>
+        <label style="font-size:12px;font-weight:600;color:var(--cinza);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px">☁️ Sincronizar via Google Drive</label>
+        <button class="mini-btn" id="btnSalvarBackup" type="button">💾 Baixar backup (.json)</button>
+        <a class="mini-btn" id="btnAbrirPasta" href="https://drive.google.com/drive/folders/1LVwNu6LCpP9h-UWWThITy9iu0QItexaL?usp=drive_link" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;margin-top:6px">📁 Abrir pasta do Google Drive</a>
+        <button class="mini-btn" id="btnImportarBackup" type="button" style="margin-top:6px">📥 Importar backup (.json)</button>
+        <div id="syncStatus" style="font-size:12px;color:var(--cinza);margin-top:6px">Baixe o backup, salve-o na pasta acima. Em outro dispositivo, baixe o arquivo da pasta e importe aqui.</div>
       </div>
       <button class="btn-zerar" id="btnZerar" type="button">Zerar tudo e recomeçar temporada</button>
       <button class="btn-zerar" id="btnLogout" type="button" style="color:#0B5C38;margin-top:12px">🚪 Sair da conta</button>
@@ -1003,110 +1004,74 @@ document.getElementById('btnLogout').addEventListener('click',()=>{
   }
 });
 
-// ===== SINCRONIZAÇÃO VIA LINK COMPARTILHÁVEL =====
-// Codifica dados em base64 no FRAGMENTO da URL (#sync=...).
-// O fragmento nunca é enviado ao servidor, então não existe limite de
-// tamanho de URL do lado do servidor (erro "414 URI Too Long").
+// ===== SINCRONIZAÇÃO VIA PASTA FIXA DO GOOGLE DRIVE =====
+// Pasta fixa: https://drive.google.com/drive/folders/1LVwNu6LCpP9h-UWWThITy9iu0QItexaL
+// O navegador não pode gravar direto na pasta sem OAuth do Google, então o
+// fluxo é: baixar o arquivo .json aqui -> mover manualmente pra pasta acima
+// (ou ela já cai na pasta de Downloads sincronizada, se o Drive Desktop
+// estiver configurado) -> em outro dispositivo, baixar o arquivo da pasta
+// e importar aqui.
 
-function extrairSyncDeUrl(urlStr){
-  try{
-    const url=new URL(urlStr);
-    // Aceita tanto #sync=... (novo) quanto ?sync=... (links antigos)
-    const hash=url.hash.startsWith('#')?url.hash.slice(1):url.hash;
-    const hashParams=new URLSearchParams(hash);
-    return hashParams.get('sync')||url.searchParams.get('sync');
-  }catch(e){
-    return null;
-  }
-}
-
-function gerarLinkCompartilhamento(){
-  // Envia só o essencial (sem log de alterações, que pode ficar grande)
-  const {logCfg,...dadosEssenciais}=S;
-  const dados={...dadosEssenciais,dataExporto:new Date().toLocaleString('pt-BR'),usuario:usuarioLogado};
-  const json=JSON.stringify(dados);
-  const base64=btoa(encodeURIComponent(json));
-  const link=window.location.origin+window.location.pathname+'#sync='+base64;
-
-  if(link.length>7500){
-    toast('⚠️ Histórico muito grande para link. Use Exportar CSV.','cartao');
-    return;
-  }
-
-  // Copiar para clipboard
-  navigator.clipboard.writeText(link).then(()=>{
-    toast('✅ Link copiado para clipboard!','gol');
-  }).catch(()=>{
-    prompt('📤 Compartilhe este link com outro dispositivo:',link);
-  });
-
-  document.getElementById('syncStatus').innerHTML=`✅ Link gerado! Compartilhe em WhatsApp, Email, etc.<br><small>Outra pessoa abre o link e clica "Carregar de Link"</small>`;
-}
-
-function carregarDeLink(){
-  const syncData=extrairSyncDeUrl(window.location.href);
-
-  if(!syncData){
-    const link=prompt('📥 Cole o link compartilhado aqui:');
-    if(!link)return;
-
-    const data=extrairSyncDeUrl(link);
-    if(data){
-      processarLinkSync(data);
-    }else{
-      toast('❌ Link inválido','cartao');
-    }
-  }else{
-    processarLinkSync(syncData);
-  }
-}
-
-function processarLinkSync(base64Data){
-  try{
-    const json=decodeURIComponent(atob(base64Data));
-    const dadosCloud=JSON.parse(json);
-
-    if(!dadosCloud.saldo&&!dadosCloud.historico){
-      toast('❌ Link não contém dados válidos','cartao');
-      return;
-    }
-
-    if(confirm(`📥 Importar dados de ${dadosCloud.usuario} (${dadosCloud.dataExporto})?\n\nIsso vai sobrescrever os dados locais.`)){
-      S={...clone(DEFAULT),...dadosCloud};
-      S.config={...clone(DEFAULT.config),...(dadosCloud.config||{})};
-      save();
-      render();
-      renderConfig();
-
-      document.getElementById('syncStatus').innerHTML=`✅ Dados sincronizados com sucesso!<br><small>De: ${dadosCloud.usuario}</small>`;
-      toast('✅ Dados importados!','gol');
-
-      // Limpar fragmento da URL
-      window.history.replaceState({},document.title,window.location.pathname+window.location.search);
-    }
-  }catch(erro){
-    toast('❌ Erro ao processar link','cartao');
-    console.error(erro);
-  }
-}
-
-// Eventos dos botões
-document.getElementById('btnGerarLink').addEventListener('click',()=>{
+document.getElementById('btnSalvarBackup').addEventListener('click',()=>{
   if(!usuarioLogado){
     toast('⚠️ Faça login primeiro','cartao');
     return;
   }
-  toast('📤 Gerando link...','gol');
-  setTimeout(gerarLinkCompartilhamento,500);
+
+  const dados={...S,dataExporto:new Date().toLocaleString('pt-BR'),usuario:usuarioLogado};
+  const json=JSON.stringify(dados,null,2);
+  const nomeArquivo=`mesada-leo-${usuarioLogado}.json`;
+
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=nomeArquivo;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  document.getElementById('syncStatus').innerHTML='✅ Backup baixado! Agora mova o arquivo para a pasta do Google Drive acima.';
+  toast('💾 Backup baixado — mova para a pasta do Drive','gol');
 });
 
-document.getElementById('btnCarregarLink').addEventListener('click',carregarDeLink);
+document.getElementById('btnImportarBackup').addEventListener('click',()=>{
+  const input=document.createElement('input');
+  input.type='file';
+  input.accept='.json';
+  input.addEventListener('change',(e)=>{
+    const file=e.target.files[0];
+    if(!file)return;
 
-// Verificar se há sync na URL ao carregar
-window.addEventListener('load',()=>{
-  if(extrairSyncDeUrl(window.location.href)){
-    toast('ℹ️ Clique "Carregar de Link" para sincronizar','gol');
-  }
+    const reader=new FileReader();
+    reader.onload=(event)=>{
+      try{
+        const dadosCloud=JSON.parse(event.target.result);
+
+        if(!dadosCloud.saldo&&!dadosCloud.historico){
+          toast('❌ Arquivo não é um backup válido','cartao');
+          return;
+        }
+
+        if(confirm(`📥 Importar backup de ${dadosCloud.usuario||'?'} (${dadosCloud.dataExporto||'?'})?\n\nIsso vai sobrescrever os dados locais.`)){
+          S={...clone(DEFAULT),...dadosCloud};
+          S.config={...clone(DEFAULT.config),...(dadosCloud.config||{})};
+          save();
+          render();
+          renderConfig();
+
+          document.getElementById('syncStatus').innerHTML=`✅ Backup importado de ${dadosCloud.usuario||'?'}!`;
+          toast('✅ Dados importados!','gol');
+        }
+      }catch(erro){
+        toast('❌ Erro ao ler arquivo','cartao');
+        console.error(erro);
+      }
+    };
+    reader.readAsText(file);
+  });
+  input.click();
 });
 
 // PWA: service worker (ignorado silenciosamente fora de um servidor HTTPS)
