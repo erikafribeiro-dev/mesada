@@ -23,6 +23,21 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Archivo',sans-serif;background:var(--creme);color:var(--tinta);-webkit-font-smoothing:antialiased;padding-bottom:60px}
+#loginOverlay{position:fixed;inset:0;background:var(--creme);display:flex;align-items:center;justify-content:center;z-index:200}
+#loginOverlay[hidden]{display:none}
+.login-box{background:#fff;border-radius:18px;padding:40px 30px;width:min(340px,90vw);text-align:center;box-shadow:0 10px 30px rgba(6,61,37,.15)}
+.login-box .logo{font-size:48px;margin-bottom:16px}
+.login-box h2{font-family:'Archivo Black';font-size:20px;color:var(--verde-escuro);margin-bottom:8px}
+.login-box .subtitulo{font-size:13px;color:var(--cinza);margin-bottom:24px}
+.login-campo{margin-bottom:14px;text-align:left}
+.login-campo label{display:block;font-size:12px;font-weight:600;color:var(--cinza);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.login-campo input{width:100%;border:1px solid var(--borda);border-radius:10px;padding:12px;font-family:'Archivo';font-size:14px;font-weight:500}
+.login-campo input:focus{outline:none;border-color:var(--verde);background:#fafaf6}
+.login-erro{color:var(--vermelho);font-size:12px;font-weight:600;min-height:16px;margin-bottom:14px;margin-top:-8px}
+.btn-login{width:100%;background:var(--verde);color:#fff;border:none;border-radius:var(--radius);padding:14px;font-family:'Archivo Black';font-size:15px;letter-spacing:.5px;cursor:pointer;box-shadow:0 4px 14px rgba(11,92,56,.35);margin-bottom:10px}
+.btn-login:active{transform:scale(.98)}
+.btn-cadastro{width:100%;background:transparent;color:var(--verde);border:2px solid var(--verde);border-radius:var(--radius);padding:12px;font-family:'Archivo';font-weight:600;font-size:14px;cursor:pointer}
+.btn-cadastro:active{transform:scale(.98)}
 .wrap{max-width:520px;margin:0 auto;padding:0 16px}
 
 /* ---------- Header ---------- */
@@ -163,7 +178,26 @@ details[open].config summary::after{content:"▴"}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
-<body>
+<body hidden>
+
+<div id="loginOverlay">
+  <div class="login-box">
+    <div class="logo">🔒</div>
+    <h2 id="loginTitulo">Mesada do Leo</h2>
+    <p class="subtitulo" id="loginSubtitulo">Faça login para continuar</p>
+    <div class="login-campo">
+      <label>Usuário</label>
+      <input type="text" id="loginUsuario" placeholder="seu usuário" autocomplete="username">
+    </div>
+    <div class="login-campo">
+      <label>Senha</label>
+      <input type="password" id="loginSenha" placeholder="sua senha" autocomplete="current-password">
+    </div>
+    <div class="login-erro" id="loginErro"></div>
+    <button class="btn-login" id="btnLogin">Entrar</button>
+    <button class="btn-cadastro" id="btnCadastro">Criar nova conta</button>
+  </div>
+</div>
 
 <header>
   <div class="wrap">
@@ -274,6 +308,7 @@ details[open].config summary::after{content:"▴"}
       </div>
       <button class="mini-btn" id="btnExportar" type="button">⬇️ Exportar histórico (CSV)</button>
       <button class="btn-zerar" id="btnZerar" type="button">Zerar tudo e recomeçar temporada</button>
+      <button class="btn-zerar" id="btnLogout" type="button" style="color:#0B5C38;margin-top:12px">🚪 Sair da conta</button>
     </div>
   </details>
 
@@ -316,6 +351,133 @@ details[open].config summary::after{content:"▴"}
 <div id="toast"></div>
 
 <script>
+// Hash simples para senha (segurança básica)
+const simpleHash=s=>{let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h=h&h;}return Math.abs(h).toString(36);};
+
+// ===== AUTENTICAÇÃO =====
+let usuarioLogado=null;
+const LOGIN_KEY='mesada-leo-login';
+const USERS_KEY='mesada-leo-users';
+
+function obterSenhaHash(usuario,senha){return simpleHash(usuario+':'+senha);}
+
+function carregarUsers(){
+  try{const u=localStorage.getItem(USERS_KEY);return u?JSON.parse(u):{};} catch(e){return {};}
+}
+
+function salvarUsers(users){localStorage.setItem(USERS_KEY,JSON.stringify(users));}
+
+function cadastrarUsuario(usuario,senha){
+  if(!usuario||!senha){return false;}
+  const users=carregarUsers();
+  if(users[usuario]){return false;}
+  users[usuario]={hash:obterSenhaHash(usuario,senha),criado:new Date().toISOString()};
+  salvarUsers(users);
+  return true;
+}
+
+function verificarLogin(usuario,senha){
+  const users=carregarUsers();
+  if(!users[usuario])return false;
+  return users[usuario].hash===obterSenhaHash(usuario,senha);
+}
+
+function fazerLogin(usuario,senha){
+  if(verificarLogin(usuario,senha)){
+    usuarioLogado=usuario;
+    localStorage.setItem(LOGIN_KEY,JSON.stringify({usuario:usuario,timestamp:Date.now()}));
+    return true;
+  }
+  return false;
+}
+
+function fazerLogout(){
+  usuarioLogado=null;
+  localStorage.removeItem(LOGIN_KEY);
+  document.body.hidden=true;
+  document.getElementById('loginOverlay').hidden=false;
+  document.getElementById('loginUsuario').value='';
+  document.getElementById('loginSenha').value='';
+  document.getElementById('loginErro').textContent='';
+  document.getElementById('loginUsuario').focus();
+}
+
+function verificarAutenticacao(){
+  try{
+    const login=localStorage.getItem(LOGIN_KEY);
+    if(login){
+      const {usuario}=JSON.parse(login);
+      if(usuario){usuarioLogado=usuario;return true;}
+    }
+  }catch(e){}
+  return false;
+}
+
+function inicializarLogin(){
+  const loginOverlay=document.getElementById('loginOverlay');
+  const btnLogin=document.getElementById('btnLogin');
+  const btnCadastro=document.getElementById('btnCadastro');
+  const usuarioInput=document.getElementById('loginUsuario');
+  const senhaInput=document.getElementById('loginSenha');
+  const erroEl=document.getElementById('loginErro');
+  let modoCadastro=false;
+
+  function tentarLogin(){
+    const usuario=usuarioInput.value.trim();
+    const senha=senhaInput.value;
+    erroEl.textContent='';
+
+    if(!usuario||!senha){erroEl.textContent='Preencha usuário e senha';return;}
+
+    if(modoCadastro){
+      if(senha.length<4){erroEl.textContent='Senha deve ter no mínimo 4 caracteres';return;}
+      if(cadastrarUsuario(usuario,senha)){
+        fazerLogin(usuario,senha);
+        loginOverlay.hidden=true;
+        document.body.hidden=false;
+        load();
+      }else{erroEl.textContent='Usuário já existe';}
+    }else{
+      if(fazerLogin(usuario,senha)){
+        loginOverlay.hidden=true;
+        document.body.hidden=false;
+        load();
+      }else{erroEl.textContent='Usuário ou senha incorretos';}
+    }
+  }
+
+  btnLogin.addEventListener('click',tentarLogin);
+  usuarioInput.addEventListener('keypress',e=>{if(e.key==='Enter')tentarLogin();});
+  senhaInput.addEventListener('keypress',e=>{if(e.key==='Enter')tentarLogin();});
+
+  btnCadastro.addEventListener('click',()=>{
+    modoCadastro=!modoCadastro;
+    if(modoCadastro){
+      document.getElementById('loginTitulo').textContent='Criar conta';
+      document.getElementById('loginSubtitulo').textContent='Defina um usuário e senha';
+      btnLogin.textContent='Cadastrar';
+      btnCadastro.textContent='Já tenho conta';
+      usuarioInput.focus();
+    }else{
+      document.getElementById('loginTitulo').textContent='Mesada do Leo';
+      document.getElementById('loginSubtitulo').textContent='Faça login para continuar';
+      btnLogin.textContent='Entrar';
+      btnCadastro.textContent='Criar nova conta';
+    }
+    erroEl.textContent='';
+    usuarioInput.value='';
+    senhaInput.value='';
+  });
+}
+
+// Verificar autenticação ao carregar
+if(!verificarAutenticacao()){
+  inicializarLogin();
+}else{
+  document.body.hidden=false;
+  document.getElementById('loginOverlay').hidden=true;
+}
+
 const KEY='mesada-leo-v1';
 const NIVEIS=[[0,'Base'],[100,'Titular'],[250,'Capitão'],[500,'Craque'],[1000,'Lenda']];
 const DEFAULT={
@@ -822,6 +984,12 @@ document.getElementById('btnZerar').addEventListener('click',function(){
   cfgBase=clone(S.config);zerarArmado=false;
   this.textContent='Zerar tudo e recomeçar temporada';
   render();renderConfig();save();toast('🔄 Nova temporada iniciada');
+});
+
+document.getElementById('btnLogout').addEventListener('click',()=>{
+  if(confirm('Tem certeza que quer sair? Seus dados serão mantidos.')){
+    fazerLogout();
+  }
 });
 
 load();
