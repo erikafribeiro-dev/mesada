@@ -1004,13 +1004,34 @@ document.getElementById('btnLogout').addEventListener('click',()=>{
 });
 
 // ===== SINCRONIZAÇÃO VIA LINK COMPARTILHÁVEL =====
-// Codifica dados em base64 para compartilhamento via URL
+// Codifica dados em base64 no FRAGMENTO da URL (#sync=...).
+// O fragmento nunca é enviado ao servidor, então não existe limite de
+// tamanho de URL do lado do servidor (erro "414 URI Too Long").
+
+function extrairSyncDeUrl(urlStr){
+  try{
+    const url=new URL(urlStr);
+    // Aceita tanto #sync=... (novo) quanto ?sync=... (links antigos)
+    const hash=url.hash.startsWith('#')?url.hash.slice(1):url.hash;
+    const hashParams=new URLSearchParams(hash);
+    return hashParams.get('sync')||url.searchParams.get('sync');
+  }catch(e){
+    return null;
+  }
+}
 
 function gerarLinkCompartilhamento(){
-  const dados={...S,dataExporto:new Date().toLocaleString('pt-BR'),usuario:usuarioLogado};
+  // Envia só o essencial (sem log de alterações, que pode ficar grande)
+  const {logCfg,...dadosEssenciais}=S;
+  const dados={...dadosEssenciais,dataExporto:new Date().toLocaleString('pt-BR'),usuario:usuarioLogado};
   const json=JSON.stringify(dados);
   const base64=btoa(encodeURIComponent(json));
-  const link=window.location.origin+window.location.pathname+'?sync='+base64;
+  const link=window.location.origin+window.location.pathname+'#sync='+base64;
+
+  if(link.length>7500){
+    toast('⚠️ Histórico muito grande para link. Use Exportar CSV.','cartao');
+    return;
+  }
 
   // Copiar para clipboard
   navigator.clipboard.writeText(link).then(()=>{
@@ -1023,15 +1044,13 @@ function gerarLinkCompartilhamento(){
 }
 
 function carregarDeLink(){
-  const params=new URLSearchParams(window.location.search);
-  const syncData=params.get('sync');
+  const syncData=extrairSyncDeUrl(window.location.href);
 
   if(!syncData){
     const link=prompt('📥 Cole o link compartilhado aqui:');
     if(!link)return;
 
-    const urlParams=new URL(link).searchParams;
-    const data=urlParams.get('sync');
+    const data=extrairSyncDeUrl(link);
     if(data){
       processarLinkSync(data);
     }else{
@@ -1062,8 +1081,8 @@ function processarLinkSync(base64Data){
       document.getElementById('syncStatus').innerHTML=`✅ Dados sincronizados com sucesso!<br><small>De: ${dadosCloud.usuario}</small>`;
       toast('✅ Dados importados!','gol');
 
-      // Limpar URL
-      window.history.replaceState({},document.title,window.location.pathname);
+      // Limpar fragmento da URL
+      window.history.replaceState({},document.title,window.location.pathname+window.location.search);
     }
   }catch(erro){
     toast('❌ Erro ao processar link','cartao');
@@ -1085,8 +1104,7 @@ document.getElementById('btnCarregarLink').addEventListener('click',carregarDeLi
 
 // Verificar se há sync na URL ao carregar
 window.addEventListener('load',()=>{
-  const params=new URLSearchParams(window.location.search);
-  if(params.get('sync')){
+  if(extrairSyncDeUrl(window.location.href)){
     toast('ℹ️ Clique "Carregar de Link" para sincronizar','gol');
   }
 });
