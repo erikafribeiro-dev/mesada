@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=Chivo+Mono:wght@500;700&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
 <style>
 :root{
   --verde:#0B5C38; --verde-escuro:#063D25; --verde-claro:#E8F2EC;
@@ -1001,48 +1002,94 @@ document.getElementById('btnLogout').addEventListener('click',()=>{
   }
 });
 
-// ===== GOOGLE DRIVE SYNC (Arquivo compartilhado) =====
+// ===== GOOGLE DRIVE SYNC (Salvar direto na pasta aberta) =====
 const SYNC_KEY='mesada-leo-google-sync';
+let googleAuthToken=null;
 
 function atualizarStatusGoogle(){
   const statusEl=document.getElementById('googleStatus');
   const btnGoogle=document.getElementById('btnSincGoogle');
   const syncData=localStorage.getItem(SYNC_KEY);
 
-  if(syncData){
-    try{
-      const {dataUltimoSync}=JSON.parse(syncData);
-      statusEl.innerHTML=`✅ Último backup: ${dataUltimoSync}<br><small>Cole um novo JSON para atualizar</small>`;
-      btnGoogle.innerHTML='📤 Exportar para Google Drive<br>📥 Importar do Google Drive';
-      return;
-    }catch(e){}
+  if(googleAuthToken){
+    statusEl.innerHTML='✅ Conectado ao Google Drive<br><small>Clique para salvar/importar</small>';
+    btnGoogle.textContent='💾 Salvar na pasta do Google Drive';
+  }else if(syncData){
+    statusEl.innerHTML='⏳ Clique para conectar';
+    btnGoogle.innerHTML='🔗 Conectar Google Drive';
+  }else{
+    statusEl.innerHTML='❌ Desconectado';
+    btnGoogle.textContent='🔗 Conectar Google Drive';
   }
+}
 
-  statusEl.innerHTML='⏳ Clique para exportar/importar';
+// Autenticar com Google
+function autenticarGoogle(){
+  return new Promise((resolve)=>{
+    gapi.auth2.authorize({
+      client_id:'SEU_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+      scope:'https://www.googleapis.com/auth/drive.file',
+      immediate:false
+    },(response)=>{
+      if(response.getAuthResponse().id_token){
+        googleAuthToken=response.getAuthResponse().access_token;
+        localStorage.setItem(SYNC_KEY,JSON.stringify({conectado:true}));
+        atualizarStatusGoogle();
+        resolve(true);
+      }else{
+        resolve(false);
+      }
+    });
+  });
 }
 
 document.getElementById('btnSincGoogle').addEventListener('click',async()=>{
-  const opcao=confirm('📤 Exportar dados para Google Drive?\n\n(Cancelar para importar dados existentes)');
+  if(!googleAuthToken){
+    // Tentar autenticar
+    toast('🔗 Conectando ao Google Drive...','gol');
+    const autenticado=await autenticarGoogle();
+    if(!autenticado){
+      toast('ℹ️ Para usar Google Drive, configure seu Client ID no código ou use import/export manual','gol');
+      return;
+    }
+  }
+
+  // Se chegou aqui, está autenticado
+  const opcao=confirm('💾 Salvar dados no Google Drive?\n\n(Cancelar para importar dados existentes)');
 
   if(opcao){
-    // EXPORTAR: criar arquivo JSON para download
+    // SALVAR na pasta do Google Drive
+    toast('💾 Salvando no Google Drive...','gol');
+
     const dados={...S,dataExporto:new Date().toLocaleString('pt-BR')};
     const json=JSON.stringify(dados,null,2);
-    const blob=new Blob([json],{type:'application/json'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download=`mesada-leo-${usuarioLogado}-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const nomeArquivo=`mesada-leo-${usuarioLogado}-${new Date().toISOString().split('T')[0]}.json`;
 
-    toast('📥 Arquivo baixado! Salve no Google Drive','gol');
-    localStorage.setItem(SYNC_KEY,JSON.stringify({dataUltimoSync:new Date().toLocaleString('pt-BR')}));
-    atualizarStatusGoogle();
+    try{
+      const metadata={
+        name:nomeArquivo,
+        mimeType:'application/json'
+      };
+
+      const formData=new FormData();
+      formData.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
+      formData.append('file',new Blob([json],{type:'application/json'}));
+
+      const response=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&access_token='+googleAuthToken,{
+        method:'POST',
+        body:formData
+      });
+
+      if(response.ok){
+        toast('✅ Arquivo salvo no Google Drive!','gol');
+      }else{
+        toast('❌ Erro ao salvar','cartao');
+      }
+    }catch(erro){
+      toast('❌ Erro: '+erro.message,'cartao');
+    }
   }else{
-    // IMPORTAR: pedir arquivo JSON
+    // IMPORTAR de arquivo
     const input=document.createElement('input');
     input.type='file';
     input.accept='.json';
@@ -1055,28 +1102,21 @@ document.getElementById('btnSincGoogle').addEventListener('click',async()=>{
         try{
           const dadosCloud=JSON.parse(event.target.result);
 
-          // Validar se é um backup válido
           if(!dadosCloud.saldo&&!dadosCloud.historico){
             toast('❌ Arquivo não é um backup válido','cartao');
             return;
           }
 
-          // Perguntar se quer sobrescrever
           if(confirm(`📥 Importar backup de ${dadosCloud.dataExporto||(new Date().toLocaleString('pt-BR'))}?\n\nIsso vai sobrescrever os dados locais.`)){
-            // Mesclar: dados da nuvem sobrescrevem dados locais
             S={...clone(DEFAULT),...dadosCloud};
             S.config={...clone(DEFAULT.config),...(dadosCloud.config||{})};
             save();
             render();
             renderConfig();
-
-            localStorage.setItem(SYNC_KEY,JSON.stringify({dataUltimoSync:new Date().toLocaleString('pt-BR')}));
-            atualizarStatusGoogle();
             toast('✅ Dados importados com sucesso!','gol');
           }
         }catch(erro){
           toast('❌ Erro ao ler arquivo','cartao');
-          console.error(erro);
         }
       };
       reader.readAsText(file);
