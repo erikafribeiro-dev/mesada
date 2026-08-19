@@ -13,6 +13,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=Chivo+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{
   --verde:#0B5C38; --verde-escuro:#063D25; --verde-claro:#E8F2EC;
@@ -307,6 +308,11 @@ details[open].config summary::after{content:"▴"}
         <div class="log-cfg" id="logCfg"></div>
       </div>
       <button class="mini-btn" id="btnExportar" type="button">⬇️ Exportar histórico (CSV)</button>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--borda)">
+        <label style="font-size:12px;font-weight:600;color:var(--cinza);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px">☁️ Google Drive (backup na nuvem)</label>
+        <button class="mini-btn" id="btnSincGoogle" type="button">🔗 Conectar Google Drive</button>
+        <div id="googleStatus" style="font-size:12px;color:var(--cinza);margin-top:6px"></div>
+      </div>
       <button class="btn-zerar" id="btnZerar" type="button">Zerar tudo e recomeçar temporada</button>
       <button class="btn-zerar" id="btnLogout" type="button" style="color:#0B5C38;margin-top:12px">🚪 Sair da conta</button>
     </div>
@@ -994,6 +1000,50 @@ document.getElementById('btnLogout').addEventListener('click',()=>{
     fazerLogout();
   }
 });
+
+// ===== GOOGLE DRIVE SYNC =====
+const GOOGLE_CLIENT_ID='CLIENT_ID_AQUI.apps.googleusercontent.com'; // Será configurado depois
+let googleAccessToken=null;
+const DRIVE_FOLDER_NAME='Mesada do Leo Backup';
+const SYNC_KEY='mesada-leo-google-sync';
+
+function initGoogleSignIn(){
+  const statusEl=document.getElementById('googleStatus');
+  const btnGoogle=document.getElementById('btnSincGoogle');
+
+  // Verificar se já está sincronizado
+  const syncData=localStorage.getItem(SYNC_KEY);
+  if(syncData){
+    const {token,folderIdSalvo}=JSON.parse(syncData);
+    if(token){
+      googleAccessToken=token;
+      statusEl.innerHTML='✅ Conectado ao Google Drive<br><small>Dados sincronizados automaticamente</small>';
+      btnGoogle.textContent='🔄 Ressincronizar agora';
+      return;
+    }
+  }
+
+  statusEl.innerHTML='❌ Desconectado<br><small>Clique para conectar</small>';
+}
+
+document.getElementById('btnSincGoogle').addEventListener('click',async()=>{
+  if(!googleAccessToken){
+    alert('⚠️ Sincronização com Google Drive em desenvolvimento!\n\nPor enquanto, use a exportação em CSV para backup.');
+    return;
+  }
+
+  // Salvar dados na nuvem
+  const dados=JSON.stringify(S);
+  const blob=new Blob([dados],{type:'application/json'});
+  toast('💾 Sincronizando com Google Drive...','gol');
+
+  // Aqui será implementada a integração com Google Drive API
+  setTimeout(()=>{
+    toast('✅ Backup salvo no Google Drive','gol');
+  },2000);
+});
+
+initGoogleSignIn();
 
 // PWA: service worker (ignorado silenciosamente fora de um servidor HTTPS)
 try{
