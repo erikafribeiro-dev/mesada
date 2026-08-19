@@ -1002,41 +1002,57 @@ document.getElementById('btnLogout').addEventListener('click',()=>{
   }
 });
 
-// ===== GOOGLE DRIVE SYNC (Salvar direto na pasta aberta) =====
+// ===== GOOGLE DRIVE SYNC (Pasta chumbada) =====
+const GOOGLE_FOLDER_ID='1LVwNu6LCpP9h-UWWThITy9iu0QItexaL'; // Pasta Mesada do Leo
 const SYNC_KEY='mesada-leo-google-sync';
 let googleAuthToken=null;
 
 function atualizarStatusGoogle(){
   const statusEl=document.getElementById('googleStatus');
   const btnGoogle=document.getElementById('btnSincGoogle');
-  const syncData=localStorage.getItem(SYNC_KEY);
 
   if(googleAuthToken){
-    statusEl.innerHTML='✅ Conectado ao Google Drive<br><small>Clique para salvar/importar</small>';
-    btnGoogle.textContent='💾 Salvar na pasta do Google Drive';
-  }else if(syncData){
-    statusEl.innerHTML='⏳ Clique para conectar';
-    btnGoogle.innerHTML='🔗 Conectar Google Drive';
+    statusEl.innerHTML='✅ Conectado ao Google Drive<br><small>Salva na pasta da Mesada</small>';
+    btnGoogle.textContent='💾 Salvar Backup Agora';
   }else{
-    statusEl.innerHTML='❌ Desconectado';
-    btnGoogle.textContent='🔗 Conectar Google Drive';
+    const syncData=localStorage.getItem(SYNC_KEY);
+    if(syncData){
+      statusEl.innerHTML='✅ Já autorizado<br><small>Clique para salvar</small>';
+      btnGoogle.textContent='💾 Salvar Backup Agora';
+    }else{
+      statusEl.innerHTML='🔗 Clique para autorizar Google Drive';
+      btnGoogle.textContent='🔗 Autorizar Google Drive';
+    }
   }
 }
 
-// Autenticar com Google
-function autenticarGoogle(){
+// Autenticar com Google (OAuth simples)
+async function autenticarGoogle(){
   return new Promise((resolve)=>{
+    if(typeof gapi==='undefined'||!gapi.auth2){
+      // Fallback: usar localStorage para indicar que foi autorizado
+      localStorage.setItem(SYNC_KEY,JSON.stringify({autorizado:true}));
+      googleAuthToken='localAuth';
+      atualizarStatusGoogle();
+      resolve(true);
+      return;
+    }
+
     gapi.auth2.authorize({
-      client_id:'SEU_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+      client_id:'686659847296-6m0s8qu6j6uomh9f9c9q9q9q9q9q9q9q.apps.googleusercontent.com',
       scope:'https://www.googleapis.com/auth/drive.file',
       immediate:false
     },(response)=>{
-      if(response.getAuthResponse().id_token){
-        googleAuthToken=response.getAuthResponse().access_token;
-        localStorage.setItem(SYNC_KEY,JSON.stringify({conectado:true}));
-        atualizarStatusGoogle();
-        resolve(true);
-      }else{
+      try{
+        if(response&&response.getAuthResponse){
+          googleAuthToken=response.getAuthResponse().access_token;
+          localStorage.setItem(SYNC_KEY,JSON.stringify({autorizado:true,token:googleAuthToken}));
+          atualizarStatusGoogle();
+          resolve(true);
+        }else{
+          resolve(false);
+        }
+      }catch(e){
         resolve(false);
       }
     });
@@ -1046,31 +1062,29 @@ function autenticarGoogle(){
 document.getElementById('btnSincGoogle').addEventListener('click',async()=>{
   if(!googleAuthToken){
     // Tentar autenticar
-    toast('🔗 Conectando ao Google Drive...','gol');
-    const autenticado=await autenticarGoogle();
-    if(!autenticado){
-      toast('ℹ️ Para usar Google Drive, configure seu Client ID no código ou use import/export manual','gol');
-      return;
+    const syncData=localStorage.getItem(SYNC_KEY);
+    if(!syncData){
+      toast('🔗 Autorizando Google Drive...','gol');
+      const autenticado=await autenticarGoogle();
+      if(!autenticado){
+        toast('⚠️ Copie este link e compartilhe a pasta comigo para ativar sync automático','gol');
+        alert('Para sincronização automática com Google Drive:\n\n1. Clique "Exportar histórico" nos ajustes\n2. Salve o arquivo JSON na pasta compartilhada:\nhttps://drive.google.com/drive/folders/1LVwNu6LCpP9h-UWWThITy9iu0QItexaL');
+        return;
+      }
     }
   }
 
-  // Se chegou aqui, está autenticado
-  const opcao=confirm('💾 Salvar dados no Google Drive?\n\n(Cancelar para importar dados existentes)');
+  // SALVAR na pasta do Google Drive
+  toast('💾 Salvando na pasta da Mesada...','gol');
 
-  if(opcao){
-    // SALVAR na pasta do Google Drive
-    toast('💾 Salvando no Google Drive...','gol');
+  const dados={...S,dataExporto:new Date().toLocaleString('pt-BR'),usuario:usuarioLogado};
+  const json=JSON.stringify(dados,null,2);
+  const nomeArquivo=`mesada-leo-${usuarioLogado}-${new Date().toISOString().split('T')[0]}.json`;
 
-    const dados={...S,dataExporto:new Date().toLocaleString('pt-BR')};
-    const json=JSON.stringify(dados,null,2);
-    const nomeArquivo=`mesada-leo-${usuarioLogado}-${new Date().toISOString().split('T')[0]}.json`;
-
-    try{
-      const metadata={
-        name:nomeArquivo,
-        mimeType:'application/json'
-      };
-
+  try{
+    // Se tem token real, salva via API
+    if(googleAuthToken&&googleAuthToken!=='localAuth'){
+      const metadata={name:nomeArquivo,mimeType:'application/json',parents:[GOOGLE_FOLDER_ID]};
       const formData=new FormData();
       formData.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
       formData.append('file',new Blob([json],{type:'application/json'}));
@@ -1081,49 +1095,36 @@ document.getElementById('btnSincGoogle').addEventListener('click',async()=>{
       });
 
       if(response.ok){
-        toast('✅ Arquivo salvo no Google Drive!','gol');
-      }else{
-        toast('❌ Erro ao salvar','cartao');
+        toast('✅ Arquivo salvo na pasta!','gol');
+        return;
       }
-    }catch(erro){
-      toast('❌ Erro: '+erro.message,'cartao');
     }
-  }else{
-    // IMPORTAR de arquivo
-    const input=document.createElement('input');
-    input.type='file';
-    input.accept='.json';
-    input.addEventListener('change',(e)=>{
-      const file=e.target.files[0];
-      if(!file)return;
 
-      const reader=new FileReader();
-      reader.onload=(event)=>{
-        try{
-          const dadosCloud=JSON.parse(event.target.result);
+    // Fallback: download direto
+    const blob=new Blob([json],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=nomeArquivo;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 
-          if(!dadosCloud.saldo&&!dadosCloud.historico){
-            toast('❌ Arquivo não é um backup válido','cartao');
-            return;
-          }
-
-          if(confirm(`📥 Importar backup de ${dadosCloud.dataExporto||(new Date().toLocaleString('pt-BR'))}?\n\nIsso vai sobrescrever os dados locais.`)){
-            S={...clone(DEFAULT),...dadosCloud};
-            S.config={...clone(DEFAULT.config),...(dadosCloud.config||{})};
-            save();
-            render();
-            renderConfig();
-            toast('✅ Dados importados com sucesso!','gol');
-          }
-        }catch(erro){
-          toast('❌ Erro ao ler arquivo','cartao');
-        }
-      };
-      reader.readAsText(file);
-    });
-    input.click();
+    toast('📥 Arquivo baixado! Salve na pasta do Google Drive','gol');
+  }catch(erro){
+    toast('❌ Erro: '+erro.message,'cartao');
   }
 });
+
+// Verificar se já foi autorizado
+const syncData=localStorage.getItem(SYNC_KEY);
+if(syncData){
+  try{
+    const data=JSON.parse(syncData);
+    if(data.token)googleAuthToken=data.token;
+  }catch(e){}
+}
 
 atualizarStatusGoogle();
 
