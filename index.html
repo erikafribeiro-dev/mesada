@@ -13,8 +13,6 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=Chivo+Mono:wght@500;700&display=swap" rel="stylesheet">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="https://apis.google.com/js/platform.js" async defer></script>
 <style>
 :root{
   --verde:#0B5C38; --verde-escuro:#063D25; --verde-claro:#E8F2EC;
@@ -25,21 +23,6 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Archivo',sans-serif;background:var(--creme);color:var(--tinta);-webkit-font-smoothing:antialiased;padding-bottom:60px}
-#loginOverlay{position:fixed;inset:0;background:var(--creme);display:flex;align-items:center;justify-content:center;z-index:200}
-#loginOverlay[hidden]{display:none}
-.login-box{background:#fff;border-radius:18px;padding:40px 30px;width:min(340px,90vw);text-align:center;box-shadow:0 10px 30px rgba(6,61,37,.15)}
-.login-box .logo{font-size:48px;margin-bottom:16px}
-.login-box h2{font-family:'Archivo Black';font-size:20px;color:var(--verde-escuro);margin-bottom:8px}
-.login-box .subtitulo{font-size:13px;color:var(--cinza);margin-bottom:24px}
-.login-campo{margin-bottom:14px;text-align:left}
-.login-campo label{display:block;font-size:12px;font-weight:600;color:var(--cinza);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.login-campo input{width:100%;border:1px solid var(--borda);border-radius:10px;padding:12px;font-family:'Archivo';font-size:14px;font-weight:500}
-.login-campo input:focus{outline:none;border-color:var(--verde);background:#fafaf6}
-.login-erro{color:var(--vermelho);font-size:12px;font-weight:600;min-height:16px;margin-bottom:14px;margin-top:-8px}
-.btn-login{width:100%;background:var(--verde);color:#fff;border:none;border-radius:var(--radius);padding:14px;font-family:'Archivo Black';font-size:15px;letter-spacing:.5px;cursor:pointer;box-shadow:0 4px 14px rgba(11,92,56,.35);margin-bottom:10px}
-.btn-login:active{transform:scale(.98)}
-.btn-cadastro{width:100%;background:transparent;color:var(--verde);border:2px solid var(--verde);border-radius:var(--radius);padding:12px;font-family:'Archivo';font-weight:600;font-size:14px;cursor:pointer}
-.btn-cadastro:active{transform:scale(.98)}
 .wrap{max-width:520px;margin:0 auto;padding:0 16px}
 
 /* ---------- Header ---------- */
@@ -69,12 +52,6 @@ header .wrap{display:flex;justify-content:space-between;align-items:center}
 /* ---------- Potes ---------- */
 .secao-titulo{font-family:'Archivo Black';font-size:14px;letter-spacing:1px;text-transform:uppercase;color:var(--verde-escuro);margin:26px 0 10px;display:flex;align-items:center;gap:8px}
 .secao-titulo::after{content:"";flex:1;height:2px;background:var(--borda);border-radius:2px}
-.potes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.pote{background:#fff;border:1px solid var(--borda);border-radius:var(--radius);padding:12px 10px;text-align:center;box-shadow:var(--sombra)}
-.pote .icone{font-size:20px}
-.pote b{display:block;font-family:'Chivo Mono';font-size:15px;margin:4px 0 1px}
-.pote span{font-size:10.5px;color:var(--cinza);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.pote small{display:block;font-size:10px;color:var(--cinza);margin-top:2px}
 
 /* ---------- Botões de ação ---------- */
 .acoes{display:flex;flex-direction:column;gap:8px}
@@ -83,6 +60,8 @@ header .wrap{display:flex;justify-content:space-between;align-items:center}
 .btn-acao .valor{font-family:'Chivo Mono';font-weight:700;border-radius:8px;padding:4px 10px;font-size:13.5px;white-space:nowrap}
 .ganho .valor{background:var(--verde-claro);color:var(--verde)}
 .ganho:active{background:var(--verde-claro)}
+.btn-acao.feito{opacity:.55;background:var(--verde-claro)}
+.btn-acao.feito .valor{background:var(--verde);color:#fff}
 .pena .valor{background:var(--vermelho-claro);color:var(--vermelho)}
 .pena:active{background:var(--vermelho-claro)}
 .btn-mesada{width:100%;margin-top:10px;background:var(--verde);color:#fff;border:none;border-radius:var(--radius);padding:15px;font-family:'Archivo Black';font-size:15px;letter-spacing:.5px;cursor:pointer;box-shadow:0 4px 14px rgba(11,92,56,.35)}
@@ -122,7 +101,8 @@ details[open].config summary::after{content:"▴"}
 .lista-edit{display:flex;flex-direction:column;gap:6px}
 .lista-edit .item{display:flex;gap:6px}
 .lista-edit input.nome{flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px;font-family:'Archivo'}
-.lista-edit input.val{width:70px;border:1px solid var(--borda);border-radius:8px;padding:8px;font-family:'Chivo Mono';font-size:13px;text-align:right}
+.lista-edit input.vez{width:46px;border:1px solid var(--borda);border-radius:8px;padding:8px 4px;font-family:'Chivo Mono';font-size:13px;text-align:center}
+.lista-edit input.val{width:60px;border:1px solid var(--borda);border-radius:8px;padding:8px;font-family:'Chivo Mono';font-size:13px;text-align:right}
 .lista-edit button{border:none;background:var(--vermelho-claro);color:var(--vermelho);border-radius:8px;width:34px;cursor:pointer;font-size:15px}
 .mini-btn{border:1px dashed var(--borda);background:none;border-radius:8px;padding:8px;font-size:13px;color:var(--verde);font-weight:600;cursor:pointer}
 .btn-salvar{background:var(--verde-escuro);color:#fff;border:none;border-radius:10px;padding:12px;font-weight:700;font-size:14px;cursor:pointer}
@@ -143,16 +123,34 @@ details[open].config summary::after{content:"▴"}
 .pin-box input:focus{outline:none;border-color:var(--verde)}
 .pin-box.erro input{border-color:var(--vermelho);animation:shake .3s}
 @keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+#loginTela{position:fixed;inset:0;background:linear-gradient(160deg,#0F2C1E,#063D25);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}
+#loginTela[hidden]{display:none}
+.login-box{width:min(320px,90vw);text-align:center}
+.escudo-login{width:72px;height:72px;font-size:32px;margin:0 auto 14px;border-width:3px}
+.login-box h2{font-family:'Archivo Black';color:#fff;font-size:20px;letter-spacing:1px}
+.login-box p{color:rgba(255,255,255,.6);font-size:13px;margin:4px 0 18px}
+.login-box input{width:100%;border:2px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;border-radius:12px;padding:13px 14px;font-family:'Archivo';font-size:15px;margin-bottom:10px}
+.login-box input::placeholder{color:rgba(255,255,255,.4)}
+.login-box input:focus{outline:none;border-color:var(--ouro)}
+.login-box.erro input{border-color:var(--vermelho);animation:shake .3s}
+.login-box #loginEntrar{width:100%;background:var(--ouro);color:#063D25;border:none;border-radius:12px;padding:14px;font-family:'Archivo Black';font-size:15px;letter-spacing:.5px;cursor:pointer;margin-top:6px}
+.login-box #loginEntrar:active{transform:scale(.98)}
+.login-box .pin-erro{color:#FF8A7A}
+#cadastroTela{position:fixed;inset:0;background:linear-gradient(160deg,#0F2C1E,#063D25);display:flex;align-items:center;justify-content:center;z-index:210;padding:20px;overflow-y:auto}
+#cadastroTela[hidden]{display:none}
+#cadastroTela button{width:100%;background:var(--ouro);color:#063D25;border:none;border-radius:12px;padding:14px;font-family:'Archivo Black';font-size:15px;cursor:pointer;margin-top:6px}
+.cad-grupo{color:rgba(255,255,255,.75);font-size:12px;font-weight:700;text-align:left;margin:12px 0 6px;letter-spacing:.5px}
 .pin-erro{color:var(--vermelho);font-size:12px;font-weight:600;min-height:16px;margin-top:6px}
 .pin-acoes{display:flex;gap:8px;margin-top:12px}
 .pin-acoes button{flex:1;border:none;border-radius:10px;padding:12px;font-weight:700;font-size:14px;cursor:pointer}
 .pin-entrar{background:var(--verde);color:#fff}
 .pin-cancelar{background:var(--verde-claro);color:var(--verde-escuro)}
-#gastoOverlay{position:fixed;inset:0;background:rgba(6,40,25,.75);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:100}
-#gastoOverlay[hidden]{display:none}
-.gasto-potes{display:flex;gap:6px;margin-top:10px}
-.gasto-potes .gp{flex:1;border:2px solid var(--borda);background:#fff;border-radius:10px;padding:9px 4px;font-size:12px;font-weight:700;cursor:pointer;color:var(--tinta)}
-.gasto-potes .gp.ativo{border-color:var(--verde);background:var(--verde-claro);color:var(--verde-escuro)}
+#perfilMenu,#senhaOverlay{position:fixed;inset:0;background:rgba(6,40,25,.75);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:110}
+#perfilMenu[hidden],#senhaOverlay[hidden]{display:none}
+.menu-lista{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.menu-item{width:100%;border:1px solid var(--borda);background:var(--creme);border-radius:10px;padding:13px;font-family:'Archivo';font-weight:700;font-size:14px;color:var(--tinta);cursor:pointer;text-align:left}
+.menu-item:active{background:var(--verde-claro)}
+.menu-item.sair{color:var(--vermelho)}
 .btn-gasto{width:100%;margin-top:8px;background:#fff;color:var(--tinta);border:1px solid var(--borda);border-radius:var(--radius);padding:12px;font-family:'Archivo';font-weight:700;font-size:13.5px;cursor:pointer;box-shadow:var(--sombra)}
 .btn-gasto:active{transform:scale(.98)}
 .meta-card{margin-top:10px;background:#fff;border:1px solid var(--borda);border-radius:var(--radius);padding:13px 14px;box-shadow:var(--sombra)}
@@ -162,7 +160,32 @@ details[open].config summary::after{content:"▴"}
 .meta-barra{height:10px;background:var(--verde-claro);border-radius:99px;overflow:hidden}
 .meta-fill{height:100%;width:0;background:linear-gradient(90deg,var(--verde),#12A05F);border-radius:99px;transition:width .4s}
 .meta-info{font-size:11.5px;color:var(--cinza);margin-top:6px}
+/* campo de futebol */
+.campo-fut{margin-top:4px}
+.campo-gramado{position:relative;height:38px;border-radius:10px;overflow:hidden;border:2px solid #0A5433;
+  background:repeating-linear-gradient(90deg,#0E7A4A 0 14.28%,#0C6E42 14.28% 28.56%);
+  background-size:200% 100%}
+.campo-gramado::before{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent 0 calc(14.28% - 2px),rgba(255,255,255,.35) calc(14.28% - 2px) 14.28%)}
+.campo-fill{position:absolute;top:0;left:0;bottom:0;width:0;transition:width .6s cubic-bezier(.2,.8,.3,1);
+  background:linear-gradient(90deg,rgba(217,164,16,.25),rgba(217,164,16,.55));border-right:2px solid var(--ouro)}
+.campo-bola{position:absolute;top:50%;left:0;transform:translate(-40%,-52%);font-size:22px;
+  transition:left .6s cubic-bezier(.2,.8,.3,1);filter:drop-shadow(0 2px 3px rgba(0,0,0,.4));z-index:2}
+.campo-bola.golll{animation:chute .7s ease}
+@keyframes chute{40%{transform:translate(-40%,-90%) rotate(180deg)}100%{transform:translate(-40%,-52%) rotate(360deg)}}
+.campo-gol{position:absolute;right:2px;top:50%;transform:translateY(-52%);font-size:20px;z-index:1}
+/* dias da semana */
+.dias-semana{display:flex;gap:5px;margin-top:9px}
+.dia-col{flex:1;text-align:center}
+.dia-tubo{height:34px;background:var(--verde-claro);border-radius:7px;position:relative;overflow:hidden}
+.dia-tubo .dia-fill{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,#12A05F,var(--verde));border-radius:7px 7px 0 0;transition:height .4s}
+.dia-col.hoje .dia-tubo{outline:2px solid var(--ouro);outline-offset:1px}
+.dia-col.cheio .dia-tubo .dia-fill{background:linear-gradient(180deg,var(--ouro),#B8860B)}
+.dia-rotulo{font-size:9.5px;color:var(--cinza);font-weight:700;margin-top:3px;text-transform:uppercase}
+.dia-valor{font-family:'Chivo Mono';font-size:9px;color:var(--verde-escuro);font-weight:700}
 .xp-linha{margin-top:12px;position:relative}
+.sem-saldo{margin-top:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:8px 10px;font-size:11.5px;text-align:center;position:relative;line-height:1.5}
+.sem-saldo b{font-family:'Chivo Mono';font-size:13px}
 .xp-barra{height:6px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden}
 .xp-fill{height:100%;width:0;background:var(--ouro);border-radius:99px;transition:width .4s}
 .xp-texto{font-size:10.5px;opacity:.65;margin-top:5px;letter-spacing:.5px}
@@ -182,22 +205,31 @@ details[open].config summary::after{content:"▴"}
 </head>
 <body>
 
-<div id="loginOverlay" hidden>
+<div id="cadastroTela" hidden>
   <div class="login-box">
-    <div class="logo">🔒</div>
-    <h2 id="loginTitulo">Mesada do Leo</h2>
-    <p class="subtitulo" id="loginSubtitulo">Faça login para continuar</p>
-    <div class="login-campo">
-      <label>Usuário</label>
-      <input type="text" id="loginUsuario" placeholder="seu usuário" autocomplete="username">
-    </div>
-    <div class="login-campo">
-      <label>Senha</label>
-      <input type="password" id="loginSenha" placeholder="sua senha" autocomplete="current-password">
-    </div>
-    <div class="login-erro" id="loginErro"></div>
-    <button class="btn-login" id="btnLogin">Entrar</button>
-    <button class="btn-cadastro" id="btnCadastro">Criar nova conta</button>
+    <div class="escudo escudo-login">L</div>
+    <h2>PRIMEIRO ACESSO</h2>
+    <p>Cadastre as duas contas do app</p>
+    <div class="cad-grupo">👨‍👩‍👦 Conta dos pais</div>
+    <input type="text" id="cadPaisUser" placeholder="Usuário dos pais" value="erika">
+    <input type="password" id="cadPaisSenha" placeholder="Senha dos pais (mín. 4)">
+    <div class="cad-grupo">⚽ Conta da criança</div>
+    <input type="text" id="cadCriUser" placeholder="Usuário da criança" value="leo">
+    <input type="password" id="cadCriSenha" placeholder="Senha da criança (mín. 4)">
+    <div class="pin-erro" id="cadErro"></div>
+    <button type="button" id="cadSalvar">CRIAR CONTAS ⚽</button>
+  </div>
+</div>
+
+<div id="loginTela">
+  <div class="login-box">
+    <div class="escudo escudo-login">L</div>
+    <h2>MESADA DO LEO</h2>
+    <p>Entre para ver o placar</p>
+    <input type="text" id="loginUser" placeholder="Usuário" autocomplete="username">
+    <input type="password" id="loginSenha" placeholder="Senha" autocomplete="current-password">
+    <div class="pin-erro" id="loginErro"></div>
+    <button type="button" id="loginEntrar">ENTRAR ⚽</button>
   </div>
 </div>
 
@@ -207,7 +239,10 @@ details[open].config summary::after{content:"▴"}
       <div class="escudo">L</div>
       <h1>MESADA DO LEO<small>Placar da semana</small></h1>
     </div>
-    <div class="nivel-chip"><span class="estrela">★</span><span id="nivelNome">Base</span></div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <div class="nivel-chip" id="perfilChip" title="toque para sair"></div>
+      <div class="nivel-chip"><span class="estrela">★</span><span id="nivelNome">Base</span></div>
+    </div>
   </div>
 </header>
 
@@ -223,26 +258,25 @@ details[open].config summary::after{content:"▴"}
       <div class="stat"><b id="penasSem">0</b><span>Cartões da semana</span></div>
       <div class="stat streak"><b id="streak">0 🔥</b><span>Semanas limpas</span></div>
     </div>
+    <div class="sem-saldo" id="semanaSaldo"></div>
     <div class="xp-linha">
       <div class="xp-barra"><div class="xp-fill" id="xpFill"></div></div>
       <div class="xp-texto" id="xpTexto"></div>
     </div>
   </div>
 
-  <!-- POTES -->
-  <div class="secao-titulo">Potes do dinheiro</div>
-  <div class="potes">
-    <div class="pote"><div class="icone">🛍️</div><b id="pGastar">R$ 0</b><span>Gastar</span><small>recebe 50%</small></div>
-    <div class="pote"><div class="icone">🐷</div><b id="pPoupar">R$ 0</b><span>Poupar</span><small>recebe 30%</small></div>
-    <div class="pote"><div class="icone">📈</div><b id="pInvestir">R$ 0</b><span>Investir</span><small>recebe 20% + 1% a.m.</small></div>
-  </div>
-  <button class="btn-gasto" id="btnGasto">💸 Registrar gasto do Leo</button>
-
-  <!-- META -->
-  <div class="meta-card" id="metaCard" hidden>
-    <div class="meta-topo"><span>🎯 <b id="metaNome"></b></span><span class="meta-pct" id="metaPct">0%</span></div>
-    <div class="meta-barra"><div class="meta-fill" id="metaFill"></div></div>
-    <div class="meta-info" id="metaInfo"></div>
+  <!-- RUMO À META DA SEMANA -->
+  <div class="meta-card campo-card" style="margin-top:26px">
+    <div class="meta-topo"><span>🏟️ <b>Rumo ao gol da semana</b></span><span class="meta-pct" id="potPct">0%</span></div>
+    <div class="campo-fut">
+      <div class="campo-gramado">
+        <div class="campo-fill" id="potFill"></div>
+        <div class="campo-bola" id="potBola">⚽</div>
+        <div class="campo-gol">🥅</div>
+      </div>
+    </div>
+    <div class="dias-semana" id="diasSemana"></div>
+    <div class="meta-info" id="potInfo"></div>
   </div>
 
   <!-- GANHOS -->
@@ -256,6 +290,7 @@ details[open].config summary::after{content:"▴"}
   <!-- MESADA -->
   <button class="btn-mesada" id="btnMesada">💰 PAGAR MESADA DA SEMANA</button>
   <button class="btn-semana" id="btnSemana">🗓️ INICIAR NOVA SEMANA</button>
+  <button class="btn-gasto" id="btnBackup">💾 Salvar (baixar backup com histórico)</button>
   <p class="hint">Semana sem cartão = bônus de 10% · Pague a mesada e depois inicie a nova semana</p>
 
   <!-- RESUMO DO MÊS -->
@@ -287,10 +322,17 @@ details[open].config summary::after{content:"▴"}
         <input type="password" id="cfgPin" inputmode="numeric" maxlength="4" placeholder="deixe em branco para manter">
       </div>
       <div class="campo">
-        <label>🎯 Meta de poupança (nome e valor · 0 desativa)</label>
+        <label>👨‍👩‍👦 Conta dos pais (usuário · nova senha)</label>
         <div class="item" style="display:flex;gap:6px">
-          <input class="nome" id="cfgMetaNome" style="flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px">
-          <input class="val" id="cfgMetaValor" type="number" min="0" step="1" style="width:80px;border:1px solid var(--borda);border-radius:8px;padding:8px;font-family:'Chivo Mono';font-size:13px;text-align:right">
+          <input id="cfgPaisUser" style="flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px" placeholder="usuário">
+          <input id="cfgPaisSenha" type="password" style="flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px" placeholder="em branco mantém">
+        </div>
+      </div>
+      <div class="campo">
+        <label>⚽ Conta da criança (usuário · nova senha)</label>
+        <div class="item" style="display:flex;gap:6px">
+          <input id="cfgCriUser" style="flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px" placeholder="usuário">
+          <input id="cfgCriSenha" type="password" style="flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px" placeholder="em branco mantém">
         </div>
       </div>
       <div class="campo">
@@ -309,36 +351,42 @@ details[open].config summary::after{content:"▴"}
         <div class="log-cfg" id="logCfg"></div>
       </div>
       <button class="mini-btn" id="btnExportar" type="button">⬇️ Exportar histórico (CSV)</button>
-      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--borda)">
-        <label style="font-size:12px;font-weight:600;color:var(--cinza);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px">☁️ Sincronizar via Google Drive</label>
-        <button class="mini-btn" id="btnSalvarBackup" type="button">💾 Baixar backup (.json)</button>
-        <a class="mini-btn" id="btnAbrirPasta" href="https://drive.google.com/drive/folders/1LVwNu6LCpP9h-UWWThITy9iu0QItexaL?usp=drive_link" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;margin-top:6px">📁 Abrir pasta do Google Drive</a>
-        <button class="mini-btn" id="btnImportarBackup" type="button" style="margin-top:6px">📥 Importar backup (.json)</button>
-        <div id="syncStatus" style="font-size:12px;color:var(--cinza);margin-top:6px">Baixe o backup, salve-o na pasta acima. Em outro dispositivo, baixe o arquivo da pasta e importe aqui.</div>
-      </div>
+      <button class="mini-btn" id="btnRestaurar" type="button">📤 Restaurar backup (.json)</button>
+      <input type="file" id="arquivoBackup" accept=".json,application/json" style="display:none">
+      <button class="mini-btn" id="btnSair" type="button">🚪 Sair do app (pedir login de novo)</button>
       <button class="btn-zerar" id="btnZerar" type="button">Zerar tudo e recomeçar temporada</button>
-      <button class="btn-zerar" id="btnLogout" type="button" style="color:#0B5C38;margin-top:12px">🚪 Sair da conta</button>
     </div>
   </details>
 
 </div>
 
-<div id="gastoOverlay" hidden>
+
+<div id="perfilMenu" hidden>
   <div class="pin-box">
-    <div class="cadeado">💸</div>
-    <h3>Registrar gasto</h3>
-    <p>Quanto o Leo usou e de qual pote?</p>
-    <input type="number" id="gastoValor" inputmode="decimal" min="0" step="0.5" placeholder="Valor (R$)" style="letter-spacing:0;font-size:18px">
-    <input type="text" id="gastoDesc" placeholder="Com o quê? (ex.: lanche, figurinhas)" style="letter-spacing:0;font-size:14px;margin-top:8px">
-    <div class="gasto-potes">
-      <button type="button" class="gp ativo" data-pote="g">🛍️ Gastar</button>
-      <button type="button" class="gp" data-pote="p">🐷 Poupar</button>
-      <button type="button" class="gp" data-pote="i">📈 Investir</button>
+    <div class="cadeado" id="pmIcone">👤</div>
+    <h3 id="pmTitulo">Conta</h3>
+    <p id="pmSub"></p>
+    <div class="menu-lista">
+      <button type="button" class="menu-item" id="pmTrocar">🔁 Trocar perfil</button>
+      <button type="button" class="menu-item" id="pmSenha">🔒 Alterar minha senha</button>
+      <button type="button" class="menu-item sair" id="pmSair">🚪 Sair do app</button>
     </div>
-    <div class="pin-erro" id="gastoErro"></div>
+    <div class="pin-acoes"><button type="button" class="pin-cancelar" id="pmFechar">Fechar</button></div>
+  </div>
+</div>
+
+<div id="senhaOverlay" hidden>
+  <div class="pin-box">
+    <div class="cadeado">🔒</div>
+    <h3>Alterar senha</h3>
+    <p id="soPerfil"></p>
+    <input type="password" id="soAtual" placeholder="Senha atual" style="letter-spacing:0;font-size:15px">
+    <input type="password" id="soNova" placeholder="Nova senha (mín. 4)" style="letter-spacing:0;font-size:15px;margin-top:8px">
+    <input type="password" id="soConf" placeholder="Confirmar nova senha" style="letter-spacing:0;font-size:15px;margin-top:8px">
+    <div class="pin-erro" id="soErro"></div>
     <div class="pin-acoes">
-      <button type="button" class="pin-cancelar" id="gastoCancelar">Cancelar</button>
-      <button type="button" class="pin-entrar" id="gastoConfirmar">Descontar</button>
+      <button type="button" class="pin-cancelar" id="soCancelar">Cancelar</button>
+      <button type="button" class="pin-entrar" id="soSalvar">Salvar</button>
     </div>
   </div>
 </div>
@@ -360,154 +408,23 @@ details[open].config summary::after{content:"▴"}
 <div id="toast"></div>
 
 <script>
-// Hash simples para senha (segurança básica)
-const simpleHash=s=>{let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h=h&h;}return Math.abs(h).toString(36);};
-
-// ===== AUTENTICAÇÃO =====
-let usuarioLogado=null;
-const LOGIN_KEY='mesada-leo-login';
-const USERS_KEY='mesada-leo-users';
-
-function obterSenhaHash(usuario,senha){return simpleHash(usuario+':'+senha);}
-
-function carregarUsers(){
-  try{const u=localStorage.getItem(USERS_KEY);return u?JSON.parse(u):{};} catch(e){return {};}
-}
-
-function salvarUsers(users){localStorage.setItem(USERS_KEY,JSON.stringify(users));}
-
-function cadastrarUsuario(usuario,senha){
-  if(!usuario||!senha){return false;}
-  const users=carregarUsers();
-  if(users[usuario]){return false;}
-  users[usuario]={hash:obterSenhaHash(usuario,senha),criado:new Date().toISOString()};
-  salvarUsers(users);
-  return true;
-}
-
-function verificarLogin(usuario,senha){
-  const users=carregarUsers();
-  if(!users[usuario])return false;
-  return users[usuario].hash===obterSenhaHash(usuario,senha);
-}
-
-function fazerLogin(usuario,senha){
-  if(verificarLogin(usuario,senha)){
-    usuarioLogado=usuario;
-    localStorage.setItem(LOGIN_KEY,JSON.stringify({usuario:usuario,timestamp:Date.now()}));
-    return true;
-  }
-  return false;
-}
-
-function fazerLogout(){
-  usuarioLogado=null;
-  localStorage.removeItem(LOGIN_KEY);
-  document.body.hidden=true;
-  document.getElementById('loginOverlay').hidden=false;
-  document.getElementById('loginUsuario').value='';
-  document.getElementById('loginSenha').value='';
-  document.getElementById('loginErro').textContent='';
-  document.getElementById('loginUsuario').focus();
-}
-
-function verificarAutenticacao(){
-  try{
-    const login=localStorage.getItem(LOGIN_KEY);
-    if(login){
-      const {usuario}=JSON.parse(login);
-      if(usuario){usuarioLogado=usuario;return true;}
-    }
-  }catch(e){}
-  return false;
-}
-
-function inicializarLogin(){
-  const loginOverlay=document.getElementById('loginOverlay');
-  const btnLogin=document.getElementById('btnLogin');
-  const btnCadastro=document.getElementById('btnCadastro');
-  const usuarioInput=document.getElementById('loginUsuario');
-  const senhaInput=document.getElementById('loginSenha');
-  const erroEl=document.getElementById('loginErro');
-  let modoCadastro=false;
-
-  function tentarLogin(){
-    const usuario=usuarioInput.value.trim();
-    const senha=senhaInput.value;
-    erroEl.textContent='';
-
-    if(!usuario||!senha){erroEl.textContent='Preencha usuário e senha';return;}
-
-    if(modoCadastro){
-      if(senha.length<4){erroEl.textContent='Senha deve ter no mínimo 4 caracteres';return;}
-      if(cadastrarUsuario(usuario,senha)){
-        fazerLogin(usuario,senha);
-        loginOverlay.hidden=true;
-        document.body.hidden=false;
-        load();
-      }else{erroEl.textContent='Usuário já existe';}
-    }else{
-      if(fazerLogin(usuario,senha)){
-        loginOverlay.hidden=true;
-        document.body.hidden=false;
-        load();
-      }else{erroEl.textContent='Usuário ou senha incorretos';}
-    }
-  }
-
-  btnLogin.addEventListener('click',tentarLogin);
-  usuarioInput.addEventListener('keypress',e=>{if(e.key==='Enter')tentarLogin();});
-  senhaInput.addEventListener('keypress',e=>{if(e.key==='Enter')tentarLogin();});
-
-  btnCadastro.addEventListener('click',()=>{
-    modoCadastro=!modoCadastro;
-    if(modoCadastro){
-      document.getElementById('loginTitulo').textContent='Criar conta';
-      document.getElementById('loginSubtitulo').textContent='Defina um usuário e senha';
-      btnLogin.textContent='Cadastrar';
-      btnCadastro.textContent='Já tenho conta';
-      usuarioInput.focus();
-    }else{
-      document.getElementById('loginTitulo').textContent='Mesada do Leo';
-      document.getElementById('loginSubtitulo').textContent='Faça login para continuar';
-      btnLogin.textContent='Entrar';
-      btnCadastro.textContent='Criar nova conta';
-    }
-    erroEl.textContent='';
-    usuarioInput.value='';
-    senhaInput.value='';
-  });
-}
-
-// Verificar autenticação ao carregar
-window.addEventListener('DOMContentLoaded', ()=>{
-  if(!verificarAutenticacao()){
-    inicializarLogin();
-    document.getElementById('loginOverlay').hidden=false;
-  }else{
-    document.getElementById('loginOverlay').hidden=true;
-    load();
-  }
-});
-
 const KEY='mesada-leo-v1';
 const NIVEIS=[[0,'Base'],[100,'Titular'],[250,'Capitão'],[500,'Craque'],[1000,'Lenda']];
 const DEFAULT={
   saldo:0, xp:0, streak:0, ganhosSem:0, penasSem:0,
   semGV:0, semPV:0, semMes:0, semIni:null, semanas:[],
-  potes:{g:0,p:0,i:0}, jurosMes:null,
+  contas:{pais:{u:'erika',s:'MTIzNA=='},cri:{u:'leo',s:'MTIzNA=='}}, logado:false, perfil:null, cadastroOk:false, diario:{}, cliques:{},
   historico:[], logCfg:[], pin:'MTIzNA==',
   config:{
     mesada:25,
-    meta:{n:'Meta de poupança',v:100},
     ganhos:[
-      {n:'Semana de estudos completa',v:5},
-      {n:'Nota ≥ 8 em prova',v:10},
-      {n:'Arrumar o quarto sem pedir',v:3},
-      {n:'Ajudar em casa (louça, lixo)',v:2},
-      {n:'Ler 30 minutos',v:3},
-      {n:'Estudar 30 minutos no dia',v:2},
-      {n:'Dormir antes das 22h',v:2}
+      {n:'Semana de estudos completa',v:5,x:1},
+      {n:'Nota ≥ 8 em prova',v:10,x:1,livre:1},
+      {n:'Arrumar o quarto sem pedir',v:3,x:2},
+      {n:'Ajudar em casa (louça, lixo)',v:2,x:3},
+      {n:'Ler 30 minutos',v:2.5,x:7},
+      {n:'Estudar 30 minutos no dia',v:2,x:7},
+      {n:'Dormir antes das 22h',v:2,x:7}
     ],
     penas:[
       {n:'Esquecer lição ou tarefa',v:3},
@@ -562,24 +479,56 @@ async function load(){
           if(!Array.isArray(S.semanas))S.semanas=[];
           S.cfgVer=5;
         }
-        if(S.cfgVer<6){
-          // converte o saldo antigo em potes reais (50/30/20)
-          if(!S.potes||typeof S.potes.g!=='number'){
-            const s=S.saldo||0;
-            S.potes={g:Math.round(s*50)/100,p:Math.round(s*30)/100,i:0};
-            S.potes.i=Math.round((s-S.potes.g-S.potes.p)*100)/100;
+        if(S.cfgVer<6){S.cfgVer=6;}
+        if(S.cfgVer<7){
+          if(!S.login)S.login={u:'erika',s:'MTIzNA=='};
+          if(typeof S.logado!=='boolean')S.logado=false;
+          S.cfgVer=7;
+        }
+        if(S.cfgVer<8){
+          const diarios=['Estudar 30 minutos no dia','Dormir antes das 22h','Ler 30 minutos'];
+          S.config.ganhos.forEach(g=>{if(!g.x)g.x=diarios.includes(g.n)?7:1;});
+          delete S.config.meta;
+          S.cfgVer=8;
+        }
+        if(S.cfgVer<9){S.cfgVer=9;}
+        if(S.cfgVer<10){
+          // migra login antigo para contas separadas
+          if(!S.contas||!S.contas.pais){
+            S.contas={pais:(S.login&&S.login.u)?{u:S.login.u,s:S.login.s}:{u:'erika',s:'MTIzNA=='},
+                      cri:{u:'leo',s:'MTIzNA=='}};
           }
-          if(!S.config.meta)S.config.meta={n:'Meta de poupança',v:100};
-          S.cfgVer=6;
+          delete S.login;delete S.gEmails;
+          if(typeof S.cadastroOk!=='boolean')S.cadastroOk=true; // dados existentes: pula cadastro
+          if(!S.perfil)S.perfil=S.logado?'pais':null;
+          if(!S.diario||typeof S.diario!=='object')S.diario={};
+          S.cfgVer=10;
+        }
+        if(S.cfgVer<11){
+          const tabela={'Semana de estudos completa':[5,1,0],'Nota ≥ 8 em prova':[10,1,1],
+            'Arrumar o quarto sem pedir':[3,2,0],'Ajudar em casa (louça, lixo)':[2,3,0],
+            'Ler 30 minutos':[2.5,7,0],'Estudar 30 minutos no dia':[2,7,0],'Dormir antes das 22h':[2,7,0]};
+          S.config.ganhos.forEach(g=>{
+            if(tabela[g.n]){g.v=tabela[g.n][0];g.x=tabela[g.n][1];if(tabela[g.n][2])g.livre=1;else delete g.livre;}
+          });
+          if(!S.cliques||typeof S.cliques!=='object')S.cliques={};
+          logCfg('Tabela recalibrada: potencial semanal total = R$ 100,00 · 1 clique/dia por tarefa (provas liberadas)');
+          S.cfgVer=11;
         }
         save();
         if(!S.pin)S.pin='MTIzNA==';
     }catch(e){/* dado corrompido — usa padrão */}
   }
   if(!S.semIni)S.semIni=new Date().toISOString();
-  if(!S.jurosMes)S.jurosMes=new Date().getFullYear()+'-'+String(new Date().getMonth()+1).padStart(2,'0');
-  aplicarJuros();
   cfgBase=clone(S.config);
+  // fluxo: cadastro (1º uso) → login → app; mantém conectado até "Sair"
+  if(!S.cadastroOk){
+    document.getElementById('cadastroTela').hidden=false;
+    document.getElementById('loginTela').hidden=true;
+  }else{
+    document.getElementById('loginTela').hidden=!!S.logado;
+  }
+  if(S.logado)aplicarPerfil();
   render(); renderConfig();
 }
 async function save(){
@@ -589,42 +538,37 @@ async function save(){
 }
 
 const fmt=v=>'R$ '+v.toFixed(2).replace('.',',');
+const hojeKey=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+function segundaDaSemana(d){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-((x.getDay()+6)%7));return x;}
 const cur=v=>{const x=Math.round(v*100)/100;return 'R$'+x.toFixed(2).replace('.',',').replace(/,00$/,'');};
 const r2=v=>Math.round(v*100)/100;
-function syncSaldo(){S.saldo=r2(S.potes.g+S.potes.p+S.potes.i);}
-function depositar(v){
-  S.potes.g=r2(S.potes.g+v*0.5);
-  S.potes.p=r2(S.potes.p+v*0.3);
-  S.potes.i=r2(S.potes.i+v*0.2);
-  syncSaldo();
-}
-function debitarGastar(v){S.potes.g=r2(S.potes.g-v);syncSaldo();}
-function aplicarJuros(){
-  const chave=new Date().getFullYear()+'-'+String(new Date().getMonth()+1).padStart(2,'0');
-  if(S.jurosMes===chave)return;
-  if(S.jurosMes&&S.potes.i>0){
-    const j=r2(S.potes.i*0.01);
-    if(j>0){
-      S.potes.i=r2(S.potes.i+j);syncSaldo();
-      S.historico.unshift({d:'💹 Rendimento do pote Investir (1% a.m.)',v:j,t:agora()});
-      if(S.historico.length>60)S.historico.pop();
-    }
-  }
-  S.jurosMes=chave;save();
-}
+function depositar(v){S.saldo=r2(S.saldo+v);}
+function debitarGastar(v){S.saldo=r2(S.saldo-v);}
 function nivel(){let nome=NIVEIS[0][1];for(const[x,n]of NIVEIS){if(S.xp>=x)nome=n;}return nome;}
 
 function render(){
   const el=document.getElementById('saldo');
   el.innerHTML='<span class="moeda">R$</span>'+S.saldo.toFixed(2).replace('.',',');
   el.classList.add('pulse');setTimeout(()=>el.classList.remove('pulse'),160);
+  // conta completa da semana: mesada + ganhos − cartões
+  // antes do pagamento, mostra a mesada BASE prevista; depois, o valor realmente pago
+  const mesadaPaga=S.semMes>0;
+  const mesadaMostra=mesadaPaga?S.semMes:(S.config.mesada||0);
+  const netSem=r2(mesadaMostra+S.semGV-S.semPV);
+  const ss=document.getElementById('semanaSaldo');
+  ss.innerHTML='Semana: 💰 '+cur(mesadaMostra)+(mesadaPaga?' mesada':' mesada <span style="opacity:.6">(a pagar)</span>')
+    +' + ⚽ '+cur(S.semGV)+' ganhos − 🟥 '+cur(S.semPV)+' cartões = <b>'
+    +(netSem>=0?'+':'−')+cur(Math.abs(netSem))+'</b>'
+    +(mesadaPaga?'':' <span style="opacity:.6">previsto</span>');
   document.getElementById('ganhosSem').textContent='+'+cur(S.semGV||0);
   document.querySelector('#ganhosSem+span').textContent='Ganhos ('+S.ganhosSem+'×)';
   document.getElementById('penasSem').textContent='−'+cur(S.semPV||0);
   document.querySelector('#penasSem+span').textContent='Cartões ('+S.penasSem+'×)';
   document.getElementById('streak').textContent=S.streak+' 🔥';
-  if(S.semIni){
-    document.getElementById('semanaAtual').textContent='Semana atual: '+dataCurta(S.semIni)+' até '+ddmm(new Date());
+  {
+    const seg=segundaDaSemana(new Date());
+    const dom=new Date(seg.getFullYear(),seg.getMonth(),seg.getDate()+6);
+    document.getElementById('semanaAtual').textContent='Semana: seg '+ddmm(seg)+' a dom '+ddmm(dom);
   }
   const nAtual=nivel();
   document.getElementById('nivelNome').textContent=nAtual;
@@ -639,30 +583,47 @@ function render(){
     document.getElementById('xpFill').style.width='100%';
     document.getElementById('xpTexto').textContent=`${S.xp} XP · nível máximo: Lenda 👑`;
   }
-  // potes com saldos reais
-  document.getElementById('pGastar').textContent=cur(S.potes.g);
-  document.getElementById('pPoupar').textContent=cur(S.potes.p);
-  document.getElementById('pInvestir').textContent=cur(S.potes.i);
-  // meta de poupança (usa o pote Poupar)
-  const meta=S.config.meta;
-  const card=document.getElementById('metaCard');
-  if(meta&&meta.v>0){
-    card.hidden=false;
-    const pct=Math.min(100,Math.round(S.potes.p/meta.v*100));
-    document.getElementById('metaNome').textContent=meta.n||'Meta de poupança';
-    document.getElementById('metaPct').textContent=pct+'%';
-    document.getElementById('metaFill').style.width=pct+'%';
-    document.getElementById('metaInfo').textContent=pct>=100
-      ? '🏆 Meta alcançada! Pote Poupar: '+fmt(S.potes.p)
-      : 'Pote Poupar: '+fmt(S.potes.p)+' de '+fmt(meta.v)+' · faltam '+fmt(r2(meta.v-S.potes.p));
-  }else{card.hidden=true;}
+  // potencial de ganho da semana (estímulo)
+  const potGanhos=S.config.ganhos.reduce((t,g)=>t+g.v*(g.x||1),0);
+  const potencial=r2(S.config.mesada*1.1+potGanhos);
+  const realizado=r2(S.semMes+S.semGV);
+  const pctPot=potencial>0?Math.min(100,Math.round(realizado/potencial*100)):0;
+  document.getElementById('potPct').textContent=pctPot+'%';
+  document.getElementById('potFill').style.width=pctPot+'%';
+  const bola=document.getElementById('potBola');
+  bola.style.left=Math.min(pctPot,96)+'%';
+  if(pctPot>=100&&!bola.dataset.gol){bola.dataset.gol='1';bola.classList.add('golll');setTimeout(()=>bola.classList.remove('golll'),800);}
+  if(pctPot<100)delete bola.dataset.gol;
+  document.getElementById('potInfo').textContent=pctPot>=100
+    ? '🏆 GOOOL! Potencial máximo da semana: '+fmt(realizado)+'!'
+    : 'Já garantiu '+fmt(realizado)+' de até '+fmt(potencial)+' · mesada + bônus + todos os ganhos';
+  // barrinhas dos 7 dias da semana atual
+  const diasBox=document.getElementById('diasSemana');diasBox.innerHTML='';
+  const ROT=['dom','seg','ter','qua','qui','sex','sáb'];
+  const alvoDia=potGanhos>0?potGanhos/7:1;
+  const ini=segundaDaSemana(new Date()); // semana começa na segunda
+  const hojeK=(d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));
+  for(let i=0;i<7;i++){
+    const d=new Date(ini.getFullYear(),ini.getMonth(),ini.getDate()+i);
+    const k=hojeK(d);
+    const v=(S.diario&&S.diario[k])||0;
+    const pct=Math.min(100,Math.round(v/alvoDia*100));
+    const col=document.createElement('div');
+    col.className='dia-col'+(k===hojeK(new Date())?' hoje':'')+(pct>=100?' cheio':'');
+    col.innerHTML='<div class="dia-tubo"><div class="dia-fill" style="height:'+pct+'%"></div></div>'+
+      '<div class="dia-rotulo">'+ROT[d.getDay()]+'</div>'+
+      '<div class="dia-valor">'+(v>0?cur(v):'·')+'</div>';
+    diasBox.appendChild(col);
+  }
 
   // botões
   const lg=document.getElementById('listaGanhos');lg.innerHTML='';
+  const kHoje=hojeKey();
   S.config.ganhos.forEach((g,i)=>{
-    const b=document.createElement('button');b.className='btn-acao ganho';
-    b.innerHTML=`<span>${g.n}</span><span class="valor">+ ${fmt(g.v)}</span>`;
-    b.onclick=()=>lancar(g.n,g.v,'gol');lg.appendChild(b);
+    const feito=!g.livre&&S.cliques&&S.cliques[kHoje]&&S.cliques[kHoje][g.n]>=1;
+    const b=document.createElement('button');b.className='btn-acao ganho'+(feito?' feito':'');
+    b.innerHTML=`<span>${g.n}</span><span class="valor">${feito?'✓ hoje':'+ '+fmt(g.v)}</span>`;
+    b.onclick=()=>lancarGanho(g);lg.appendChild(b);
   });
   const lp=document.getElementById('listaPenas');lp.innerHTML='';
   S.config.penas.forEach((p,i)=>{
@@ -692,11 +653,23 @@ function toast(msg,tipo){
 
 function agora(){return new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' · '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});}
 
+function lancarGanho(g){
+  const k=hojeKey();
+  if(!S.cliques)S.cliques={};
+  if(!S.cliques[k])S.cliques[k]={};
+  if(!g.livre&&(S.cliques[k][g.n]||0)>=1){
+    toast('⏰ "'+g.n+'" já foi marcado hoje — amanhã tem mais!','cartao');return;
+  }
+  S.cliques[k][g.n]=(S.cliques[k][g.n]||0)+1;
+  lancar(g.n,g.v,'gol');
+}
 function lancar(desc,valor,tipo){
   if(valor>0)depositar(valor);else debitarGastar(-valor);
   S.historico.unshift({d:desc,v:valor,t:agora()});
   if(S.historico.length>60)S.historico.pop();
-  if(valor>0){S.ganhosSem++;S.xp+=10;S.semGV=r2(S.semGV+valor);toast('⚽ GOOOL! '+fmt(valor),'gol');}
+  if(valor>0){S.ganhosSem++;S.xp+=10;S.semGV=r2(S.semGV+valor);
+    const hk=(d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'))(new Date());
+    if(!S.diario)S.diario={};S.diario[hk]=r2((S.diario[hk]||0)+valor);toast('⚽ GOOOL! '+fmt(valor),'gol');}
   else{S.penasSem++;S.semPV=r2(S.semPV-valor);toast('🟥 Cartão: '+fmt(-valor),'cartao');}
   render();save();
 }
@@ -732,7 +705,8 @@ btnMesada.onclick=()=>{
   });
   if(S.historico.length>60)S.historico.pop();
   S.xp+=15;
-  toast((temBonus?'💰🔥 Pago com bônus: ':'💰 Mesada paga: ')+fmt(total)+' — agora inicie a nova semana','gol');
+  const netSemana=r2(S.semMes+S.semGV-S.semPV);
+  toast('💰 Mesada '+fmt(total)+' paga · semana fecha em '+(netSemana>=0?'+':'−')+fmt(Math.abs(netSemana)),'gol');
   render();save();
 };
 
@@ -816,9 +790,8 @@ btnSemana.onclick=()=>{
     gv:S.semGV,pv:S.semPV,mes:S.semMes
   });
   if(S.semanas.length>30)S.semanas.pop();
-  S.ganhosSem=0;S.penasSem=0;S.semGV=0;S.semPV=0;S.semMes=0;
+  S.ganhosSem=0;S.penasSem=0;S.semGV=0;S.semPV=0;S.semMes=0;S.diario={};S.cliques={};
   S.semIni=hoje.toISOString();
-  aplicarJuros();
   toast('🗓️ Nova semana iniciada — anterior guardada no mês','gol');
   render();save();
 };
@@ -826,15 +799,16 @@ btnSemana.onclick=()=>{
 /* ---------- Config ---------- */
 function renderConfig(){
   document.getElementById('cfgMesada').value=S.config.mesada;
-  document.getElementById('cfgMetaNome').value=(S.config.meta&&S.config.meta.n)||'';
-  document.getElementById('cfgMetaValor').value=(S.config.meta&&S.config.meta.v)||0;
+  document.getElementById('cfgPaisUser').value=S.contas.pais.u;
+  document.getElementById('cfgCriUser').value=S.contas.cri.u;
   ['ganhos','penas'].forEach(tipo=>{
     const box=document.getElementById(tipo==='ganhos'?'editGanhos':'editPenas');
     box.innerHTML='';
     S.config[tipo].forEach((it,i)=>{
       const row=document.createElement('div');row.className='item';
+      const campoX=tipo==='ganhos'?`<input class="vez" type="number" min="1" max="7" value="${it.x||1}" data-t="${tipo}" data-i="${i}" data-f="x" title="vezes por semana">`:'';
       row.innerHTML=`<input class="nome" data-t="${tipo}" data-i="${i}" data-f="n">
-        <input class="val" type="number" min="0" step="0.5" value="${it.v}" data-t="${tipo}" data-i="${i}" data-f="v">
+        <input class="val" type="number" min="0" step="0.5" value="${it.v}" data-t="${tipo}" data-i="${i}" data-f="v">${campoX}
         <button type="button" class="rm" data-t="${tipo}" data-i="${i}">✕</button>`;
       row.querySelector('.nome').value=it.n;
       row.querySelector('.rm').addEventListener('click',()=>{S.config[tipo].splice(i,1);renderConfig();});
@@ -861,15 +835,14 @@ function renderLog(){
 function diffConfig(antes,depois){
   const mudancas=[];
   if(antes.mesada!==depois.mesada)mudancas.push(`Mesada base: ${fmt(antes.mesada)} → ${fmt(depois.mesada)}`);
-  const mA=antes.meta||{n:'',v:0},mD=depois.meta||{n:'',v:0};
-  if(mA.n!==mD.n||mA.v!==mD.v)mudancas.push(`Meta: "${mD.n}" (${fmt(mD.v)})`);
   [['ganhos','Ganho'],['penas','Penalidade']].forEach(([tipo,rotulo])=>{
     const mapA={},mapD={};
-    antes[tipo].forEach(it=>mapA[it.n]=it.v);
-    depois[tipo].forEach(it=>mapD[it.n]=it.v);
+    antes[tipo].forEach(it=>mapA[it.n]=it.v+'|'+(it.x||1));
+    depois[tipo].forEach(it=>mapD[it.n]=it.v+'|'+(it.x||1));
     Object.keys(mapD).forEach(n=>{
-      if(!(n in mapA))mudancas.push(`${rotulo} adicionado: "${n}" (${fmt(mapD[n])})`);
-      else if(mapA[n]!==mapD[n])mudancas.push(`${rotulo} "${n}": ${fmt(mapA[n])} → ${fmt(mapD[n])}`);
+      const [vD,xD]=mapD[n].split('|');
+      if(!(n in mapA))mudancas.push(`${rotulo} adicionado: "${n}" (${fmt(+vD)}${tipo==='ganhos'?' · '+xD+'×/sem':''})`);
+      else if(mapA[n]!==mapD[n])mudancas.push(`${rotulo} "${n}": ${fmt(+vD)}${tipo==='ganhos'?' · '+xD+'×/sem':''}`);
     });
     Object.keys(mapA).forEach(n=>{
       if(!(n in mapD))mudancas.push(`${rotulo} removido: "${n}"`);
@@ -908,36 +881,147 @@ pinInput.addEventListener('input',()=>{if(pinInput.value.length===4)tentarPin();
 document.getElementById('pinCancelar').addEventListener('click',()=>{overlay.hidden=true;});
 overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.hidden=true;});
 
-/* ---------- Registrar gasto ---------- */
-const gastoOverlay=document.getElementById('gastoOverlay');
-let poteSel='g';
-const NOMEPOTE={g:'Gastar',p:'Poupar',i:'Investir'};
-document.getElementById('btnGasto').addEventListener('click',()=>{
-  document.getElementById('gastoValor').value='';
-  document.getElementById('gastoDesc').value='';
-  document.getElementById('gastoErro').textContent='';
-  poteSel='g';
-  document.querySelectorAll('.gp').forEach(b=>b.classList.toggle('ativo',b.dataset.pote==='g'));
-  gastoOverlay.hidden=false;
+/* ---------- Login ---------- */
+function aplicarPerfil(){
+  const cri=S.perfil==='cri';
+  document.getElementById('btnMesada').style.display=cri?'none':'';
+  document.getElementById('btnSemana').style.display=cri?'none':'';
+  document.getElementById('painelConfig').style.display=cri?'none':'';
+  const chip=document.getElementById('perfilChip');
+  if(chip)chip.textContent=cri?'⚽ '+S.contas.cri.u:'👨‍👩‍👦 '+S.contas.pais.u;
+}
+function tentarLogin(){
+  const u=document.getElementById('loginUser').value.trim().toLowerCase();
+  const s=btoa(document.getElementById('loginSenha').value);
+  let perfil=null;
+  if(u===S.contas.pais.u.toLowerCase()&&s===S.contas.pais.s)perfil='pais';
+  else if(u===S.contas.cri.u.toLowerCase()&&s===S.contas.cri.s)perfil='cri';
+  if(perfil){
+    S.logado=true;S.perfil=perfil;save();
+    document.getElementById('loginTela').hidden=true;
+    aplicarPerfil();
+    toast(perfil==='cri'?'⚽ Bora marcar gol, '+S.contas.cri.u+'!':'✅ Modo dos pais ativo','gol');
+  }else{
+    document.getElementById('loginErro').textContent='Usuário ou senha incorretos';
+    const box=document.querySelector('#loginTela .login-box');
+    box.classList.add('erro');setTimeout(()=>box.classList.remove('erro'),350);
+  }
+}
+document.getElementById('cadSalvar').addEventListener('click',()=>{
+  const pu=document.getElementById('cadPaisUser').value.trim();
+  const ps=document.getElementById('cadPaisSenha').value;
+  const cu=document.getElementById('cadCriUser').value.trim();
+  const cs=document.getElementById('cadCriSenha').value;
+  const erro=document.getElementById('cadErro');
+  if(!pu||!cu){erro.textContent='Preencha os dois usuários';return;}
+  if(pu.toLowerCase()===cu.toLowerCase()){erro.textContent='Os usuários precisam ser diferentes';return;}
+  if(ps.length<4||cs.length<4){erro.textContent='Senhas com pelo menos 4 caracteres';return;}
+  S.contas={pais:{u:pu,s:btoa(ps)},cri:{u:cu,s:btoa(cs)}};
+  S.cadastroOk=true;save();
+  logCfg('Contas criadas: pais "'+pu+'" e criança "'+cu+'"');
+  document.getElementById('cadastroTela').hidden=true;
+  document.getElementById('loginTela').hidden=false;
+})
+document.getElementById('loginEntrar').addEventListener('click',tentarLogin);
+document.getElementById('loginSenha').addEventListener('keydown',e=>{if(e.key==='Enter')tentarLogin();});
+const perfilMenu=document.getElementById('perfilMenu');
+const senhaOverlay=document.getElementById('senhaOverlay');
+document.getElementById('perfilChip').addEventListener('click',()=>{
+  const cri=S.perfil==='cri';
+  document.getElementById('pmIcone').textContent=cri?'⚽':'👨‍👩‍👦';
+  document.getElementById('pmTitulo').textContent=cri?S.contas.cri.u:S.contas.pais.u;
+  document.getElementById('pmSub').textContent=cri?'Perfil da criança':'Perfil dos pais';
+  perfilMenu.hidden=false;
 });
-document.querySelectorAll('.gp').forEach(b=>b.addEventListener('click',()=>{
-  poteSel=b.dataset.pote;
-  document.querySelectorAll('.gp').forEach(x=>x.classList.toggle('ativo',x===b));
-}));
-document.getElementById('gastoCancelar').addEventListener('click',()=>{gastoOverlay.hidden=true;});
-gastoOverlay.addEventListener('click',e=>{if(e.target===gastoOverlay)gastoOverlay.hidden=true;});
-document.getElementById('gastoConfirmar').addEventListener('click',()=>{
-  const v=parseFloat(document.getElementById('gastoValor').value);
-  const erro=document.getElementById('gastoErro');
-  if(!v||v<=0){erro.textContent='Informe um valor válido';return;}
-  if(v>S.potes[poteSel]){erro.textContent='O pote '+NOMEPOTE[poteSel]+' só tem '+fmt(S.potes[poteSel]);return;}
-  const desc=document.getElementById('gastoDesc').value.trim()||'Gasto';
-  S.potes[poteSel]=r2(S.potes[poteSel]-v);syncSaldo();
-  S.historico.unshift({d:'💸 '+desc+' (pote '+NOMEPOTE[poteSel]+')',v:-v,t:agora()});
-  if(S.historico.length>60)S.historico.pop();
-  gastoOverlay.hidden=true;
-  toast('💸 Descontado '+fmt(v)+' do pote '+NOMEPOTE[poteSel],'cartao');
-  render();save();
+document.getElementById('pmFechar').addEventListener('click',()=>{perfilMenu.hidden=true;});
+perfilMenu.addEventListener('click',e=>{if(e.target===perfilMenu)perfilMenu.hidden=true;});
+
+function irParaLogin(usuarioSugerido){
+  S.logado=false;S.perfil=null;save();
+  document.getElementById('loginUser').value=usuarioSugerido||'';
+  document.getElementById('loginSenha').value='';
+  document.getElementById('loginErro').textContent='';
+  perfilMenu.hidden=true;
+  document.getElementById('loginTela').hidden=false;
+}
+document.getElementById('pmTrocar').addEventListener('click',()=>{
+  // sugere o usuário do OUTRO perfil para agilizar a troca
+  const outro=S.perfil==='cri'?S.contas.pais.u:S.contas.cri.u;
+  irParaLogin(outro);
+  document.getElementById('loginSenha').focus();
+});
+document.getElementById('pmSair').addEventListener('click',()=>irParaLogin(''));
+
+document.getElementById('pmSenha').addEventListener('click',()=>{
+  perfilMenu.hidden=true;
+  ['soAtual','soNova','soConf'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('soErro').textContent='';
+  document.getElementById('soPerfil').textContent='Perfil: '+(S.perfil==='cri'?S.contas.cri.u+' (criança)':S.contas.pais.u+' (pais)');
+  senhaOverlay.hidden=false;
+  setTimeout(()=>document.getElementById('soAtual').focus(),50);
+});
+document.getElementById('soCancelar').addEventListener('click',()=>{senhaOverlay.hidden=true;});
+senhaOverlay.addEventListener('click',e=>{if(e.target===senhaOverlay)senhaOverlay.hidden=true;});
+document.getElementById('soSalvar').addEventListener('click',()=>{
+  const ch=S.perfil==='cri'?'cri':'pais';
+  const atual=document.getElementById('soAtual').value;
+  const nova=document.getElementById('soNova').value;
+  const conf=document.getElementById('soConf').value;
+  const erro=document.getElementById('soErro');
+  if(btoa(atual)!==S.contas[ch].s){erro.textContent='Senha atual incorreta';return;}
+  if(nova.length<4){erro.textContent='A nova senha precisa de pelo menos 4 caracteres';return;}
+  if(nova!==conf){erro.textContent='A confirmação não confere';return;}
+  S.contas[ch].s=btoa(nova);
+  logCfg('Senha ('+(ch==='cri'?'criança':'pais')+') alterada pelo próprio usuário');
+  save(); // salva automaticamente, sem precisar do botão de ajustes
+  senhaOverlay.hidden=true;
+  toast('🔒 Senha alterada e salva','gol');
+});
+document.getElementById('btnSair').addEventListener('click',()=>{
+  S.logado=false;S.perfil=null;save();
+  document.getElementById('loginSenha').value='';
+  document.getElementById('loginErro').textContent='';
+  document.getElementById('loginTela').hidden=false;
+  document.getElementById('painelConfig').open=false;
+});
+
+/* ---------- Backup local (salvar e restaurar) ---------- */
+document.getElementById('btnBackup').addEventListener('click',()=>{
+  save(); // garante que o estado atual está gravado
+  const d=new Date();
+  const nome='mesada-leo-backup-'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'.json';
+  try{
+    const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=nome;
+    document.body.appendChild(a);a.click();a.remove();
+    toast('💾 Backup salvo: '+nome,'gol');
+  }catch(e){toast('Não foi possível baixar aqui — tente pelo navegador');}
+});
+document.getElementById('btnRestaurar').addEventListener('click',()=>{
+  document.getElementById('arquivoBackup').click();
+});
+document.getElementById('arquivoBackup').addEventListener('change',e=>{
+  const f=e.target.files[0];
+  if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const dados=JSON.parse(r.result);
+      if(typeof dados.saldo!=='number'||!Array.isArray(dados.historico)){
+        toast('⚠️ Arquivo inválido — não é um backup da mesada');return;
+      }
+      S={...clone(DEFAULT),...dados};
+      S.config={...clone(DEFAULT.config),...(dados.config||{})};
+      cfgBase=clone(S.config);
+      logCfg('Backup restaurado ('+f.name+')');
+      render();renderConfig();save();
+      toast('📤 Backup restaurado com sucesso','gol');
+    }catch(err){toast('⚠️ Não consegui ler esse arquivo');}
+  };
+  r.readAsText(f);
+  e.target.value='';
 });
 
 document.getElementById('btnAddGanho').addEventListener('click',()=>{S.config.ganhos.push({n:'Novo item',v:1});renderConfig();});
@@ -945,13 +1029,9 @@ document.getElementById('btnAddPena').addEventListener('click',()=>{S.config.pen
 document.getElementById('btnSalvarCfg').addEventListener('click',()=>{
   const antes=clone(S.config);
   S.config.mesada=parseFloat(document.getElementById('cfgMesada').value)||0;
-  S.config.meta={
-    n:document.getElementById('cfgMetaNome').value.trim()||'Meta de poupança',
-    v:parseFloat(document.getElementById('cfgMetaValor').value)||0
-  };
   document.querySelectorAll('.lista-edit input').forEach(inp=>{
     const t=inp.getAttribute('data-t'),i=+inp.getAttribute('data-i'),f=inp.getAttribute('data-f');
-    if(S.config[t]&&S.config[t][i])S.config[t][i][f]=f==='v'?(parseFloat(inp.value)||0):inp.value;
+    if(S.config[t]&&S.config[t][i])S.config[t][i][f]=f==='v'?(parseFloat(inp.value)||0):(f==='x'?Math.min(7,Math.max(1,parseInt(inp.value)||1)):inp.value);
   });
   const mudancas=diffConfig(cfgBase||antes,S.config);
   const novoPin=document.getElementById('cfgPin').value.trim();
@@ -959,6 +1039,18 @@ document.getElementById('btnSalvarCfg').addEventListener('click',()=>{
     if(/^\d{4}$/.test(novoPin)){S.pin=btoa(novoPin);mudancas.push('Senha dos ajustes alterada');}
     else{toast('⚠️ A senha deve ter 4 números');return;}
   }
+  [['Pais','pais'],['Cri','cri']].forEach(([id,ch])=>{
+    const nu=document.getElementById('cfg'+id+'User').value.trim();
+    const ns=document.getElementById('cfg'+id+'Senha').value;
+    const rot=ch==='pais'?'pais':'criança';
+    if(nu&&nu.toLowerCase()!==S.contas[ch].u.toLowerCase()){S.contas[ch].u=nu;mudancas.push('Usuário ('+rot+') alterado para "'+nu+'"');}
+    if(ns){
+      if(ns.length<4){toast('⚠️ Senhas com pelo menos 4 caracteres');return;}
+      S.contas[ch].s=btoa(ns);mudancas.push('Senha ('+rot+') alterada');
+    }
+    document.getElementById('cfg'+id+'Senha').value='';
+  });
+  aplicarPerfil();
   document.getElementById('cfgPin').value='';
   mudancas.forEach(m=>logCfg(m));
   cfgBase=clone(S.config);
@@ -998,81 +1090,7 @@ document.getElementById('btnZerar').addEventListener('click',function(){
   render();renderConfig();save();toast('🔄 Nova temporada iniciada');
 });
 
-document.getElementById('btnLogout').addEventListener('click',()=>{
-  if(confirm('Tem certeza que quer sair? Seus dados serão mantidos.')){
-    fazerLogout();
-  }
-});
-
-// ===== SINCRONIZAÇÃO VIA PASTA FIXA DO GOOGLE DRIVE =====
-// Pasta fixa: https://drive.google.com/drive/folders/1LVwNu6LCpP9h-UWWThITy9iu0QItexaL
-// O navegador não pode gravar direto na pasta sem OAuth do Google, então o
-// fluxo é: baixar o arquivo .json aqui -> mover manualmente pra pasta acima
-// (ou ela já cai na pasta de Downloads sincronizada, se o Drive Desktop
-// estiver configurado) -> em outro dispositivo, baixar o arquivo da pasta
-// e importar aqui.
-
-document.getElementById('btnSalvarBackup').addEventListener('click',()=>{
-  if(!usuarioLogado){
-    toast('⚠️ Faça login primeiro','cartao');
-    return;
-  }
-
-  const dados={...S,dataExporto:new Date().toLocaleString('pt-BR'),usuario:usuarioLogado};
-  const json=JSON.stringify(dados,null,2);
-  const nomeArquivo=`mesada-leo-${usuarioLogado}.json`;
-
-  const blob=new Blob([json],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;
-  a.download=nomeArquivo;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-
-  document.getElementById('syncStatus').innerHTML='✅ Backup baixado! Agora mova o arquivo para a pasta do Google Drive acima.';
-  toast('💾 Backup baixado — mova para a pasta do Drive','gol');
-});
-
-document.getElementById('btnImportarBackup').addEventListener('click',()=>{
-  const input=document.createElement('input');
-  input.type='file';
-  input.accept='.json';
-  input.addEventListener('change',(e)=>{
-    const file=e.target.files[0];
-    if(!file)return;
-
-    const reader=new FileReader();
-    reader.onload=(event)=>{
-      try{
-        const dadosCloud=JSON.parse(event.target.result);
-
-        if(!dadosCloud.saldo&&!dadosCloud.historico){
-          toast('❌ Arquivo não é um backup válido','cartao');
-          return;
-        }
-
-        if(confirm(`📥 Importar backup de ${dadosCloud.usuario||'?'} (${dadosCloud.dataExporto||'?'})?\n\nIsso vai sobrescrever os dados locais.`)){
-          S={...clone(DEFAULT),...dadosCloud};
-          S.config={...clone(DEFAULT.config),...(dadosCloud.config||{})};
-          save();
-          render();
-          renderConfig();
-
-          document.getElementById('syncStatus').innerHTML=`✅ Backup importado de ${dadosCloud.usuario||'?'}!`;
-          toast('✅ Dados importados!','gol');
-        }
-      }catch(erro){
-        toast('❌ Erro ao ler arquivo','cartao');
-        console.error(erro);
-      }
-    };
-    reader.readAsText(file);
-  });
-  input.click();
-});
+load();
 
 // PWA: service worker (ignorado silenciosamente fora de um servidor HTTPS)
 try{
