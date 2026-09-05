@@ -722,6 +722,7 @@ async function save(){
 }
 
 const fmt=v=>'R$ '+v.toFixed(2).replace('.',',');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const hojeKey=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
 function segundaDaSemana(d){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-((x.getDay()+6)%7));return x;}
 const cur=v=>{const x=Math.round(v*100)/100;return 'R$'+x.toFixed(2).replace('.',',').replace(/,00$/,'');};
@@ -822,13 +823,13 @@ function render(){
     b.className='btn-acao ganho'+(feito?' feito':'')+(g.foco?' foco':'');
     const strk=g.foco?streakDe(g.n):0;
     const sub=g.foco?`<small class="strk">${strk>0?'🔥 '+strk+' dia'+(strk>1?'s':'')+' seguido'+(strk>1?'s':''):'comece a sequência hoje!'}</small>`:'';
-    b.innerHTML=`<span>${g.foco?'⭐ ':''}${g.n}${sub}</span><span class="valor">${feito?'✓ hoje':'+ '+fmt(g.v)}</span>`;
+    b.innerHTML=`<span>${g.foco?'⭐ ':''}${esc(g.n)}${sub}</span><span class="valor">${feito?'✓ hoje':'+ '+fmt(g.v)}</span>`;
     b.onclick=()=>lancarGanho(g);lg.appendChild(b);
   });
   const lp=document.getElementById('listaPenas');lp.innerHTML='';
   S.config.penas.forEach((p,i)=>{
     const b=document.createElement('button');b.className='btn-acao pena';
-    b.innerHTML=`<span>${p.n}</span><span class="valor">− ${fmt(p.v)}</span>`;
+    b.innerHTML=`<span>${esc(p.n)}</span><span class="valor">− ${fmt(p.v)}</span>`;
     b.onclick=()=>lancar(p.n,-p.v,'cartao');lp.appendChild(b);
   });
 
@@ -839,7 +840,7 @@ function render(){
   if(!S.historico.length){h.innerHTML='<div class="vazio">Nenhum lançamento ainda. Primeiro gol vem aí! ⚽</div>';}
   S.historico.slice(0,20).forEach(m=>{
     const d=document.createElement('div');d.className='mov';
-    d.innerHTML=`<div class="desc"><b>${m.d}</b><small>${m.t}</small></div>
+    d.innerHTML=`<div class="desc"><b>${esc(m.d)}</b><small>${esc(m.t)}</small></div>
       <span class="val ${m.v>=0?'pos':'neg'}">${m.v>=0?'+':'−'} ${fmt(Math.abs(m.v))}</span>`;
     h.appendChild(d);
   });
@@ -1067,7 +1068,10 @@ function renderConfig(){
   document.getElementById('cfgMesada').value=S.config.mesada;
   document.getElementById('cfgCrianca').value=S.crianca||'';
   document.getElementById('cfgZap').value=S.zap||'';
-  document.getElementById('cfgCriUser').value=S.criUser||'(criança ainda não cadastrada)';
+  const cu=document.getElementById('cfgCriUser');
+  cu.value=S.criUser||'';cu.readOnly=!!S.criUser;
+  cu.placeholder=S.criUser?'':'criar usuário da criança';
+  cu.style.background=S.criUser?'var(--creme)':'#fff';
   ['ganhos','penas'].forEach(tipo=>{
     const box=document.getElementById(tipo==='ganhos'?'editGanhos':'editPenas');
     box.innerHTML='';
@@ -1260,12 +1264,20 @@ async function sair(usuarioSugerido){
   if(canalRT&&supa){try{supa.removeChannel(canalRT);}catch(e){}canalRT=null;}
   if(supa){try{await supa.auth.signOut();}catch(e){}}
   nuvemOk=false;familiaId=null;emailNuvem='';S.perfil=null;
-  save();chipNuvem();mostrarLogin(usuarioSugerido);
+  if(!manterPref()){ // aparelho não confiável: não deixa o placar em cache
+    S=clone(DEFAULT);
+    if(temLocal()){try{localStorage.removeItem(KEY);}catch(e){}}
+  }else{save();}
+  chipNuvem();render();mostrarLogin(usuarioSugerido);
 }
 
 /* ---- sincronização ---- */
 function dadosParaNuvem(){const d=clone(S);LOCAIS.forEach(k=>delete d[k]);return d;}
+function estadoValido(d){
+  return d&&typeof d==='object'&&Array.isArray(d.historico)&&d.config&&Array.isArray(d.config.ganhos)&&Array.isArray(d.config.penas)&&typeof d.saldo==='number';
+}
 function aplicarDaNuvem(row){
+  if(!estadoValido(row.dados)){toast('⚠️ Dados da nuvem inválidos — mantendo os locais');return;}
   const locais={};LOCAIS.forEach(k=>locais[k]=S[k]);
   S={...clone(DEFAULT),...row.dados,...locais};
   S.syncTs=new Date(row.atualizado_em).getTime();S.localTs=S.syncTs;
@@ -1273,7 +1285,10 @@ function aplicarDaNuvem(row){
   if(temStorage()){try{window.storage.set(KEY,dados);}catch(e){}}
   if(temLocal()){try{localStorage.setItem(KEY,dados);}catch(e){}}
   cfgBase=clone(S.config);
-  aplicarPerfil();render();renderConfig();
+  if(typeof checarAvancoFase==='function')checarAvancoFase();
+  aplicarPerfil();render();
+  const painel=document.getElementById('painelConfig');
+  if(!(painel&&painel.open&&document.body.dataset.tab==='Pais'))renderConfig(); // não apaga edição em andamento
 }
 async function enviarParaNuvem(){
   if(!supa||!familiaId||!nuvemOk)return;
@@ -1298,6 +1313,7 @@ async function entrar(session){
   emailNuvem=(session&&session.user&&session.user.email)||'';
   const ehCrianca=emailNuvem.endsWith(DOM_CRI);
   let {data:p,error}=await supa.rpc('meu_perfil');
+  if(Array.isArray(p))p=p[0]||null;
   if(error){msgLogin('Banco não configurado: rode o SQL da Fase 2 no Supabase');await supa.auth.signOut();return false;}
   if(!p||!p.familia_id){
     if(ehCrianca){msgLogin('Esta conta de criança não está ligada a nenhuma família');await supa.auth.signOut();return false;}
@@ -1382,7 +1398,7 @@ document.getElementById('loginEntrar').addEventListener('click',async()=>{
   const {data,error}=await supa.auth.signInWithPassword({email,password:senha});
   if(error){
     const m=error.message||'';
-    msgLogin(m.includes('Invalid')?'Usuário/e-mail ou senha incorretos':m.includes('confirm')?'Confirme o e-mail antes de entrar':'Erro: '+m);
+    msgLogin(m.includes('Invalid')?'Usuário/e-mail ou senha incorretos':m.includes('confirm')?'Conta ainda não confirmada — nos pais, confirme pelo e-mail; na criança, peça aos pais para recriar':'Erro: '+m);
     const box=document.querySelector('#loginTela .login-box');box.classList.add('erro');setTimeout(()=>box.classList.remove('erro'),350);
     return;
   }
@@ -1407,6 +1423,25 @@ document.getElementById('loginOffline').addEventListener('click',()=>{
   familiaId=S.familiaId;nuvemOk=false;chipNuvem();entrarNoApp();toast('Modo offline — sincroniza ao entrar online');
 });
 
+/* ---- criar a conta da criança (pais logados) ---- */
+async function criarCrianca(cu,cs,cn){
+  // 1º: pelo banco (já confirmada, sem depender de e-mail)
+  let {error:e3}=await supa.rpc('criar_conta_crianca',{p_usuario:cu,p_senha:cs,p_nome:cn});
+  if(!e3)return {ok:true};
+  const m=(e3.message||'');
+  if(m.includes('já em uso'))return {erro:'Usuário "'+cu+'" já está em uso — escolha outro'};
+  if(m.includes('Somente'))return {erro:'Só a conta dos pais pode criar a criança'};
+  // 2º: fallback — cria pelo Auth e vincula
+  try{
+    const alt=criarCliente(false);
+    const {data:dc,error:e5}=await alt.auth.signUp({email:cu+DOM_CRI,password:cs});
+    if(e5||!dc.user)return {erro:(e5&&e5.message.includes('registered'))?'Usuário "'+cu+'" já está em uso':'Erro ao criar a criança: '+(e5?e5.message:m)};
+    const {error:e4}=await supa.rpc('vincular_crianca',{p_user_id:dc.user.id,p_nome:cn});
+    if(e4)return {erro:'Erro ao vincular a criança: '+e4.message};
+    return {ok:true};
+  }catch(e){return {erro:'Erro ao criar a criança: '+m};}
+}
+
 /* ---- criar conta da família (pais + criança) ---- */
 document.getElementById('cadSalvar').addEventListener('click',async()=>{
   const pe=document.getElementById('cadPaisEmail').value.trim().toLowerCase(),ps=document.getElementById('cadPaisSenha').value;
@@ -1425,11 +1460,8 @@ document.getElementById('cadSalvar').addEventListener('click',async()=>{
   const {data:fid,error:e2}=await supa.rpc('criar_familia');
   if(e2||!fid){erro.textContent='Banco não configurado: rode o SQL da Fase 2';ok.textContent='';return;}
   ok.textContent='Criando a conta da criança...';
-  const alt=criarCliente(false);
-  const {data:dc,error:e3}=await alt.auth.signUp({email:cu+DOM_CRI,password:cs});
-  if(e3||!dc.user){erro.textContent=(e3&&e3.message.includes('registered'))?'Usuário "'+cu+'" já está em uso — escolha outro':'Erro ao criar a criança: '+(e3?e3.message:'');ok.textContent='';return;}
-  const {error:e4}=await supa.rpc('vincular_crianca',{p_user_id:dc.user.id,p_nome:cn});
-  if(e4){erro.textContent='Erro ao vincular a criança: '+e4.message;ok.textContent='';return;}
+  const r=await criarCrianca(cu,cs,cn);
+  if(r.erro){erro.textContent=r.erro;ok.textContent='';return;}
   S.crianca=cn;S.criUser=cu;
   logCfg('Família criada: pais '+pe+' · criança "'+cn+'" (usuário '+cu+')');
   document.getElementById('cadastroTela').hidden=true;
@@ -1493,7 +1525,7 @@ document.getElementById('arquivoBackup').addEventListener('change',e=>{
   r.onload=()=>{
     try{
       const dados=JSON.parse(r.result);
-      if(typeof dados.saldo!=='number'||!Array.isArray(dados.historico)){
+      if(!estadoValido(dados)){
         toast('⚠️ Arquivo inválido — não é um backup da mesada');return;
       }
       const locais={};LOCAIS.forEach(k=>locais[k]=S[k]);
@@ -1521,11 +1553,22 @@ document.getElementById('btnSalvarCfg').addEventListener('click',async()=>{
   S.config.mesada=parseFloat(document.getElementById('cfgMesada').value)||0;
   document.querySelectorAll('.lista-edit input').forEach(inp=>{
     const t=inp.getAttribute('data-t'),i=+inp.getAttribute('data-i'),f=inp.getAttribute('data-f');
-    if(S.config[t]&&S.config[t][i])S.config[t][i][f]=f==='v'?(parseFloat(inp.value)||0):(f==='x'?Math.min(7,Math.max(1,parseInt(inp.value)||1)):inp.value);
+    if(S.config[t]&&S.config[t][i])S.config[t][i][f]=f==='v'?Math.max(0,parseFloat(inp.value)||0):(f==='x'?Math.min(7,Math.max(1,parseInt(inp.value)||1)):String(inp.value).trim().slice(0,60));
   });
   const mudancas=diffConfig(cfgBase||antes,S.config);
   const novaSenhaCri=document.getElementById('cfgCriSenha').value;
-  if(novaSenhaCri){
+  if(!S.criUser){
+    const cuNovo=document.getElementById('cfgCriUser').value.trim().toLowerCase();
+    if(cuNovo||novaSenhaCri){
+      if(!/^[a-z0-9._-]{3,20}$/.test(cuNovo)){toast('⚠️ Usuário da criança: 3–20 letras/números');return;}
+      if(novaSenhaCri.length<6){toast('⚠️ Senha da criança: mínimo 6 caracteres');return;}
+      if(!supa||!nuvemOk){toast('⚠️ Sem conexão');return;}
+      const r=await criarCrianca(cuNovo,novaSenhaCri,S.crianca||cuNovo);
+      if(r.erro){toast('⚠️ '+r.erro);return;}
+      S.criUser=cuNovo;mudancas.push('Conta da criança criada: usuário "'+cuNovo+'"');
+      document.getElementById('cfgCriSenha').value='';
+    }
+  }else if(novaSenhaCri){
     if(novaSenhaCri.length<6){toast('⚠️ Senha da criança: mínimo 6 caracteres');return;}
     if(!supa||!nuvemOk){toast('⚠️ Sem conexão — a senha só pode ser redefinida online');return;}
     const {error}=await supa.rpc('redefinir_senha_crianca',{p_nova:novaSenhaCri});
