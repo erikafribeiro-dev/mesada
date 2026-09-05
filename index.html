@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mesada Leo">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=Chivo+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -62,6 +63,9 @@ header .wrap{display:flex;justify-content:space-between;align-items:center}
 .ganho:active{background:var(--verde-claro)}
 .btn-acao.feito{opacity:.55;background:var(--verde-claro)}
 .btn-acao.feito .valor{background:var(--verde);color:#fff}
+.btn-acao.foco{border:2px solid var(--ouro);background:linear-gradient(135deg,#FFFDF5,#FFF7DF)}
+.btn-acao.foco.feito{opacity:.8}
+.btn-acao .strk{display:block;font-size:11px;font-weight:600;color:#A87B0A;margin-top:2px}
 .pena .valor{background:var(--vermelho-claro);color:var(--vermelho)}
 .pena:active{background:var(--vermelho-claro)}
 .btn-mesada{width:100%;margin-top:10px;background:var(--verde);color:#fff;border:none;border-radius:var(--radius);padding:15px;font-family:'Archivo Black';font-size:15px;letter-spacing:.5px;cursor:pointer;box-shadow:0 4px 14px rgba(11,92,56,.35)}
@@ -104,6 +108,7 @@ details[open].config summary::after{content:"▴"}
 .lista-edit input.vez{width:46px;border:1px solid var(--borda);border-radius:8px;padding:8px 4px;font-family:'Chivo Mono';font-size:13px;text-align:center}
 .lista-edit input.val{width:60px;border:1px solid var(--borda);border-radius:8px;padding:8px;font-family:'Chivo Mono';font-size:13px;text-align:right}
 .lista-edit button{border:none;background:var(--vermelho-claro);color:var(--vermelho);border-radius:8px;width:34px;cursor:pointer;font-size:15px}
+.lista-edit button.star{background:#FFF4D6;color:var(--ouro);flex-shrink:0}
 .mini-btn{border:1px dashed var(--borda);background:none;border-radius:8px;padding:8px;font-size:13px;color:var(--verde);font-weight:600;cursor:pointer}
 .btn-salvar{background:var(--verde-escuro);color:#fff;border:none;border-radius:10px;padding:12px;font-weight:700;font-size:14px;cursor:pointer}
 .btn-zerar{background:none;border:none;color:var(--vermelho);font-size:12px;cursor:pointer;text-decoration:underline;margin-top:4px}
@@ -139,7 +144,26 @@ details[open].config summary::after{content:"▴"}
 #cadastroTela{position:fixed;inset:0;background:linear-gradient(160deg,#0F2C1E,#063D25);display:flex;align-items:center;justify-content:center;z-index:210;padding:20px;overflow-y:auto}
 #cadastroTela[hidden]{display:none}
 #cadastroTela button{width:100%;background:var(--ouro);color:#063D25;border:none;border-radius:12px;padding:14px;font-family:'Archivo Black';font-size:15px;cursor:pointer;margin-top:6px}
+#nuvemTela{position:fixed;inset:0;background:linear-gradient(160deg,#0F2C1E,#063D25);display:flex;align-items:center;justify-content:center;z-index:230;padding:20px;overflow-y:auto}
+#nuvemTela[hidden]{display:none}
+#nuvemTela #nvEntrar{width:100%;background:var(--ouro);color:#063D25;border:none;border-radius:12px;padding:14px;font-family:'Archivo';font-weight:700;font-size:15px;cursor:pointer;margin-top:6px}
+.nv-links{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
+.nv-link{background:none;border:none;color:rgba(255,255,255,.75);font-family:'Archivo';font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline;padding:4px}
+.nv-local{display:block;margin:18px auto 0;color:rgba(255,255,255,.45);font-weight:500}
+.pin-ok{color:#7ED9A3;font-size:12px;font-weight:600;min-height:16px;margin-top:6px}
+#nuvemChip{font-size:13px;padding:6px 9px;cursor:pointer}
+#nuvemChip.off{opacity:.45}
 .cad-grupo{color:rgba(255,255,255,.75);font-size:12px;font-weight:700;text-align:left;margin:12px 0 6px;letter-spacing:.5px}
+#onboarding{position:fixed;inset:0;background:linear-gradient(160deg,#0F2C1E,#063D25);display:flex;align-items:center;justify-content:center;z-index:220;padding:20px}
+#onboarding[hidden]{display:none}
+.onb-icone{font-size:52px;margin-bottom:10px}
+.onb-box h2{font-family:'Archivo Black';color:#fff;font-size:19px}
+.onb-txt{color:rgba(255,255,255,.75);font-size:14px;line-height:1.55;margin:10px 0 18px}
+.onb-txt b{color:var(--ouro)}
+.onb-dots{display:flex;gap:7px;justify-content:center;margin-bottom:16px}
+.onb-dots span{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25)}
+.onb-dots span.on{background:var(--ouro)}
+#onbProx{width:100%;background:var(--ouro);color:#063D25;border:none;border-radius:12px;padding:14px;font-family:'Archivo Black';font-size:15px;cursor:pointer}
 .pin-erro{color:var(--vermelho);font-size:12px;font-weight:600;min-height:16px;margin-top:6px}
 .pin-acoes{display:flex;gap:8px;margin-top:12px}
 .pin-acoes button{flex:1;border:none;border-radius:10px;padding:12px;font-weight:700;font-size:14px;cursor:pointer}
@@ -160,6 +184,13 @@ details[open].config summary::after{content:"▴"}
 .meta-barra{height:10px;background:var(--verde-claro);border-radius:99px;overflow:hidden}
 .meta-fill{height:100%;width:0;background:linear-gradient(90deg,var(--verde),#12A05F);border-radius:99px;transition:width .4s}
 .meta-info{font-size:11.5px;color:var(--cinza);margin-top:6px}
+.jornada-card{border:2px solid var(--verde);background:linear-gradient(135deg,#F4FBF7,#E8F2EC)}
+.jor-stepper{display:flex;gap:6px;margin:8px 0 4px}
+.jor-passo{flex:1;text-align:center;padding:7px 2px;border-radius:9px;background:#fff;border:1px solid var(--borda);opacity:.55}
+.jor-passo span{font-size:16px;display:block}
+.jor-passo small{font-size:8.5px;font-weight:700;text-transform:uppercase;color:var(--cinza);letter-spacing:.3px}
+.jor-passo.feito{opacity:1;background:var(--verde-claro);border-color:var(--verde)}
+.jor-passo.atual{opacity:1;border:2px solid var(--ouro);background:#FFFBEE;transform:scale(1.04)}
 /* campo de futebol */
 .campo-fut{margin-top:4px}
 .campo-gramado{position:relative;height:38px;border-radius:10px;overflow:hidden;border:2px solid #0A5433;
@@ -201,30 +232,143 @@ details[open].config summary::after{content:"▴"}
 #toast.gol{background:var(--verde)}
 #toast.cartao{background:var(--vermelho)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ===== Tema profissional (override) ===== */
+:root{--verde:#0B5C38;--verde-escuro:#063D25;--verde-claro:#E6F1EB;--creme:#F6F7F5;--tinta:#17211B;
+  --ouro:#C99A0F;--vermelho:#B93A32;--vermelho-claro:#F7E9E7;--cinza:#5E6B63;--borda:#DDE4DF;
+  --r-lg:20px;--r-md:14px;--r-sm:10px;
+  --sombra:0 1px 2px rgba(6,61,37,.06),0 6px 20px rgba(6,61,37,.06)}
+body{background:var(--creme);padding-bottom:96px}
+header{padding:16px 0 18px;transition:padding .2s}
+body[data-tab="Placar"] header{padding-bottom:88px}
+.brand h1{letter-spacing:0;font-size:16px}
+.brand small{text-transform:none;letter-spacing:0;font-size:11.5px;opacity:.65}
+.nivel-chip{font-weight:600;font-size:12px;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.18)}
+.tab{display:none}.tab.active{display:block}
+
+/* placar: o único elemento ousado */
+.placar{border-radius:var(--r-lg);box-shadow:0 14px 40px rgba(6,61,37,.28);margin-top:-70px}
+.placar::before{display:none}
+.placar-label{text-transform:none;letter-spacing:0;font-size:12.5px;opacity:.7;font-weight:500}
+.saldo{font-size:44px}
+.stat{border-radius:var(--r-sm);background:rgba(255,255,255,.06)}
+.stat span{text-transform:none;letter-spacing:0;font-size:10.5px;opacity:.7}
+.sem-saldo{border-radius:var(--r-sm);font-size:11.5px}
+.xp-texto{letter-spacing:0;font-size:11px}
+
+/* seções e cards: quietos */
+.secao-titulo{font-family:'Archivo';font-weight:700;font-size:15px;letter-spacing:0;text-transform:none;color:var(--tinta);margin:22px 0 10px}
+.secao-titulo::after{display:none}
+.secao-titulo small{font-family:'Archivo';font-weight:500;font-size:11.5px;color:var(--cinza);margin-left:auto}
+.secao-titulo.ganhos::before,.secao-titulo.penas::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--verde)}
+.secao-titulo.penas::before{background:var(--vermelho)}
+.meta-card{border-radius:var(--r-md);box-shadow:var(--sombra);border-color:var(--borda)}
+.jornada-card{background:#fff;border:1px solid var(--borda)}
+.jor-passo small{text-transform:none;letter-spacing:0;font-size:9.5px}
+.jor-passo.atual{transform:none}
+.dia-rotulo{text-transform:none;font-weight:600}
+.meta-info{color:var(--cinza)}
+
+/* botões: hierarquia clara */
+.btn-acao{border-radius:var(--r-md);box-shadow:var(--sombra);font-weight:600;font-size:14px}
+.btn-acao .valor{border-radius:8px}
+.btn-acao.foco{background:#FFFCF3}
+.btn-mesada{font-family:'Archivo';font-weight:700;font-size:15px;letter-spacing:0;text-transform:none;border-radius:var(--r-md);box-shadow:0 6px 18px rgba(11,92,56,.28)}
+.btn-semana{font-family:'Archivo';font-weight:700;font-size:15px;letter-spacing:0;text-transform:none;border-radius:var(--r-md);border-width:1.5px}
+.btn-zap{width:100%;margin-top:10px;background:#25D366;color:#fff;border:none;border-radius:var(--r-md);padding:13px;font-family:'Archivo';font-weight:700;font-size:14.5px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 18px rgba(37,211,102,.28)}
+.btn-zap svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linejoin:round}
+.btn-zap:active{transform:scale(.98)}
+.btn-ghost{width:100%;margin-top:14px;background:transparent;color:var(--cinza);border:1px dashed var(--borda);border-radius:var(--r-md);padding:12px;font-family:'Archivo';font-weight:600;font-size:13.5px;cursor:pointer}
+.hint{font-size:12px;line-height:1.5}
+details.config{border-radius:var(--r-md);box-shadow:var(--sombra);margin-top:14px}
+details.config summary{font-size:14.5px}
+.cadeado-mini{font-size:11px;font-weight:500;color:var(--cinza);margin-left:auto;margin-right:8px}
+.campo label{text-transform:none;letter-spacing:0;font-size:12.5px;color:var(--cinza)}
+.mini-btn{border-radius:var(--r-sm);text-align:left}
+.btn-salvar{border-radius:var(--r-sm)}
+.mov,.sem-linha{border-radius:var(--r-sm)}
+
+/* barra de navegação inferior */
+.tabbar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-top:1px solid var(--borda);
+  display:flex;justify-content:space-around;padding:8px 8px calc(8px + env(safe-area-inset-bottom));z-index:50}
+.tabbar button{flex:1;max-width:120px;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;
+  color:var(--cinza);font-family:'Archivo';font-size:11px;font-weight:600;cursor:pointer;border-radius:var(--r-sm)}
+.tabbar svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tabbar button.on{color:var(--verde)}
+.tabbar button.on svg{stroke-width:2.2}
+.tabbar button.on span{position:relative}
+.tabbar button.on span::after{content:"";position:absolute;left:50%;bottom:-6px;width:16px;height:2.5px;background:var(--verde);border-radius:2px;transform:translateX(-50%)}
+#toast{bottom:92px;border-radius:var(--r-md)}
+
+/* acessibilidade */
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--verde);outline-offset:2px}
 </style>
 </head>
 <body>
 
+<div id="nuvemTela" hidden>
+  <div class="login-box">
+    <div class="escudo escudo-login">☁</div>
+    <h2>Conectar à família</h2>
+    <p>Conta dos responsáveis. Sincroniza o placar entre os aparelhos e faz backup na nuvem.</p>
+    <input type="email" id="nvEmail" placeholder="E-mail dos pais" autocomplete="email">
+    <input type="password" id="nvSenha" placeholder="Senha (mín. 6)" autocomplete="current-password">
+    <div class="pin-erro" id="nvErro"></div>
+    <div class="pin-ok" id="nvOk"></div>
+    <button type="button" id="nvEntrar">ENTRAR</button>
+    <div class="nv-links">
+      <button type="button" class="nv-link" id="nvCriar">Criar conta da família</button>
+      <button type="button" class="nv-link" id="nvEsqueci">Esqueci a senha</button>
+    </div>
+    <button type="button" class="nv-link nv-local" id="nvLocal">Continuar sem nuvem (só neste aparelho)</button>
+  </div>
+</div>
+
 <div id="cadastroTela" hidden>
   <div class="login-box">
-    <div class="escudo escudo-login">L</div>
+    <div class="escudo escudo-login">⚽</div>
     <h2>PRIMEIRO ACESSO</h2>
     <p>Cadastre as duas contas do app</p>
     <div class="cad-grupo">👨‍👩‍👦 Conta dos pais</div>
-    <input type="text" id="cadPaisUser" placeholder="Usuário dos pais" value="erika">
+    <input type="text" id="cadPaisUser" placeholder="Usuário dos pais" value="">
     <input type="password" id="cadPaisSenha" placeholder="Senha dos pais (mín. 4)">
     <div class="cad-grupo">⚽ Conta da criança</div>
-    <input type="text" id="cadCriUser" placeholder="Usuário da criança" value="leo">
+    <input type="text" id="cadCriNome" placeholder="Nome da criança (aparece no app)">
+    <input type="text" id="cadCriUser" placeholder="Usuário da criança" value="">
     <input type="password" id="cadCriSenha" placeholder="Senha da criança (mín. 4)">
     <div class="pin-erro" id="cadErro"></div>
     <button type="button" id="cadSalvar">CRIAR CONTAS ⚽</button>
   </div>
 </div>
 
+<div id="onboarding" hidden>
+  <div class="login-box onb-box">
+    <div id="onbSlides">
+      <div class="onb-slide">
+        <div class="onb-icone">⚽</div>
+        <h2>Como funciona</h2>
+        <p class="onb-txt">Tarefas boas marcam <b>gols</b> e valem dinheiro. Deslizes levam <b>cartão</b> e descontam. Tudo em tempo real, com 1 clique por dia em cada tarefa.</p>
+      </div>
+      <div class="onb-slide" hidden>
+        <div class="onb-icone">💰</div>
+        <h2>Até R$ 100 por semana</h2>
+        <p class="onb-txt">Mesada base + <b>bônus de 10%</b> por semana sem cartões + ganhos das tarefas. Fazendo tudo, chega a R$ 100. O placar mostra o caminho até o gol.</p>
+      </div>
+      <div class="onb-slide" hidden>
+        <div class="onb-icone">🧠</div>
+        <h2>Jornada de 10 semanas</h2>
+        <p class="onb-txt">Baseado em neurociência: começa com <b>1 hábito</b> e adiciona outros gradualmente. Em ~66 dias, os hábitos viram automáticos. Sequências 🔥 mostram a evolução.</p>
+      </div>
+    </div>
+    <div class="onb-dots" id="onbDots"><span class="on"></span><span></span><span></span></div>
+    <button type="button" id="onbProx">PRÓXIMO →</button>
+  </div>
+</div>
+
 <div id="loginTela">
   <div class="login-box">
-    <div class="escudo escudo-login">L</div>
-    <h2>MESADA DO LEO</h2>
+    <div class="escudo escudo-login" id="escudoLogin">⚽</div>
+    <h2 id="loginTitulo">PLACAR DA MESADA</h2>
     <p>Entre para ver o placar</p>
     <input type="text" id="loginUser" placeholder="Usuário" autocomplete="username">
     <input type="password" id="loginSenha" placeholder="Senha" autocomplete="current-password">
@@ -236,10 +380,11 @@ details[open].config summary::after{content:"▴"}
 <header>
   <div class="wrap">
     <div class="brand">
-      <div class="escudo">L</div>
-      <h1>MESADA DO LEO<small>Placar da semana</small></h1>
+      <div class="escudo" id="escudoLetra">⚽</div>
+      <h1 id="marcaTitulo">PLACAR DA MESADA<small>Hábitos que valem gol</small></h1>
     </div>
     <div style="display:flex;gap:6px;align-items:center">
+      <div class="nivel-chip off" id="nuvemChip" title="Nuvem">☁</div>
       <div class="nivel-chip" id="perfilChip" title="toque para sair"></div>
       <div class="nivel-chip"><span class="estrela">★</span><span id="nivelNome">Base</span></div>
     </div>
@@ -248,6 +393,7 @@ details[open].config summary::after{content:"▴"}
 
 <div class="wrap">
 
+<section class="tab active" id="tabPlacar">
   <!-- PLACAR -->
   <div class="placar">
     <div class="placar-label">Saldo total</div>
@@ -265,9 +411,16 @@ details[open].config summary::after{content:"▴"}
     </div>
   </div>
 
+  <!-- JORNADA DO CRAQUE -->
+  <div class="meta-card jornada-card" style="margin-top:26px">
+    <div class="meta-topo"><span><b id="jorFase"></b></span><span class="meta-pct" id="jorSem"></span></div>
+    <div class="jor-stepper" id="jorStepper"></div>
+    <div class="meta-info" id="jorMsg"></div>
+  </div>
+
   <!-- RUMO À META DA SEMANA -->
   <div class="meta-card campo-card" style="margin-top:26px">
-    <div class="meta-topo"><span>🏟️ <b>Rumo ao gol da semana</b></span><span class="meta-pct" id="potPct">0%</span></div>
+    <div class="meta-topo"><span><b>Rumo ao gol da semana</b></span><span class="meta-pct" id="potPct">0%</span></div>
     <div class="campo-fut">
       <div class="campo-gramado">
         <div class="campo-fill" id="potFill"></div>
@@ -279,40 +432,54 @@ details[open].config summary::after{content:"▴"}
     <div class="meta-info" id="potInfo"></div>
   </div>
 
-  <!-- GANHOS -->
-  <div class="secao-titulo">⚽ Ganhos</div>
+</section>
+
+<section class="tab" id="tabTarefas">
+  <div class="secao-titulo ganhos">Ganhos <small>1 por dia · provas liberadas</small></div>
   <div class="acoes" id="listaGanhos"></div>
 
-  <!-- PENALIDADES -->
-  <div class="secao-titulo">🟥 Penalidades</div>
+  <div class="secao-titulo penas">Penalidades</div>
   <div class="acoes" id="listaPenas"></div>
+</section>
 
-  <!-- MESADA -->
-  <button class="btn-mesada" id="btnMesada">💰 PAGAR MESADA DA SEMANA</button>
-  <button class="btn-semana" id="btnSemana">🗓️ INICIAR NOVA SEMANA</button>
-  <button class="btn-gasto" id="btnBackup">💾 Salvar (baixar backup com histórico)</button>
-  <p class="hint">Semana sem cartão = bônus de 10% · Pague a mesada e depois inicie a nova semana</p>
+<section class="tab" id="tabSemana">
+  <div class="secao-titulo">Fechamento da semana</div>
+  <button class="btn-mesada" id="btnMesada">Pagar mesada da semana</button>
+  <button class="btn-semana" id="btnSemana">Iniciar nova semana</button>
+  <p class="hint">Semana sem cartões paga bônus de 10%. Pague a mesada e depois inicie a nova semana.</p>
+  <button class="btn-zap" id="btnZap">
+    <svg viewBox="0 0 24 24"><path d="M20 11.5a8 8 0 0 1-11.9 7L4 20l1.6-3.9A8 8 0 1 1 20 11.5z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 1a4 4 0 0 1-2-2l1-1-1-2z"/></svg>
+    Enviar resumo pelo WhatsApp</button>
 
-  <!-- RESUMO DO MÊS -->
   <details class="config hist">
-    <summary>📅 Resumo do mês<span class="hist-badge" id="mesQtd">0</span></summary>
+    <summary>Resumo do mês<span class="hist-badge" id="mesQtd">0</span></summary>
     <div class="config-body">
       <div id="resumoMes"></div>
     </div>
   </details>
 
-  <!-- HISTÓRICO -->
   <details class="config hist">
-    <summary>📋 Súmula (histórico)<span class="hist-badge" id="histQtd">0</span></summary>
+    <summary>Histórico de lançamentos<span class="hist-badge" id="histQtd">0</span></summary>
     <div class="config-body">
       <div class="historico" id="historico"></div>
     </div>
   </details>
 
-  <!-- CONFIG -->
+  <button class="btn-ghost" id="btnBackup">Salvar backup dos dados</button>
+</section>
+
+<section class="tab" id="tabPais">
   <details class="config" id="painelConfig">
-    <summary>🔒 Ajustes (modo dos pais)</summary>
+    <summary>Ajustes dos pais <span class="cadeado-mini">protegido por senha</span></summary>
     <div class="config-body">
+      <div class="campo">
+        <label>Nome da criança</label>
+        <input type="text" id="cfgCrianca" style="width:100%;border:1px solid var(--borda);border-radius:8px;padding:10px;font-size:14px">
+      </div>
+      <div class="campo">
+        <label>WhatsApp da criança (DDD + número, só dígitos)</label>
+        <input type="tel" id="cfgZap" inputmode="numeric" placeholder="11999998888" style="width:100%;border:1px solid var(--borda);border-radius:8px;padding:10px;font-family:'Chivo Mono';font-size:14px">
+      </div>
       <div class="campo">
         <label>Mesada base semanal (R$)</label>
         <input type="number" id="cfgMesada" min="0" step="1">
@@ -322,14 +489,14 @@ details[open].config summary::after{content:"▴"}
         <input type="password" id="cfgPin" inputmode="numeric" maxlength="4" placeholder="deixe em branco para manter">
       </div>
       <div class="campo">
-        <label>👨‍👩‍👦 Conta dos pais (usuário · nova senha)</label>
+        <label>Conta dos pais (usuário e nova senha)</label>
         <div class="item" style="display:flex;gap:6px">
           <input id="cfgPaisUser" style="flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px" placeholder="usuário">
           <input id="cfgPaisSenha" type="password" style="flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px" placeholder="em branco mantém">
         </div>
       </div>
       <div class="campo">
-        <label>⚽ Conta da criança (usuário · nova senha)</label>
+        <label>Conta da criança (usuário e nova senha)</label>
         <div class="item" style="display:flex;gap:6px">
           <input id="cfgCriUser" style="flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px" placeholder="usuário">
           <input id="cfgCriSenha" type="password" style="flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px" placeholder="em branco mantém">
@@ -338,28 +505,45 @@ details[open].config summary::after{content:"▴"}
       <div class="campo">
         <label>Ganhos</label>
         <div class="lista-edit" id="editGanhos"></div>
-        <button class="mini-btn" id="btnAddGanho" type="button">+ adicionar ganho</button>
+        <button class="mini-btn" id="btnAddGanho" type="button">Adicionar ganho</button>
       </div>
       <div class="campo">
         <label>Penalidades</label>
         <div class="lista-edit" id="editPenas"></div>
-        <button class="mini-btn" id="btnAddPena" type="button">+ adicionar penalidade</button>
+        <button class="mini-btn" id="btnAddPena" type="button">Adicionar penalidade</button>
       </div>
       <button class="btn-salvar" id="btnSalvarCfg" type="button">Salvar ajustes</button>
       <div class="campo">
-        <label>📋 Log de alterações</label>
+        <label>Log de alterações</label>
         <div class="log-cfg" id="logCfg"></div>
       </div>
-      <button class="mini-btn" id="btnExportar" type="button">⬇️ Exportar histórico (CSV)</button>
-      <button class="mini-btn" id="btnRestaurar" type="button">📤 Restaurar backup (.json)</button>
+      <button class="mini-btn" id="btnExportar" type="button">Exportar histórico (CSV)</button>
+      <button class="mini-btn" id="btnJornada" type="button">Reiniciar Jornada do Craque</button>
+      <button class="mini-btn" id="btnRestaurar" type="button">Restaurar backup (.json)</button>
       <input type="file" id="arquivoBackup" accept=".json,application/json" style="display:none">
-      <button class="mini-btn" id="btnSair" type="button">🚪 Sair do app (pedir login de novo)</button>
-      <button class="btn-zerar" id="btnZerar" type="button">Zerar tudo e recomeçar temporada</button>
+      <button class="mini-btn" id="btnSair" type="button">Sair do app</button>
+      <button class="btn-zerar" id="btnExcluirNuvem" type="button">Excluir família e dados da nuvem (LGPD)</button>
+      <button class="btn-zerar" id="btnZerar" type="button">Zerar temporada (saldo e histórico)</button>
     </div>
   </details>
+</section>
 
 </div>
 
+<nav class="tabbar" id="tabbar">
+  <button type="button" data-tab="Placar" class="on">
+    <svg viewBox="0 0 24 24"><path d="M4 5h16v11H4z"/><path d="M9 20h6M12 16v4"/><path d="M8 9h3M13 9h3"/></svg>
+    <span>Placar</span></button>
+  <button type="button" data-tab="Tarefas">
+    <svg viewBox="0 0 24 24"><path d="M10 6h10M10 12h10M10 18h10"/><path d="M4 6l1.5 1.5L8 5M4 12l1.5 1.5L8 11M4 18l1.5 1.5L8 17"/></svg>
+    <span>Tarefas</span></button>
+  <button type="button" data-tab="Semana">
+    <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+    <span>Semana</span></button>
+  <button type="button" data-tab="Pais" id="navPais">
+    <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+    <span>Pais</span></button>
+</nav>
 
 <div id="perfilMenu" hidden>
   <div class="pin-box">
@@ -369,6 +553,7 @@ details[open].config summary::after{content:"▴"}
     <div class="menu-lista">
       <button type="button" class="menu-item" id="pmTrocar">🔁 Trocar perfil</button>
       <button type="button" class="menu-item" id="pmSenha">🔒 Alterar minha senha</button>
+      <button type="button" class="menu-item" id="nvDesconectar">☁ Desconectar aparelho da nuvem</button>
       <button type="button" class="menu-item sair" id="pmSair">🚪 Sair do app</button>
     </div>
     <div class="pin-acoes"><button type="button" class="pin-cancelar" id="pmFechar">Fechar</button></div>
@@ -395,7 +580,7 @@ details[open].config summary::after{content:"▴"}
   <div class="pin-box" id="pinBox">
     <div class="cadeado">🔒</div>
     <h3>Modo dos pais</h3>
-    <p>Digite a senha de 4 dígitos</p>
+    <p>Senha de 4 dígitos dos pais</p>
     <input type="password" id="pinInput" inputmode="numeric" maxlength="4" autocomplete="off">
     <div class="pin-erro" id="pinErro"></div>
     <div class="pin-acoes">
@@ -413,7 +598,7 @@ const NIVEIS=[[0,'Base'],[100,'Titular'],[250,'Capitão'],[500,'Craque'],[1000,'
 const DEFAULT={
   saldo:0, xp:0, streak:0, ganhosSem:0, penasSem:0,
   semGV:0, semPV:0, semMes:0, semIni:null, semanas:[],
-  contas:{pais:{u:'erika',s:'MTIzNA=='},cri:{u:'leo',s:'MTIzNA=='}}, logado:false, perfil:null, cadastroOk:false, diario:{}, cliques:{},
+  contas:{pais:{u:'erika',s:'MTIzNA=='},cri:{u:'leo',s:'MTIzNA=='}}, logado:false, perfil:null, cadastroOk:false, diario:{}, cliques:{}, jornada:{ini:null,fase:0}, crianca:'Leo', zap:'', syncTs:0, modoLocal:false,
   historico:[], logCfg:[], pin:'MTIzNA==',
   config:{
     mesada:25,
@@ -423,8 +608,8 @@ const DEFAULT={
       {n:'Arrumar o quarto sem pedir',v:3,x:2},
       {n:'Ajudar em casa (louça, lixo)',v:2,x:3},
       {n:'Ler 30 minutos',v:2.5,x:7},
-      {n:'Estudar 30 minutos no dia',v:2,x:7},
-      {n:'Dormir antes das 22h',v:2,x:7}
+      {n:'Estudar 30 minutos no dia',v:2,x:7,foco:1},
+      {n:'Dormir antes das 22h',v:2,x:7,foco:1}
     ],
     penas:[
       {n:'Esquecer lição ou tarefa',v:3},
@@ -515,17 +700,45 @@ async function load(){
           logCfg('Tabela recalibrada: potencial semanal total = R$ 100,00 · 1 clique/dia por tarefa (provas liberadas)');
           S.cfgVer=11;
         }
+        if(S.cfgVer<12){
+          if(!S.config.ganhos.some(g=>g.foco)){
+            S.config.ganhos.forEach(g=>{
+              if(g.n==='Estudar 30 minutos no dia'||g.n==='Dormir antes das 22h')g.foco=1;
+            });
+          }
+          logCfg('Hábitos da temporada definidos (neurociência: foco em 2 por vez)');
+          S.cfgVer=12;
+        }
+        if(S.cfgVer<13){
+          if(!S.jornada||!S.jornada.ini){
+            const seg=segundaDaSemana(new Date());
+            S.jornada={ini:seg.getFullYear()+'-'+String(seg.getMonth()+1).padStart(2,'0')+'-'+String(seg.getDate()).padStart(2,'0'),fase:0};
+          }
+          logCfg('Jornada do Craque iniciada: 10 semanas de evolução gradual de hábitos');
+          S.cfgVer=13;
+        }
+        if(S.cfgVer<14){
+          if(!S.crianca)S.crianca='Leo';
+          S.cfgVer=14;
+        }
+        if(S.cfgVer<15){if(typeof S.zap!=='string')S.zap='';S.cfgVer=15;}
         save();
         if(!S.pin)S.pin='MTIzNA==';
     }catch(e){/* dado corrompido — usa padrão */}
   }
   if(!S.semIni)S.semIni=new Date().toISOString();
+  checarAvancoFase();
   cfgBase=clone(S.config);
-  // fluxo: cadastro (1º uso) → login → app; mantém conectado até "Sair"
+  gateLocal();
+  await iniciarNuvem();
+}
+// fluxo local: cadastro (1º uso) → login → app; mantém conectado até "Sair"
+function gateLocal(){
   if(!S.cadastroOk){
     document.getElementById('cadastroTela').hidden=false;
     document.getElementById('loginTela').hidden=true;
   }else{
+    document.getElementById('cadastroTela').hidden=true;
     document.getElementById('loginTela').hidden=!!S.logado;
   }
   if(S.logado)aplicarPerfil();
@@ -535,6 +748,7 @@ async function save(){
   const dados=JSON.stringify(S);
   if(temStorage()){try{await window.storage.set(KEY,dados);}catch(e){}}
   if(temLocal()){try{localStorage.setItem(KEY,dados);}catch(e){}}
+  if(typeof agendarSync==='function')agendarSync();
 }
 
 const fmt=v=>'R$ '+v.toFixed(2).replace('.',',');
@@ -546,7 +760,18 @@ function depositar(v){S.saldo=r2(S.saldo+v);}
 function debitarGastar(v){S.saldo=r2(S.saldo-v);}
 function nivel(){let nome=NIVEIS[0][1];for(const[x,n]of NIVEIS){if(S.xp>=x)nome=n;}return nome;}
 
+function aplicarMarca(){
+  const nome=(S.crianca||'').trim();
+  const titulo=nome?('MESADA DE '+nome.toUpperCase().split(' ')[0]):'PLACAR DA MESADA';
+  const letra=nome?nome[0].toUpperCase():'⚽';
+  document.getElementById('marcaTitulo').childNodes[0].textContent=titulo;
+  document.getElementById('loginTitulo').textContent=titulo;
+  document.getElementById('escudoLetra').textContent=letra;
+  const el=document.getElementById('escudoLogin');if(el)el.textContent=letra;
+  document.title=titulo.charAt(0)+titulo.slice(1).toLowerCase()+' · Placar da Semana';
+}
 function render(){
+  aplicarMarca();
   const el=document.getElementById('saldo');
   el.innerHTML='<span class="moeda">R$</span>'+S.saldo.toFixed(2).replace('.',',');
   el.classList.add('pulse');setTimeout(()=>el.classList.remove('pulse'),160);
@@ -597,6 +822,7 @@ function render(){
   document.getElementById('potInfo').textContent=pctPot>=100
     ? '🏆 GOOOL! Potencial máximo da semana: '+fmt(realizado)+'!'
     : 'Já garantiu '+fmt(realizado)+' de até '+fmt(potencial)+' · mesada + bônus + todos os ganhos';
+  renderJornada();
   // barrinhas dos 7 dias da semana atual
   const diasBox=document.getElementById('diasSemana');diasBox.innerHTML='';
   const ROT=['dom','seg','ter','qua','qui','sex','sáb'];
@@ -619,10 +845,14 @@ function render(){
   // botões
   const lg=document.getElementById('listaGanhos');lg.innerHTML='';
   const kHoje=hojeKey();
-  S.config.ganhos.forEach((g,i)=>{
+  const ordenados=[...S.config.ganhos].sort((a,b)=>(b.foco||0)-(a.foco||0));
+  ordenados.forEach(g=>{
     const feito=!g.livre&&S.cliques&&S.cliques[kHoje]&&S.cliques[kHoje][g.n]>=1;
-    const b=document.createElement('button');b.className='btn-acao ganho'+(feito?' feito':'');
-    b.innerHTML=`<span>${g.n}</span><span class="valor">${feito?'✓ hoje':'+ '+fmt(g.v)}</span>`;
+    const b=document.createElement('button');
+    b.className='btn-acao ganho'+(feito?' feito':'')+(g.foco?' foco':'');
+    const strk=g.foco?streakDe(g.n):0;
+    const sub=g.foco?`<small class="strk">${strk>0?'🔥 '+strk+' dia'+(strk>1?'s':'')+' seguido'+(strk>1?'s':''):'comece a sequência hoje!'}</small>`:'';
+    b.innerHTML=`<span>${g.foco?'⭐ ':''}${g.n}${sub}</span><span class="valor">${feito?'✓ hoje':'+ '+fmt(g.v)}</span>`;
     b.onclick=()=>lancarGanho(g);lg.appendChild(b);
   });
   const lp=document.getElementById('listaPenas');lp.innerHTML='';
@@ -653,6 +883,71 @@ function toast(msg,tipo){
 
 function agora(){return new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' · '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});}
 
+/* ---------- Jornada do Craque (mudança gradual de hábitos) ---------- */
+const FASES=[
+  {ate:2,nome:'Aquecimento',icone:'🏃',habitos:['Estudar 30 minutos no dia'],
+   msg:'Um hábito só: estude 30min sempre no mesmo horário e lugar. Meta: 4+ dias nesta semana.'},
+  {ate:4,nome:'Ritmo de jogo',icone:'⚽',habitos:['Estudar 30 minutos no dia','Dormir antes das 22h'],
+   msg:'Estudo firme? Agora entra o sono. Dormir bem melhora a memória do que estudou. Meta: 5+ dias cada.'},
+  {ate:7,nome:'Time completo',icone:'🏆',habitos:['Estudar 30 minutos no dia','Dormir antes das 22h','Ler 30 minutos'],
+   msg:'Terceiro hábito: leitura. Emende ela num hábito já firme (ex.: ler antes de dormir). Meta: sequências de 7 dias.'},
+  {ate:10,nome:'Craque',icone:'👑',habitos:['Estudar 30 minutos no dia','Dormir antes das 22h','Ler 30 minutos'],
+   msg:'Reta final dos 66 dias! Desafio: a SEMANA PERFEITA — 100% do potencial e nenhum cartão.'},
+  {ate:999,nome:'Lenda em manutenção',icone:'🌟',habitos:[],
+   msg:'Jornada concluída! Os hábitos agora são seus. Mantenha o ritmo — ou reinicie a jornada com novos focos.'}
+];
+function semanaJornada(){
+  if(!S.jornada||!S.jornada.ini)return 1;
+  const ini=new Date(S.jornada.ini+'T12:00:00');
+  const dif=Math.floor((segundaDaSemana(new Date())-segundaDaSemana(ini))/(7*24*3600*1000));
+  return Math.max(1,dif+1);
+}
+function faseDaSemana(sem){for(let i=0;i<FASES.length;i++){if(sem<=FASES[i].ate)return i;}return FASES.length-1;}
+function checarAvancoFase(){
+  const sem=semanaJornada();
+  const f=faseDaSemana(sem);
+  if(S.jornada.fase!==f){
+    S.jornada.fase=f;
+    const fase=FASES[f];
+    if(fase.habitos.length){
+      S.config.ganhos.forEach(g=>{if(fase.habitos.includes(g.n))g.foco=1;else delete g.foco;});
+      logCfg('Jornada: Fase '+(f+1)+' — '+fase.nome+' · focos: '+fase.habitos.join(', '));
+      toast(fase.icone+' Nova fase da jornada: '+fase.nome+'!','gol');
+    }else{
+      logCfg('Jornada concluída: 10 semanas completas! 👑');
+    }
+    save();
+  }
+}
+function renderJornada(){
+  const sem=Math.min(semanaJornada(),10);
+  const f=S.jornada?S.jornada.fase:0;
+  const fase=FASES[f];
+  document.getElementById('jorFase').textContent=fase.icone+' Fase '+Math.min(f+1,4)+': '+fase.nome;
+  document.getElementById('jorSem').textContent=semanaJornada()>10?'concluída':'semana '+sem+' de 10';
+  document.getElementById('jorMsg').textContent=fase.msg;
+  const st=document.getElementById('jorStepper');st.innerHTML='';
+  FASES.slice(0,4).forEach((fs,i)=>{
+    const dot=document.createElement('div');
+    dot.className='jor-passo'+(i<f?' feito':'')+(i===f?' atual':'');
+    dot.innerHTML='<span>'+fs.icone+'</span><small>'+fs.nome+'</small>';
+    st.appendChild(dot);
+  });
+}
+function podarCliques(){
+  if(!S.cliques)return;
+  const lim=new Date();lim.setDate(lim.getDate()-60);
+  Object.keys(S.cliques).forEach(k=>{if(new Date(k+'T12:00:00')<lim)delete S.cliques[k];});
+}
+function streakDe(nome){
+  if(!S.cliques)return 0;
+  const d=new Date();
+  const key=x=>x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');
+  let n=0;
+  if(!(S.cliques[key(d)]&&S.cliques[key(d)][nome]))d.setDate(d.getDate()-1); // hoje ainda pendente não quebra
+  while(S.cliques[key(d)]&&S.cliques[key(d)][nome]){n++;d.setDate(d.getDate()-1);}
+  return n;
+}
 function lancarGanho(g){
   const k=hojeKey();
   if(!S.cliques)S.cliques={};
@@ -686,16 +981,16 @@ btnMesada.onclick=()=>{
   if(!mesadaArmada){
     mesadaArmada=true;
     btnMesada.innerHTML=temBonus
-      ? `✅ CONFIRMAR: ${fmt(base)} + bônus ${fmt(bonus)} = <u>${fmt(total)}</u>`
-      : `✅ CONFIRMAR PAGAMENTO DE ${fmt(total)} (sem bônus)`;
+      ? `Confirmar: ${fmt(base)} + bônus ${fmt(bonus)} = <u>${fmt(total)}</u>`
+      : `Confirmar pagamento de ${fmt(total)} (sem bônus)`;
     clearTimeout(mesadaTimer);
-    mesadaTimer=setTimeout(()=>{mesadaArmada=false;btnMesada.textContent='💰 PAGAR MESADA DA SEMANA';},6000);
+    mesadaTimer=setTimeout(()=>{mesadaArmada=false;btnMesada.textContent='Pagar mesada da semana';},6000);
     return;
   }
 
   // 2º toque: paga
   clearTimeout(mesadaTimer);mesadaArmada=false;
-  btnMesada.textContent='💰 PAGAR MESADA DA SEMANA';
+  btnMesada.textContent='Pagar mesada da semana';
   if(temBonus){S.streak++;}else{S.streak=0;}
   depositar(total);
   S.semMes=r2(S.semMes+total);
@@ -774,13 +1069,13 @@ const btnSemana=document.getElementById('btnSemana');
 btnSemana.onclick=()=>{
   if(!semanaArmada){
     semanaArmada=true;
-    btnSemana.textContent='✅ CONFIRMAR: fechar a semana e guardar no mês';
+    btnSemana.textContent='Confirmar: fechar a semana e guardar no mês';
     clearTimeout(semanaTimer);
-    semanaTimer=setTimeout(()=>{semanaArmada=false;btnSemana.textContent='🗓️ INICIAR NOVA SEMANA';},6000);
+    semanaTimer=setTimeout(()=>{semanaArmada=false;btnSemana.textContent='Iniciar nova semana';},6000);
     return;
   }
   clearTimeout(semanaTimer);semanaArmada=false;
-  btnSemana.textContent='🗓️ INICIAR NOVA SEMANA';
+  btnSemana.textContent='Iniciar nova semana';
   const hoje=new Date();
   const ini=S.semIni?dataCurta(S.semIni):ddmm(hoje);
   S.semanas.unshift({
@@ -790,8 +1085,9 @@ btnSemana.onclick=()=>{
     gv:S.semGV,pv:S.semPV,mes:S.semMes
   });
   if(S.semanas.length>30)S.semanas.pop();
-  S.ganhosSem=0;S.penasSem=0;S.semGV=0;S.semPV=0;S.semMes=0;S.diario={};S.cliques={};
+  S.ganhosSem=0;S.penasSem=0;S.semGV=0;S.semPV=0;S.semMes=0;S.diario={};podarCliques();
   S.semIni=hoje.toISOString();
+  checarAvancoFase();
   toast('🗓️ Nova semana iniciada — anterior guardada no mês','gol');
   render();save();
 };
@@ -799,6 +1095,8 @@ btnSemana.onclick=()=>{
 /* ---------- Config ---------- */
 function renderConfig(){
   document.getElementById('cfgMesada').value=S.config.mesada;
+  document.getElementById('cfgCrianca').value=S.crianca||'';
+  document.getElementById('cfgZap').value=S.zap||'';
   document.getElementById('cfgPaisUser').value=S.contas.pais.u;
   document.getElementById('cfgCriUser').value=S.contas.cri.u;
   ['ganhos','penas'].forEach(tipo=>{
@@ -807,9 +1105,19 @@ function renderConfig(){
     S.config[tipo].forEach((it,i)=>{
       const row=document.createElement('div');row.className='item';
       const campoX=tipo==='ganhos'?`<input class="vez" type="number" min="1" max="7" value="${it.x||1}" data-t="${tipo}" data-i="${i}" data-f="x" title="vezes por semana">`:'';
+      const btnFoco=tipo==='ganhos'?`<button type="button" class="star" title="hábito da temporada (máx. 2)">${it.foco?'⭐':'☆'}</button>`:'';
       row.innerHTML=`<input class="nome" data-t="${tipo}" data-i="${i}" data-f="n">
-        <input class="val" type="number" min="0" step="0.5" value="${it.v}" data-t="${tipo}" data-i="${i}" data-f="v">${campoX}
+        <input class="val" type="number" min="0" step="0.5" value="${it.v}" data-t="${tipo}" data-i="${i}" data-f="v">${campoX}${btnFoco}
         <button type="button" class="rm" data-t="${tipo}" data-i="${i}">✕</button>`;
+      if(tipo==='ganhos'){
+        row.querySelector('.star').addEventListener('click',()=>{
+          if(!it.foco&&S.config.ganhos.filter(g=>g.foco).length>=3){
+            toast('⭐ Máximo de 3 hábitos em foco — menos é mais');return;
+          }
+          it.foco=it.foco?0:1;if(!it.foco)delete it.foco;
+          renderConfig();
+        });
+      }
       row.querySelector('.nome').value=it.n;
       row.querySelector('.rm').addEventListener('click',()=>{S.config[tipo].splice(i,1);renderConfig();});
       box.appendChild(row);
@@ -837,12 +1145,12 @@ function diffConfig(antes,depois){
   if(antes.mesada!==depois.mesada)mudancas.push(`Mesada base: ${fmt(antes.mesada)} → ${fmt(depois.mesada)}`);
   [['ganhos','Ganho'],['penas','Penalidade']].forEach(([tipo,rotulo])=>{
     const mapA={},mapD={};
-    antes[tipo].forEach(it=>mapA[it.n]=it.v+'|'+(it.x||1));
-    depois[tipo].forEach(it=>mapD[it.n]=it.v+'|'+(it.x||1));
+    antes[tipo].forEach(it=>mapA[it.n]=it.v+'|'+(it.x||1)+'|'+(it.foco||0));
+    depois[tipo].forEach(it=>mapD[it.n]=it.v+'|'+(it.x||1)+'|'+(it.foco||0));
     Object.keys(mapD).forEach(n=>{
-      const [vD,xD]=mapD[n].split('|');
+      const [vD,xD,fD]=mapD[n].split('|');
       if(!(n in mapA))mudancas.push(`${rotulo} adicionado: "${n}" (${fmt(+vD)}${tipo==='ganhos'?' · '+xD+'×/sem':''})`);
-      else if(mapA[n]!==mapD[n])mudancas.push(`${rotulo} "${n}": ${fmt(+vD)}${tipo==='ganhos'?' · '+xD+'×/sem':''}`);
+      else if(mapA[n]!==mapD[n])mudancas.push(`${rotulo} "${n}": ${fmt(+vD)}${tipo==='ganhos'?' · '+xD+'×/sem'+(+fD?' · ⭐ temporada':''):''}`);
     });
     Object.keys(mapA).forEach(n=>{
       if(!(n in mapD))mudancas.push(`${rotulo} removido: "${n}"`);
@@ -882,11 +1190,21 @@ document.getElementById('pinCancelar').addEventListener('click',()=>{overlay.hid
 overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.hidden=true;});
 
 /* ---------- Login ---------- */
+function mostrarAba(nome){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.id==='tab'+nome));
+  document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('on',b.dataset.tab===nome));
+  document.body.dataset.tab=nome;
+  window.scrollTo({top:0,behavior:'instant'});
+}
+document.querySelectorAll('.tabbar button').forEach(b=>b.addEventListener('click',()=>mostrarAba(b.dataset.tab)));
+document.body.dataset.tab='Placar';
 function aplicarPerfil(){
   const cri=S.perfil==='cri';
   document.getElementById('btnMesada').style.display=cri?'none':'';
   document.getElementById('btnSemana').style.display=cri?'none':'';
   document.getElementById('painelConfig').style.display=cri?'none':'';
+  document.getElementById('navPais').style.display=cri?'none':'';
+  if(cri&&document.body.dataset.tab==='Pais')mostrarAba('Placar');
   const chip=document.getElementById('perfilChip');
   if(chip)chip.textContent=cri?'⚽ '+S.contas.cri.u:'👨‍👩‍👦 '+S.contas.pais.u;
 }
@@ -900,7 +1218,7 @@ function tentarLogin(){
     S.logado=true;S.perfil=perfil;save();
     document.getElementById('loginTela').hidden=true;
     aplicarPerfil();
-    toast(perfil==='cri'?'⚽ Bora marcar gol, '+S.contas.cri.u+'!':'✅ Modo dos pais ativo','gol');
+    toast(perfil==='cri'?'⚽ Bora marcar gol, '+(S.crianca||S.contas.cri.u)+'!':'✅ Modo dos pais ativo','gol');
   }else{
     document.getElementById('loginErro').textContent='Usuário ou senha incorretos';
     const box=document.querySelector('#loginTela .login-box');
@@ -916,12 +1234,27 @@ document.getElementById('cadSalvar').addEventListener('click',()=>{
   if(!pu||!cu){erro.textContent='Preencha os dois usuários';return;}
   if(pu.toLowerCase()===cu.toLowerCase()){erro.textContent='Os usuários precisam ser diferentes';return;}
   if(ps.length<4||cs.length<4){erro.textContent='Senhas com pelo menos 4 caracteres';return;}
+  const nomeCri=document.getElementById('cadCriNome').value.trim();
+  if(!nomeCri){erro.textContent='Diga o nome da criança';return;}
+  S.crianca=nomeCri;
   S.contas={pais:{u:pu,s:btoa(ps)},cri:{u:cu,s:btoa(cs)}};
   S.cadastroOk=true;save();
   logCfg('Contas criadas: pais "'+pu+'" e criança "'+cu+'"');
   document.getElementById('cadastroTela').hidden=true;
-  document.getElementById('loginTela').hidden=false;
+  onbIdx=0;mostrarOnb();
+  document.getElementById('onboarding').hidden=false;
 })
+let onbIdx=0;
+function mostrarOnb(){
+  document.querySelectorAll('.onb-slide').forEach((s,i)=>s.hidden=i!==onbIdx);
+  document.querySelectorAll('#onbDots span').forEach((d,i)=>d.classList.toggle('on',i===onbIdx));
+  document.getElementById('onbProx').textContent=onbIdx<2?'PRÓXIMO →':'COMEÇAR ⚽';
+}
+document.getElementById('onbProx').addEventListener('click',()=>{
+  if(onbIdx<2){onbIdx++;mostrarOnb();return;}
+  document.getElementById('onboarding').hidden=true;
+  document.getElementById('loginTela').hidden=false;
+});
 document.getElementById('loginEntrar').addEventListener('click',tentarLogin);
 document.getElementById('loginSenha').addEventListener('keydown',e=>{if(e.key==='Enter')tentarLogin();});
 const perfilMenu=document.getElementById('perfilMenu');
@@ -985,11 +1318,155 @@ document.getElementById('btnSair').addEventListener('click',()=>{
   document.getElementById('painelConfig').open=false;
 });
 
+/* ---------- WhatsApp ---------- */
+function textoResumo(){
+  const nome=S.crianca||'campeão';
+  const mesadaPaga=S.semMes>0;
+  const mesadaMostra=mesadaPaga?S.semMes:(S.config.mesada||0);
+  const net=r2(mesadaMostra+S.semGV-S.semPV);
+  const fase=FASES[S.jornada?S.jornada.fase:0];
+  const focos=S.config.ganhos.filter(g=>g.foco).map(g=>'• '+g.n+' 🔥 '+streakDe(g.n)+' dia(s) seguido(s)').join('\n');
+  const potGanhos=S.config.ganhos.reduce((t,g)=>t+g.v*(g.x||1),0);
+  const pct=Math.min(100,Math.round((S.semMes+S.semGV)/(S.config.mesada*1.1+potGanhos)*100));
+  return `⚽ *Placar da semana — ${nome}*\n\n`+
+    `💰 Saldo total: ${fmt(S.saldo)}\n`+
+    `📅 Semana: ${cur(mesadaMostra)} mesada${mesadaPaga?'':' (a pagar)'} + ${cur(S.semGV)} ganhos − ${cur(S.semPV)} cartões = *${net>=0?'+':'−'}${cur(Math.abs(net))}*\n`+
+    `🥅 Rumo ao gol: ${pct}% do potencial da semana\n`+
+    `🔥 Semanas limpas seguidas: ${S.streak}\n\n`+
+    `${fase.icone} Jornada: ${fase.nome} (semana ${Math.min(semanaJornada(),10)} de 10)\n`+
+    (focos?`Hábitos em foco:\n${focos}\n\n`:'\n')+
+    (pct>=100?'🏆 GOOOL! Potencial máximo atingido!':pct>=70?'💪 Reta final, falta pouco pro gol!':'⚽ Bora marcar mais gols essa semana!');
+}
+document.getElementById('btnZap').addEventListener('click',()=>{
+  const texto=textoResumo();
+  const num=(S.zap||'').replace(/\D/g,'');
+  const url=num?`https://wa.me/55${num}?text=${encodeURIComponent(texto)}`:`https://wa.me/?text=${encodeURIComponent(texto)}`;
+  window.open(url,'_blank');
+  if(!num)toast('Dica: cadastre o WhatsApp da criança nos Ajustes para abrir direto no chat');
+});
+
+/* ---------- Nuvem (Supabase): auth dos pais + sincronização ---------- */
+const SUPA_URL='https://rfiavtcfjaitjjqvlkzx.supabase.co';
+const SUPA_KEY='sb_publishable_Ry5X5FC1MRUopTI5TqKKDA_iMPJRPs9';
+const LOCAIS=['logado','perfil','syncTs','modoLocal']; // campos que NÃO vão para a nuvem
+let supa=null,familiaId=null,syncTimer=null,nuvemOk=false,canalRT=null,emailNuvem='';
+
+function nvMsg(erro,ok){document.getElementById('nvErro').textContent=erro||'';document.getElementById('nvOk').textContent=ok||'';}
+function chipNuvem(){
+  const c=document.getElementById('nuvemChip');
+  c.classList.toggle('off',!nuvemOk);
+  c.title=nuvemOk?'Nuvem conectada: '+emailNuvem:'Sem nuvem — dados só neste aparelho';
+}
+function dadosParaNuvem(){const d=clone(S);LOCAIS.forEach(k=>delete d[k]);return d;}
+function aplicarDaNuvem(row){
+  const locais={};LOCAIS.forEach(k=>locais[k]=S[k]);
+  S={...clone(DEFAULT),...row.dados,...locais};
+  S.syncTs=new Date(row.atualizado_em).getTime();
+  const dados=JSON.stringify(S);
+  if(temStorage()){try{window.storage.set(KEY,dados);}catch(e){}}
+  if(temLocal()){try{localStorage.setItem(KEY,dados);}catch(e){}}
+  cfgBase=clone(S.config);
+  render();renderConfig();gateLocal();
+}
+async function enviarParaNuvem(){
+  if(!supa||!familiaId)return;
+  try{
+    const ts=new Date();
+    const {error}=await supa.from('estados').upsert({familia_id:familiaId,dados:dadosParaNuvem(),atualizado_em:ts.toISOString()});
+    if(!error){S.syncTs=ts.getTime();if(temLocal()){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}}
+  }catch(e){}
+}
+function agendarSync(){
+  if(!nuvemOk)return;
+  clearTimeout(syncTimer);syncTimer=setTimeout(enviarParaNuvem,1500);
+}
+async function puxarDaNuvem(){
+  if(!supa||!familiaId)return;
+  try{
+    const {data:row}=await supa.from('estados').select('dados,atualizado_em').eq('familia_id',familiaId).maybeSingle();
+    if(row&&row.dados&&new Date(row.atualizado_em).getTime()>(S.syncTs||0)){aplicarDaNuvem(row);toast('☁ Placar atualizado do outro aparelho');}
+  }catch(e){}
+}
+async function conectarFamilia(session){
+  emailNuvem=(session&&session.user&&session.user.email)||'';
+  const {data:fid,error}=await supa.rpc('criar_familia');
+  if(error||!fid){nvMsg('Banco não configurado: rode o SQL das funções no Supabase');return false;}
+  familiaId=fid;
+  const {data:row}=await supa.from('estados').select('dados,atualizado_em').eq('familia_id',fid).maybeSingle();
+  const temLocalDados=S.cadastroOk||S.historico.length>0||S.saldo!==0;
+  if(row&&row.dados&&(new Date(row.atualizado_em).getTime()>(S.syncTs||0)||!temLocalDados)){
+    aplicarDaNuvem(row);            // nuvem mais nova (ou aparelho novo) → baixa
+  }else if(temLocalDados){
+    nuvemOk=true;await enviarParaNuvem(); // 1ª conexão com dados locais → sobe
+  }
+  nuvemOk=true;S.modoLocal=false;chipNuvem();
+  try{ // tempo real: outro aparelho salvou → atualiza aqui
+    if(canalRT)supa.removeChannel(canalRT);
+    canalRT=supa.channel('estados-'+fid).on('postgres_changes',{event:'*',schema:'public',table:'estados',filter:'familia_id=eq.'+fid},
+      p=>{if(p.new&&p.new.dados&&new Date(p.new.atualizado_em).getTime()>(S.syncTs||0))aplicarDaNuvem(p.new);}).subscribe();
+  }catch(e){}
+  return true;
+}
+async function iniciarNuvem(){
+  try{if(window.supabase&&window.supabase.createClient)supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);}catch(e){}
+  chipNuvem();
+  if(!supa){return;} // offline / CDN indisponível → segue local
+  const {data:{session}}=await supa.auth.getSession();
+  if(session){await conectarFamilia(session);return;}
+  if(!S.modoLocal){document.getElementById('nuvemTela').hidden=false;}
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&nuvemOk)puxarDaNuvem();});
+
+document.getElementById('nvEntrar').addEventListener('click',async()=>{
+  const email=document.getElementById('nvEmail').value.trim(),senha=document.getElementById('nvSenha').value;
+  if(!email||!senha){nvMsg('Preencha e-mail e senha');return;}
+  nvMsg('','Entrando...');
+  const {data,error}=await supa.auth.signInWithPassword({email,password:senha});
+  if(error){nvMsg(error.message.includes('Invalid')?'E-mail ou senha incorretos':error.message.includes('confirm')?'Confirme seu e-mail antes de entrar':'Erro: '+error.message);return;}
+  if(await conectarFamilia(data.session)){document.getElementById('nuvemTela').hidden=true;toast('☁ Família conectada','gol');}
+});
+document.getElementById('nvCriar').addEventListener('click',async()=>{
+  const email=document.getElementById('nvEmail').value.trim(),senha=document.getElementById('nvSenha').value;
+  if(!email||senha.length<6){nvMsg('E-mail válido e senha com 6+ caracteres');return;}
+  nvMsg('','Criando conta...');
+  const {data,error}=await supa.auth.signUp({email,password:senha});
+  if(error){nvMsg('Erro: '+error.message);return;}
+  if(data.session){if(await conectarFamilia(data.session)){document.getElementById('nuvemTela').hidden=true;toast('☁ Conta da família criada','gol');}}
+  else nvMsg('','Conta criada! Confirme pelo link enviado ao seu e-mail e depois toque em Entrar.');
+});
+document.getElementById('nvEsqueci').addEventListener('click',async()=>{
+  const email=document.getElementById('nvEmail').value.trim();
+  if(!email){nvMsg('Digite o e-mail primeiro');return;}
+  const {error}=await supa.auth.resetPasswordForEmail(email,{redirectTo:location.href});
+  nvMsg(error?'Erro: '+error.message:'','Enviamos um link de redefinição para '+email);
+});
+document.getElementById('nvLocal').addEventListener('click',()=>{S.modoLocal=true;save();document.getElementById('nuvemTela').hidden=true;chipNuvem();});
+document.getElementById('nuvemChip').addEventListener('click',()=>{
+  if(nuvemOk){toast('☁ Conectado como '+emailNuvem);}
+  else if(supa){document.getElementById('nuvemTela').hidden=false;}
+  else toast('Sem conexão com a internet');
+});
+document.getElementById('nvDesconectar').addEventListener('click',async()=>{
+  if(supa){await supa.auth.signOut();}
+  nuvemOk=false;familiaId=null;emailNuvem='';S.modoLocal=false;chipNuvem();save();
+  perfilMenu.hidden=true;toast('Aparelho desconectado da nuvem');
+});
+let excluirArmado=false;
+document.getElementById('btnExcluirNuvem').addEventListener('click',async function(){
+  if(!nuvemOk){toast('Este aparelho não está conectado à nuvem');return;}
+  if(!excluirArmado){excluirArmado=true;this.textContent='Tem certeza? Apaga TUDO na nuvem. Toque de novo';setTimeout(()=>{excluirArmado=false;this.textContent='Excluir família e dados da nuvem (LGPD)';},5000);return;}
+  excluirArmado=false;
+  const {error}=await supa.rpc('excluir_familia');
+  if(error){toast('Erro ao excluir: '+error.message);return;}
+  await supa.auth.signOut();nuvemOk=false;familiaId=null;chipNuvem();
+  toast('Dados da nuvem excluídos. Os dados locais permanecem neste aparelho.');
+});
+
 /* ---------- Backup local (salvar e restaurar) ---------- */
 document.getElementById('btnBackup').addEventListener('click',()=>{
   save(); // garante que o estado atual está gravado
   const d=new Date();
-  const nome='mesada-leo-backup-'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'.json';
+  const nome=''.concat('') /*nome dinamico abaixo*/ ;var _bk='mesada-backup-'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'.json';
   try{
     const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
     const a=document.createElement('a');
@@ -998,6 +1475,13 @@ document.getElementById('btnBackup').addEventListener('click',()=>{
     document.body.appendChild(a);a.click();a.remove();
     toast('💾 Backup salvo: '+nome,'gol');
   }catch(e){toast('Não foi possível baixar aqui — tente pelo navegador');}
+});
+document.getElementById('btnJornada').addEventListener('click',()=>{
+  const seg=segundaDaSemana(new Date());
+  S.jornada={ini:seg.getFullYear()+'-'+String(seg.getMonth()+1).padStart(2,'0')+'-'+String(seg.getDate()).padStart(2,'0'),fase:-1};
+  checarAvancoFase();
+  render();renderConfig();save();
+  toast('🔄 Jornada reiniciada na Fase 1','gol');
 });
 document.getElementById('btnRestaurar').addEventListener('click',()=>{
   document.getElementById('arquivoBackup').click();
@@ -1028,6 +1512,10 @@ document.getElementById('btnAddGanho').addEventListener('click',()=>{S.config.ga
 document.getElementById('btnAddPena').addEventListener('click',()=>{S.config.penas.push({n:'Novo item',v:1});renderConfig();});
 document.getElementById('btnSalvarCfg').addEventListener('click',()=>{
   const antes=clone(S.config);
+  const novoNome=document.getElementById('cfgCrianca').value.trim();
+  if(novoNome&&novoNome!==S.crianca){S.crianca=novoNome;mudancas.push('Nome da criança: "'+novoNome+'"');}
+  const novoZap=document.getElementById('cfgZap').value.replace(/\D/g,'');
+  if(novoZap!==(S.zap||'')){S.zap=novoZap;mudancas.push(novoZap?'WhatsApp da criança cadastrado':'WhatsApp da criança removido');}
   S.config.mesada=parseFloat(document.getElementById('cfgMesada').value)||0;
   document.querySelectorAll('.lista-edit input').forEach(inp=>{
     const t=inp.getAttribute('data-t'),i=+inp.getAttribute('data-i'),f=inp.getAttribute('data-f');
@@ -1080,13 +1568,13 @@ document.getElementById('btnExportar').addEventListener('click',()=>{
 
 let zerarArmado=false;
 document.getElementById('btnZerar').addEventListener('click',function(){
-  if(!zerarArmado){zerarArmado=true;this.textContent='Tem certeza? Toque de novo para confirmar';
-    setTimeout(()=>{zerarArmado=false;this.textContent='Zerar tudo e recomeçar temporada';},4000);return;}
+  if(!zerarArmado){zerarArmado=true;this.textContent='Tem certeza? Toque de novo';
+    setTimeout(()=>{zerarArmado=false;this.textContent='Zerar temporada (saldo e histórico)';},4000);return;}
   const cfg=S.config;const logAntigo=S.logCfg||[];
   S=clone(DEFAULT);S.config=cfg;S.logCfg=logAntigo;
   logCfg('Temporada zerada (saldo, histórico e streak reiniciados)');
   cfgBase=clone(S.config);zerarArmado=false;
-  this.textContent='Zerar tudo e recomeçar temporada';
+  this.textContent='Zerar temporada (saldo e histórico)';
   render();renderConfig();save();toast('🔄 Nova temporada iniciada');
 });
 

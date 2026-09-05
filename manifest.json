@@ -1,6 +1,6 @@
 {
-  "name": "Mesada do Leo",
-  "short_name": "Mesada Leo",
+  "name": "Placar da Mesada",
+  "short_name": "Mesada",
   "description": "Placar da mesada: ganhos, penalidades, potes e metas",
   "start_url": "./index.html",
   "scope": "./",

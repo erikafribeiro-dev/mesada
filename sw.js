@@ -1,4 +1,4 @@
-const CACHE = 'mesada-leo-v12';
+const CACHE = 'mesada-leo-v18';
 const ARQUIVOS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -16,7 +16,7 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   e.respondWith(
     caches.match(e.request).then(hit => hit || fetch(e.request).then(resp => {
-      if (e.request.method === 'GET' && resp.ok && new URL(e.request.url).origin === location.origin) {
+      const u = e.request.url; if (e.request.method === 'GET' && (resp.ok || resp.type === 'opaque') && (new URL(u).origin === location.origin || u.includes('cdn.jsdelivr.net'))) {
         const cp = resp.clone();
         caches.open(CACHE).then(c => c.put(e.request, cp));
       }
