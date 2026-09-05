@@ -118,8 +118,6 @@ details[open].config summary::after{content:"▴"}
 .log-cfg .vazio-log{font-size:12px;color:var(--cinza);padding:8px 0}
 
 /* ---------- PIN ---------- */
-#pinOverlay{position:fixed;inset:0;background:rgba(6,40,25,.75);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:100}
-#pinOverlay[hidden]{display:none}
 .pin-box{background:#fff;border-radius:16px;padding:24px 22px;width:min(300px,86vw);text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.35)}
 .pin-box .cadeado{font-size:30px}
 .pin-box h3{font-family:'Archivo Black';font-size:15px;color:var(--verde-escuro);margin:8px 0 2px}
@@ -143,12 +141,13 @@ details[open].config summary::after{content:"▴"}
 .login-box .pin-erro{color:#FF8A7A}
 #cadastroTela{position:fixed;inset:0;background:linear-gradient(160deg,#0F2C1E,#063D25);display:flex;align-items:center;justify-content:center;z-index:210;padding:20px;overflow-y:auto}
 #cadastroTela[hidden]{display:none}
-#cadastroTela button{width:100%;background:var(--ouro);color:#063D25;border:none;border-radius:12px;padding:14px;font-family:'Archivo Black';font-size:15px;cursor:pointer;margin-top:6px}
 #conflitoTela{position:fixed;inset:0;background:linear-gradient(160deg,#0F2C1E,#063D25);display:flex;align-items:center;justify-content:center;z-index:240;padding:20px;overflow-y:auto}
 #conflitoTela[hidden]{display:none}
-#nuvemTela{position:fixed;inset:0;background:linear-gradient(160deg,#0F2C1E,#063D25);display:flex;align-items:center;justify-content:center;z-index:230;padding:20px;overflow-y:auto}
-#nuvemTela[hidden]{display:none}
-#nuvemTela #nvEntrar{width:100%;background:var(--ouro);color:#063D25;border:none;border-radius:12px;padding:14px;font-family:'Archivo';font-weight:700;font-size:15px;cursor:pointer;margin-top:6px}
+#cadastroTela button#cadSalvar,#novaSenhaTela button#nsSalvar{width:100%;background:var(--ouro);color:#063D25;border:none;border-radius:12px;padding:14px;font-family:'Archivo';font-weight:700;font-size:15px;cursor:pointer;margin-top:6px}
+#novaSenhaTela{position:fixed;inset:0;background:linear-gradient(160deg,#0F2C1E,#063D25);display:flex;align-items:center;justify-content:center;z-index:235;padding:20px}
+#novaSenhaTela[hidden]{display:none}
+.lembrar{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.7);font-size:13px;margin:2px 0 8px;text-align:left}
+.lembrar input{width:auto;margin:0;accent-color:var(--ouro)}
 .nv-links{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
 .nv-link{background:none;border:none;color:rgba(255,255,255,.75);font-family:'Archivo';font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline;padding:4px}
 .nv-local{display:block;margin:18px auto 0;color:rgba(255,255,255,.45);font-weight:500}
@@ -315,43 +314,57 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid
     <p>Há um placar salvo na nuvem e outro neste aparelho. Qual deles deve valer? O outro será substituído.</p>
     <button type="button" class="menu-item" id="cfNuvem" style="text-align:left;margin-bottom:8px"></button>
     <button type="button" class="menu-item" id="cfLocal" style="text-align:left"></button>
-    <p style="margin-top:14px;font-size:11.5px">Dica: antes de decidir, você pode cancelar e salvar um backup na aba Semana.</p>
-    <button type="button" class="nv-link nv-local" id="cfCancelar">Decidir depois (continuar sem nuvem por enquanto)</button>
+    <button type="button" class="nv-link nv-local" id="cfCancelar">Cancelar e voltar ao login</button>
   </div>
 </div>
 
-<div id="nuvemTela" hidden>
+<div id="loginTela">
   <div class="login-box">
-    <div class="escudo escudo-login">☁</div>
-    <h2>Conectar à família</h2>
-    <p>Conta dos responsáveis. Sincroniza o placar entre os aparelhos e faz backup na nuvem.</p>
-    <input type="email" id="nvEmail" placeholder="E-mail dos pais" autocomplete="email">
-    <input type="password" id="nvSenha" placeholder="Senha (mín. 6)" autocomplete="current-password">
-    <div class="pin-erro" id="nvErro"></div>
-    <div class="pin-ok" id="nvOk"></div>
-    <button type="button" id="nvEntrar">ENTRAR</button>
+    <div class="escudo escudo-login" id="escudoLogin">⚽</div>
+    <h2 id="loginTitulo">PLACAR DA MESADA</h2>
+    <p>Pais entram com o e-mail. A criança entra com o usuário dela.</p>
+    <input type="text" id="loginUser" placeholder="E-mail dos pais ou usuário da criança" autocomplete="username" autocapitalize="none">
+    <input type="password" id="loginSenha" placeholder="Senha" autocomplete="current-password">
+    <label class="lembrar"><input type="checkbox" id="loginManter"> Manter conectado neste aparelho</label>
+    <div class="pin-erro" id="loginErro"></div>
+    <div class="pin-ok" id="loginOk"></div>
+    <button type="button" id="loginEntrar">ENTRAR</button>
     <div class="nv-links">
-      <button type="button" class="nv-link" id="nvCriar">Criar conta da família</button>
-      <button type="button" class="nv-link" id="nvEsqueci">Esqueci a senha</button>
+      <button type="button" class="nv-link" id="loginCriar">Criar conta da família</button>
+      <button type="button" class="nv-link" id="loginEsqueci">Esqueci a senha</button>
     </div>
-    <button type="button" class="nv-link nv-local" id="nvLocal">Continuar sem nuvem (só neste aparelho)</button>
+    <button type="button" class="nv-link nv-local" id="loginOffline" hidden>Sem internet — continuar offline com os dados deste aparelho</button>
   </div>
 </div>
 
 <div id="cadastroTela" hidden>
   <div class="login-box">
     <div class="escudo escudo-login">⚽</div>
-    <h2>PRIMEIRO ACESSO</h2>
-    <p>Cadastre as duas contas do app</p>
-    <div class="cad-grupo">👨‍👩‍👦 Conta dos pais</div>
-    <input type="text" id="cadPaisUser" placeholder="Usuário dos pais" value="">
-    <input type="password" id="cadPaisSenha" placeholder="Senha dos pais (mín. 4)">
-    <div class="cad-grupo">⚽ Conta da criança</div>
+    <h2>Criar conta da família</h2>
+    <p>Uma conta para os pais e uma para a criança, ligadas ao mesmo placar.</p>
+    <div class="cad-grupo">Pais (responsáveis)</div>
+    <input type="email" id="cadPaisEmail" placeholder="E-mail dos pais" autocomplete="email">
+    <input type="password" id="cadPaisSenha" placeholder="Senha dos pais (mín. 6)" autocomplete="new-password">
+    <div class="cad-grupo">Criança</div>
     <input type="text" id="cadCriNome" placeholder="Nome da criança (aparece no app)">
-    <input type="text" id="cadCriUser" placeholder="Usuário da criança" value="">
-    <input type="password" id="cadCriSenha" placeholder="Senha da criança (mín. 4)">
+    <input type="text" id="cadCriUser" placeholder="Usuário da criança (ex.: leo2014)" autocapitalize="none">
+    <input type="password" id="cadCriSenha" placeholder="Senha da criança (mín. 6)" autocomplete="new-password">
     <div class="pin-erro" id="cadErro"></div>
-    <button type="button" id="cadSalvar">CRIAR CONTAS ⚽</button>
+    <div class="pin-ok" id="cadOk"></div>
+    <button type="button" id="cadSalvar">CRIAR CONTAS</button>
+    <button type="button" class="nv-link nv-local" id="cadVoltar">Já tenho conta — voltar ao login</button>
+  </div>
+</div>
+
+<div id="novaSenhaTela" hidden>
+  <div class="login-box">
+    <div class="escudo escudo-login">🔒</div>
+    <h2>Definir nova senha</h2>
+    <p id="nsInfo">Digite a nova senha da sua conta.</p>
+    <input type="password" id="nsNova" placeholder="Nova senha (mín. 6)" autocomplete="new-password">
+    <input type="password" id="nsConf" placeholder="Confirmar nova senha" autocomplete="new-password">
+    <div class="pin-erro" id="nsErro"></div>
+    <button type="button" id="nsSalvar">SALVAR SENHA</button>
   </div>
 </div>
 
@@ -376,18 +389,6 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid
     </div>
     <div class="onb-dots" id="onbDots"><span class="on"></span><span></span><span></span></div>
     <button type="button" id="onbProx">PRÓXIMO →</button>
-  </div>
-</div>
-
-<div id="loginTela">
-  <div class="login-box">
-    <div class="escudo escudo-login" id="escudoLogin">⚽</div>
-    <h2 id="loginTitulo">PLACAR DA MESADA</h2>
-    <p>Entre para ver o placar</p>
-    <input type="text" id="loginUser" placeholder="Usuário" autocomplete="username">
-    <input type="password" id="loginSenha" placeholder="Senha" autocomplete="current-password">
-    <div class="pin-erro" id="loginErro"></div>
-    <button type="button" id="loginEntrar">ENTRAR ⚽</button>
   </div>
 </div>
 
@@ -484,7 +485,7 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid
 
 <section class="tab" id="tabPais">
   <details class="config" id="painelConfig">
-    <summary>Ajustes dos pais <span class="cadeado-mini">protegido por senha</span></summary>
+    <summary>Ajustes dos pais <span class="cadeado-mini">só o perfil dos pais vê</span></summary>
     <div class="config-body">
       <div class="campo">
         <label>Nome da criança</label>
@@ -499,21 +500,10 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid
         <input type="number" id="cfgMesada" min="0" step="1">
       </div>
       <div class="campo">
-        <label>Alterar senha dos ajustes (4 dígitos)</label>
-        <input type="password" id="cfgPin" inputmode="numeric" maxlength="4" placeholder="deixe em branco para manter">
-      </div>
-      <div class="campo">
-        <label>Conta dos pais (usuário e nova senha)</label>
+        <label>Conta da criança (usuário · redefinir senha)</label>
         <div class="item" style="display:flex;gap:6px">
-          <input id="cfgPaisUser" style="flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px" placeholder="usuário">
-          <input id="cfgPaisSenha" type="password" style="flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px" placeholder="em branco mantém">
-        </div>
-      </div>
-      <div class="campo">
-        <label>Conta da criança (usuário e nova senha)</label>
-        <div class="item" style="display:flex;gap:6px">
-          <input id="cfgCriUser" style="flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px" placeholder="usuário">
-          <input id="cfgCriSenha" type="password" style="flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px" placeholder="em branco mantém">
+          <input id="cfgCriUser" readonly style="flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px;background:var(--creme);color:var(--cinza)">
+          <input id="cfgCriSenha" type="password" style="flex:1;border:1px solid var(--borda);border-radius:8px;padding:8px;font-size:13px" placeholder="nova senha (mín. 6)">
         </div>
       </div>
       <div class="campo">
@@ -567,7 +557,6 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid
     <div class="menu-lista">
       <button type="button" class="menu-item" id="pmTrocar">🔁 Trocar perfil</button>
       <button type="button" class="menu-item" id="pmSenha">🔒 Alterar minha senha</button>
-      <button type="button" class="menu-item" id="nvDesconectar">☁ Desconectar aparelho da nuvem</button>
       <button type="button" class="menu-item sair" id="pmSair">🚪 Sair do app</button>
     </div>
     <div class="pin-acoes"><button type="button" class="pin-cancelar" id="pmFechar">Fechar</button></div>
@@ -579,27 +568,12 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid
     <div class="cadeado">🔒</div>
     <h3>Alterar senha</h3>
     <p id="soPerfil"></p>
-    <input type="password" id="soAtual" placeholder="Senha atual" style="letter-spacing:0;font-size:15px">
     <input type="password" id="soNova" placeholder="Nova senha (mín. 4)" style="letter-spacing:0;font-size:15px;margin-top:8px">
     <input type="password" id="soConf" placeholder="Confirmar nova senha" style="letter-spacing:0;font-size:15px;margin-top:8px">
     <div class="pin-erro" id="soErro"></div>
     <div class="pin-acoes">
       <button type="button" class="pin-cancelar" id="soCancelar">Cancelar</button>
       <button type="button" class="pin-entrar" id="soSalvar">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<div id="pinOverlay" hidden>
-  <div class="pin-box" id="pinBox">
-    <div class="cadeado">🔒</div>
-    <h3>Modo dos pais</h3>
-    <p>Senha de 4 dígitos dos pais</p>
-    <input type="password" id="pinInput" inputmode="numeric" maxlength="4" autocomplete="off">
-    <div class="pin-erro" id="pinErro"></div>
-    <div class="pin-acoes">
-      <button type="button" class="pin-cancelar" id="pinCancelar">Cancelar</button>
-      <button type="button" class="pin-entrar" id="pinEntrar">Entrar</button>
     </div>
   </div>
 </div>
@@ -612,8 +586,8 @@ const NIVEIS=[[0,'Base'],[100,'Titular'],[250,'Capitão'],[500,'Craque'],[1000,'
 const DEFAULT={
   saldo:0, xp:0, streak:0, ganhosSem:0, penasSem:0,
   semGV:0, semPV:0, semMes:0, semIni:null, semanas:[],
-  contas:{pais:{u:'erika',s:'MTIzNA=='},cri:{u:'leo',s:'MTIzNA=='}}, logado:false, perfil:null, cadastroOk:false, diario:{}, cliques:{}, jornada:{ini:null,fase:0}, crianca:'Leo', zap:'', syncTs:0, modoLocal:false,
-  historico:[], logCfg:[], pin:'MTIzNA==',
+  perfil:null, diario:{}, cliques:{}, jornada:{ini:null,fase:0}, crianca:'Leo', criUser:'', zap:'', syncTs:0, localTs:0, familiaId:null,
+  historico:[], logCfg:[],
   config:{
     mesada:25,
     ganhos:[
@@ -679,11 +653,7 @@ async function load(){
           S.cfgVer=5;
         }
         if(S.cfgVer<6){S.cfgVer=6;}
-        if(S.cfgVer<7){
-          if(!S.login)S.login={u:'erika',s:'MTIzNA=='};
-          if(typeof S.logado!=='boolean')S.logado=false;
-          S.cfgVer=7;
-        }
+        if(S.cfgVer<7){S.cfgVer=7;}
         if(S.cfgVer<8){
           const diarios=['Estudar 30 minutos no dia','Dormir antes das 22h','Ler 30 minutos'];
           S.config.ganhos.forEach(g=>{if(!g.x)g.x=diarios.includes(g.n)?7:1;});
@@ -692,14 +662,6 @@ async function load(){
         }
         if(S.cfgVer<9){S.cfgVer=9;}
         if(S.cfgVer<10){
-          // migra login antigo para contas separadas
-          if(!S.contas||!S.contas.pais){
-            S.contas={pais:(S.login&&S.login.u)?{u:S.login.u,s:S.login.s}:{u:'erika',s:'MTIzNA=='},
-                      cri:{u:'leo',s:'MTIzNA=='}};
-          }
-          delete S.login;delete S.gEmails;
-          if(typeof S.cadastroOk!=='boolean')S.cadastroOk=true; // dados existentes: pula cadastro
-          if(!S.perfil)S.perfil=S.logado?'pais':null;
           if(!S.diario||typeof S.diario!=='object')S.diario={};
           S.cfgVer=10;
         }
@@ -736,29 +698,23 @@ async function load(){
           S.cfgVer=14;
         }
         if(S.cfgVer<15){if(typeof S.zap!=='string')S.zap='';S.cfgVer=15;}
+        if(S.cfgVer<16){
+          // modelo único de contas na nuvem: remove login/PIN locais
+          ['contas','pin','login','logado','cadastroOk','modoLocal','gEmails'].forEach(k=>delete S[k]);
+          if(typeof S.criUser!=='string')S.criUser='';
+          S.cfgVer=16;
+        }
         save();
-        if(!S.pin)S.pin='MTIzNA==';
     }catch(e){/* dado corrompido — usa padrão */}
   }
   if(!S.semIni)S.semIni=new Date().toISOString();
   checarAvancoFase();
   cfgBase=clone(S.config);
-  await iniciarNuvem();
-  if(document.getElementById('nuvemTela').hidden&&document.getElementById('conflitoTela').hidden)gateLocal();
-}
-// fluxo local: cadastro (1º uso) → login → app; mantém conectado até "Sair"
-function gateLocal(){
-  if(!S.cadastroOk){
-    document.getElementById('cadastroTela').hidden=false;
-    document.getElementById('loginTela').hidden=true;
-  }else{
-    document.getElementById('cadastroTela').hidden=true;
-    document.getElementById('loginTela').hidden=!!S.logado;
-  }
-  if(S.logado)aplicarPerfil();
   render(); renderConfig();
+  await iniciarSessao();
 }
 async function save(){
+  S.localTs=Date.now();
   const dados=JSON.stringify(S);
   if(temStorage()){try{await window.storage.set(KEY,dados);}catch(e){}}
   if(temLocal()){try{localStorage.setItem(KEY,dados);}catch(e){}}
@@ -1111,8 +1067,7 @@ function renderConfig(){
   document.getElementById('cfgMesada').value=S.config.mesada;
   document.getElementById('cfgCrianca').value=S.crianca||'';
   document.getElementById('cfgZap').value=S.zap||'';
-  document.getElementById('cfgPaisUser').value=S.contas.pais.u;
-  document.getElementById('cfgCriUser').value=S.contas.cri.u;
+  document.getElementById('cfgCriUser').value=S.criUser||'(criança ainda não cadastrada)';
   ['ganhos','penas'].forEach(tipo=>{
     const box=document.getElementById(tipo==='ganhos'?'editGanhos':'editPenas');
     box.innerHTML='';
@@ -1172,38 +1127,7 @@ function diffConfig(antes,depois){
   });
   return mudancas;
 }
-/* ---------- PIN do modo dos pais ---------- */
-let desbloqueado=false;
-const painel=document.getElementById('painelConfig');
-const overlay=document.getElementById('pinOverlay');
-const pinInput=document.getElementById('pinInput');
-const pinErro=document.getElementById('pinErro');
-painel.querySelector('summary').addEventListener('click',e=>{
-  if(!desbloqueado&&!painel.open){
-    e.preventDefault();
-    pinInput.value='';pinErro.textContent='';
-    overlay.hidden=false;
-    setTimeout(()=>pinInput.focus(),50);
-  }
-});
-painel.addEventListener('toggle',()=>{if(!painel.open)desbloqueado=false;});
-function tentarPin(){
-  if(btoa(pinInput.value)===S.pin){
-    desbloqueado=true;overlay.hidden=true;painel.open=true;
-  }else{
-    pinErro.textContent='Senha incorreta';
-    const box=document.getElementById('pinBox');
-    box.classList.add('erro');setTimeout(()=>box.classList.remove('erro'),350);
-    pinInput.value='';pinInput.focus();
-  }
-}
-document.getElementById('pinEntrar').addEventListener('click',tentarPin);
-pinInput.addEventListener('keydown',e=>{if(e.key==='Enter')tentarPin();});
-pinInput.addEventListener('input',()=>{if(pinInput.value.length===4)tentarPin();});
-document.getElementById('pinCancelar').addEventListener('click',()=>{overlay.hidden=true;});
-overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.hidden=true;});
-
-/* ---------- Login ---------- */
+/* ---------- Navegação e perfil ---------- */
 function mostrarAba(nome){
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.id==='tab'+nome));
   document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('on',b.dataset.tab===nome));
@@ -1220,44 +1144,8 @@ function aplicarPerfil(){
   document.getElementById('navPais').style.display=cri?'none':'';
   if(cri&&document.body.dataset.tab==='Pais')mostrarAba('Placar');
   const chip=document.getElementById('perfilChip');
-  if(chip)chip.textContent=cri?'⚽ '+S.contas.cri.u:'👨‍👩‍👦 '+S.contas.pais.u;
+  if(chip)chip.textContent=cri?'⚽ '+(S.crianca||S.criUser||'criança'):'👨‍👩‍👦 pais';
 }
-function tentarLogin(){
-  const u=document.getElementById('loginUser').value.trim().toLowerCase();
-  const s=btoa(document.getElementById('loginSenha').value);
-  let perfil=null;
-  if(u===S.contas.pais.u.toLowerCase()&&s===S.contas.pais.s)perfil='pais';
-  else if(u===S.contas.cri.u.toLowerCase()&&s===S.contas.cri.s)perfil='cri';
-  if(perfil){
-    S.logado=true;S.perfil=perfil;save();
-    document.getElementById('loginTela').hidden=true;
-    aplicarPerfil();
-    toast(perfil==='cri'?'⚽ Bora marcar gol, '+(S.crianca||S.contas.cri.u)+'!':'✅ Modo dos pais ativo','gol');
-  }else{
-    document.getElementById('loginErro').textContent='Usuário ou senha incorretos';
-    const box=document.querySelector('#loginTela .login-box');
-    box.classList.add('erro');setTimeout(()=>box.classList.remove('erro'),350);
-  }
-}
-document.getElementById('cadSalvar').addEventListener('click',()=>{
-  const pu=document.getElementById('cadPaisUser').value.trim();
-  const ps=document.getElementById('cadPaisSenha').value;
-  const cu=document.getElementById('cadCriUser').value.trim();
-  const cs=document.getElementById('cadCriSenha').value;
-  const erro=document.getElementById('cadErro');
-  if(!pu||!cu){erro.textContent='Preencha os dois usuários';return;}
-  if(pu.toLowerCase()===cu.toLowerCase()){erro.textContent='Os usuários precisam ser diferentes';return;}
-  if(ps.length<4||cs.length<4){erro.textContent='Senhas com pelo menos 4 caracteres';return;}
-  const nomeCri=document.getElementById('cadCriNome').value.trim();
-  if(!nomeCri){erro.textContent='Diga o nome da criança';return;}
-  S.crianca=nomeCri;
-  S.contas={pais:{u:pu,s:btoa(ps)},cri:{u:cu,s:btoa(cs)}};
-  S.cadastroOk=true;save();
-  logCfg('Contas criadas: pais "'+pu+'" e criança "'+cu+'"');
-  document.getElementById('cadastroTela').hidden=true;
-  onbIdx=0;mostrarOnb();
-  document.getElementById('onboarding').hidden=false;
-})
 let onbIdx=0;
 function mostrarOnb(){
   document.querySelectorAll('.onb-slide').forEach((s,i)=>s.hidden=i!==onbIdx);
@@ -1267,69 +1155,46 @@ function mostrarOnb(){
 document.getElementById('onbProx').addEventListener('click',()=>{
   if(onbIdx<2){onbIdx++;mostrarOnb();return;}
   document.getElementById('onboarding').hidden=true;
-  document.getElementById('loginTela').hidden=false;
 });
-document.getElementById('loginEntrar').addEventListener('click',tentarLogin);
-document.getElementById('loginSenha').addEventListener('keydown',e=>{if(e.key==='Enter')tentarLogin();});
 const perfilMenu=document.getElementById('perfilMenu');
 const senhaOverlay=document.getElementById('senhaOverlay');
 document.getElementById('perfilChip').addEventListener('click',()=>{
   const cri=S.perfil==='cri';
   document.getElementById('pmIcone').textContent=cri?'⚽':'👨‍👩‍👦';
-  document.getElementById('pmTitulo').textContent=cri?S.contas.cri.u:S.contas.pais.u;
+  document.getElementById('pmTitulo').textContent=cri?(S.crianca||S.criUser):(emailNuvem||'pais');
   document.getElementById('pmSub').textContent=cri?'Perfil da criança':'Perfil dos pais';
   perfilMenu.hidden=false;
 });
 document.getElementById('pmFechar').addEventListener('click',()=>{perfilMenu.hidden=true;});
 perfilMenu.addEventListener('click',e=>{if(e.target===perfilMenu)perfilMenu.hidden=true;});
-
-function irParaLogin(usuarioSugerido){
-  S.logado=false;S.perfil=null;save();
-  document.getElementById('loginUser').value=usuarioSugerido||'';
-  document.getElementById('loginSenha').value='';
-  document.getElementById('loginErro').textContent='';
-  perfilMenu.hidden=true;
-  document.getElementById('loginTela').hidden=false;
-}
-document.getElementById('pmTrocar').addEventListener('click',()=>{
-  // sugere o usuário do OUTRO perfil para agilizar a troca
-  const outro=S.perfil==='cri'?S.contas.pais.u:S.contas.cri.u;
-  irParaLogin(outro);
-  document.getElementById('loginSenha').focus();
+document.getElementById('pmTrocar').addEventListener('click',async()=>{
+  const sugerido=S.perfil==='cri'?'':(S.criUser||'');
+  await sair(sugerido);
 });
-document.getElementById('pmSair').addEventListener('click',()=>irParaLogin(''));
+document.getElementById('pmSair').addEventListener('click',()=>sair(''));
+document.getElementById('btnSair').addEventListener('click',()=>sair(''));
 
 document.getElementById('pmSenha').addEventListener('click',()=>{
   perfilMenu.hidden=true;
-  ['soAtual','soNova','soConf'].forEach(id=>document.getElementById(id).value='');
+  ['soNova','soConf'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('soErro').textContent='';
-  document.getElementById('soPerfil').textContent='Perfil: '+(S.perfil==='cri'?S.contas.cri.u+' (criança)':S.contas.pais.u+' (pais)');
+  document.getElementById('soPerfil').textContent='Conta: '+(S.perfil==='cri'?(S.criUser||'criança'):emailNuvem);
   senhaOverlay.hidden=false;
-  setTimeout(()=>document.getElementById('soAtual').focus(),50);
+  setTimeout(()=>document.getElementById('soNova').focus(),50);
 });
 document.getElementById('soCancelar').addEventListener('click',()=>{senhaOverlay.hidden=true;});
 senhaOverlay.addEventListener('click',e=>{if(e.target===senhaOverlay)senhaOverlay.hidden=true;});
-document.getElementById('soSalvar').addEventListener('click',()=>{
-  const ch=S.perfil==='cri'?'cri':'pais';
-  const atual=document.getElementById('soAtual').value;
-  const nova=document.getElementById('soNova').value;
-  const conf=document.getElementById('soConf').value;
+document.getElementById('soSalvar').addEventListener('click',async()=>{
+  const nova=document.getElementById('soNova').value,conf=document.getElementById('soConf').value;
   const erro=document.getElementById('soErro');
-  if(btoa(atual)!==S.contas[ch].s){erro.textContent='Senha atual incorreta';return;}
-  if(nova.length<4){erro.textContent='A nova senha precisa de pelo menos 4 caracteres';return;}
+  if(nova.length<6){erro.textContent='A nova senha precisa de pelo menos 6 caracteres';return;}
   if(nova!==conf){erro.textContent='A confirmação não confere';return;}
-  S.contas[ch].s=btoa(nova);
-  logCfg('Senha ('+(ch==='cri'?'criança':'pais')+') alterada pelo próprio usuário');
-  save(); // salva automaticamente, sem precisar do botão de ajustes
-  senhaOverlay.hidden=true;
-  toast('🔒 Senha alterada e salva','gol');
-});
-document.getElementById('btnSair').addEventListener('click',()=>{
-  S.logado=false;S.perfil=null;save();
-  document.getElementById('loginSenha').value='';
-  document.getElementById('loginErro').textContent='';
-  document.getElementById('loginTela').hidden=false;
-  document.getElementById('painelConfig').open=false;
+  if(!supa||!nuvemOk){erro.textContent='Sem conexão — tente quando estiver online';return;}
+  const {error}=await supa.auth.updateUser({password:nova});
+  if(error){erro.textContent='Erro: '+error.message;return;}
+  logCfg('Senha ('+(S.perfil==='cri'?'criança':'pais')+') alterada pelo próprio usuário');
+  save();senhaOverlay.hidden=true;
+  toast('🔒 Senha alterada','gol');
 });
 
 /* ---------- WhatsApp ---------- */
@@ -1359,155 +1224,242 @@ document.getElementById('btnZap').addEventListener('click',()=>{
   if(!num)toast('Dica: cadastre o WhatsApp da criança nos Ajustes para abrir direto no chat');
 });
 
-/* ---------- Nuvem (Supabase): auth dos pais + sincronização ---------- */
+/* ---------- Contas e nuvem (Supabase) — fonte da verdade ---------- */
 const SUPA_URL='https://rfiavtcfjaitjjqvlkzx.supabase.co';
 const SUPA_KEY='sb_publishable_Ry5X5FC1MRUopTI5TqKKDA_iMPJRPs9';
-const LOCAIS=['logado','perfil','syncTs','modoLocal']; // campos que NÃO vão para a nuvem
+const DOM_CRI='@crianca.placardamesada.app';        // usuário da criança vira e-mail interno
+const LOCAIS=['perfil','syncTs','localTs','familiaId']; // campos do aparelho: não vão para a nuvem
 let supa=null,familiaId=null,syncTimer=null,nuvemOk=false,canalRT=null,emailNuvem='';
 
-function nvMsg(erro,ok){document.getElementById('nvErro').textContent=erro||'';document.getElementById('nvOk').textContent=ok||'';}
+const manterPref=()=>{try{return localStorage.getItem('pm_manter')==='1';}catch(e){return false;}};
+const setManter=v=>{try{localStorage.setItem('pm_manter',v?'1':'0');}catch(e){}};
+function criarCliente(persistir){
+  return window.supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:persistir,autoRefreshToken:true,detectSessionInUrl:true}});
+}
 function chipNuvem(){
   const c=document.getElementById('nuvemChip');
   c.classList.toggle('off',!nuvemOk);
-  c.title=nuvemOk?'Nuvem conectada: '+emailNuvem:'Sem nuvem — dados só neste aparelho';
+  c.title=nuvemOk?'Sincronizado com a nuvem · '+emailNuvem:'Offline — alterações ficam neste aparelho até reconectar';
 }
+function msgLogin(erro,ok){document.getElementById('loginErro').textContent=erro||'';document.getElementById('loginOk').textContent=ok||'';}
+function mostrarLogin(usuarioSugerido){
+  ['cadastroTela','conflitoTela','novaSenhaTela','onboarding'].forEach(id=>document.getElementById(id).hidden=true);
+  perfilMenu.hidden=true;
+  document.getElementById('loginUser').value=usuarioSugerido||'';
+  document.getElementById('loginSenha').value='';
+  msgLogin('','');
+  document.getElementById('loginManter').checked=manterPref();
+  document.getElementById('loginOffline').hidden=!(!supa&&S.familiaId&&S.perfil);
+  document.getElementById('loginTela').hidden=false;
+}
+function entrarNoApp(){
+  document.getElementById('loginTela').hidden=true;
+  aplicarPerfil();render();renderConfig();
+}
+async function sair(usuarioSugerido){
+  if(canalRT&&supa){try{supa.removeChannel(canalRT);}catch(e){}canalRT=null;}
+  if(supa){try{await supa.auth.signOut();}catch(e){}}
+  nuvemOk=false;familiaId=null;emailNuvem='';S.perfil=null;
+  save();chipNuvem();mostrarLogin(usuarioSugerido);
+}
+
+/* ---- sincronização ---- */
 function dadosParaNuvem(){const d=clone(S);LOCAIS.forEach(k=>delete d[k]);return d;}
 function aplicarDaNuvem(row){
   const locais={};LOCAIS.forEach(k=>locais[k]=S[k]);
   S={...clone(DEFAULT),...row.dados,...locais};
-  S.syncTs=new Date(row.atualizado_em).getTime();
+  S.syncTs=new Date(row.atualizado_em).getTime();S.localTs=S.syncTs;
   const dados=JSON.stringify(S);
   if(temStorage()){try{window.storage.set(KEY,dados);}catch(e){}}
   if(temLocal()){try{localStorage.setItem(KEY,dados);}catch(e){}}
   cfgBase=clone(S.config);
-  render();renderConfig();gateLocal();
+  aplicarPerfil();render();renderConfig();
 }
 async function enviarParaNuvem(){
-  if(!supa||!familiaId)return;
+  if(!supa||!familiaId||!nuvemOk)return;
   try{
     const ts=new Date();
     const {error}=await supa.from('estados').upsert({familia_id:familiaId,dados:dadosParaNuvem(),atualizado_em:ts.toISOString()});
-    if(!error){S.syncTs=ts.getTime();if(temLocal()){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}}
+    if(!error){S.syncTs=ts.getTime();S.localTs=S.syncTs;if(temLocal()){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}}
   }catch(e){}
 }
-function agendarSync(){
-  if(!nuvemOk)return;
-  clearTimeout(syncTimer);syncTimer=setTimeout(enviarParaNuvem,1500);
-}
+function agendarSync(){if(!nuvemOk)return;clearTimeout(syncTimer);syncTimer=setTimeout(enviarParaNuvem,1500);}
 async function puxarDaNuvem(){
-  if(!supa||!familiaId)return;
+  if(!supa||!familiaId||!nuvemOk)return;
   try{
     const {data:row}=await supa.from('estados').select('dados,atualizado_em').eq('familia_id',familiaId).maybeSingle();
     if(row&&row.dados&&new Date(row.atualizado_em).getTime()>(S.syncTs||0)){aplicarDaNuvem(row);toast('☁ Placar atualizado do outro aparelho');}
   }catch(e){}
 }
-async function conectarFamilia(session){
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')puxarDaNuvem();});
+
+/* ---- entrar: quem loga define o perfil e a família ---- */
+async function entrar(session){
   emailNuvem=(session&&session.user&&session.user.email)||'';
-  const {data:fid,error}=await supa.rpc('criar_familia');
-  if(error||!fid){nvMsg('Banco não configurado: rode o SQL das funções no Supabase');return false;}
-  familiaId=fid;
-  const {data:row}=await supa.from('estados').select('dados,atualizado_em').eq('familia_id',fid).maybeSingle();
-  const temLocalDados=S.cadastroOk||S.historico.length>0||S.saldo!==0;
-  const temNuvem=!!(row&&row.dados);
-  const nuvemTemConteudo=temNuvem&&(row.dados.cadastroOk||(row.dados.historico||[]).length>0||row.dados.saldo);
-  if(temNuvem&&temLocalDados&&!(S.syncTs>0)&&nuvemTemConteudo){
-    // 1ª conexão deste aparelho e já existe placar na nuvem: deixa a família escolher
-    mostrarConflito(row);return true;
+  const ehCrianca=emailNuvem.endsWith(DOM_CRI);
+  let {data:p,error}=await supa.rpc('meu_perfil');
+  if(error){msgLogin('Banco não configurado: rode o SQL da Fase 2 no Supabase');await supa.auth.signOut();return false;}
+  if(!p||!p.familia_id){
+    if(ehCrianca){msgLogin('Esta conta de criança não está ligada a nenhuma família');await supa.auth.signOut();return false;}
+    const {data:fid}=await supa.rpc('criar_familia');
+    p={familia_id:fid,tipo:'pais',nome:emailNuvem};
   }
-  if(temNuvem&&(new Date(row.atualizado_em).getTime()>(S.syncTs||0)||!temLocalDados)&&(nuvemTemConteudo||!temLocalDados)){
-    aplicarDaNuvem(row);            // nuvem mais nova (ou aparelho novo) → baixa
-  }else if(temLocalDados){
-    nuvemOk=true;await enviarParaNuvem(); // sobe o local (nuvem vazia ou mais antiga)
-  }
-  nuvemOk=true;S.modoLocal=false;chipNuvem();gateLocal();
-  try{ // tempo real: outro aparelho salvou → atualiza aqui
-    if(canalRT)supa.removeChannel(canalRT);
-    canalRT=supa.channel('estados-'+fid).on('postgres_changes',{event:'*',schema:'public',table:'estados',filter:'familia_id=eq.'+fid},
-      p=>{if(p.new&&p.new.dados&&new Date(p.new.atualizado_em).getTime()>(S.syncTs||0))aplicarDaNuvem(p.new);}).subscribe();
-  }catch(e){}
+  familiaId=p.familia_id;
+  S.perfil=p.tipo==='crianca'?'cri':'pais';
+  if(ehCrianca)S.criUser=emailNuvem.replace(DOM_CRI,'');
+
+  // cache local pertence a outra família? então não conta como dado local
+  if(S.familiaId&&S.familiaId!==familiaId){S={...clone(DEFAULT),perfil:S.perfil};}
+  S.familiaId=familiaId;
+
+  const {data:row}=await supa.from('estados').select('dados,atualizado_em').eq('familia_id',familiaId).maybeSingle();
+  const temLocalDados=S.historico.length>0||S.saldo!==0||S.semanas.length>0;
+  const temNuvem=!!(row&&row.dados&&((row.dados.historico||[]).length>0||row.dados.saldo||(row.dados.semanas||[]).length>0));
+  const nuvemTs=temNuvem?new Date(row.atualizado_em).getTime():0;
+  const localMudou=(S.localTs||0)>(S.syncTs||0);
+
+  if(temNuvem&&temLocalDados&&!(S.syncTs>0)){mostrarConflito(row);return true;}      // 1ª conexão: dois placares
+  if(temNuvem&&localMudou&&nuvemTs>(S.syncTs||0)){mostrarConflito(row);return true;} // mudou nos dois lados offline
+  nuvemOk=true;
+  if(temNuvem&&nuvemTs>(S.syncTs||0)){aplicarDaNuvem(row);}
+  else if(temLocalDados||!temNuvem){if(row&&row.dados&&!temNuvem)S.crianca=S.crianca||row.dados.crianca;await enviarParaNuvem();}
+  if(row&&row.dados&&row.dados.criUser&&!S.criUser)S.criUser=row.dados.criUser;
+  chipNuvem();assinarRealtime();
+  entrarNoApp();
+  toast(S.perfil==='cri'?'⚽ Bora marcar gol, '+(S.crianca||S.criUser)+'!':'👨‍👩‍👦 Modo dos pais · '+emailNuvem,'gol');
   return true;
 }
-let conflitoRow=null;
-function resumoDados(d,quando){
-  const n=(d.historico||[]).length;const nome=d.crianca||'—';
-  return `${quando}\nCriança: ${nome} · Saldo ${fmt(d.saldo||0)} · ${n} lançamento${n!==1?'s':''}`;
+function assinarRealtime(){
+  try{
+    if(canalRT)supa.removeChannel(canalRT);
+    canalRT=supa.channel('estados-'+familiaId).on('postgres_changes',{event:'*',schema:'public',table:'estados',filter:'familia_id=eq.'+familiaId},
+      p=>{if(p.new&&p.new.dados&&new Date(p.new.atualizado_em).getTime()>(S.syncTs||0))aplicarDaNuvem(p.new);}).subscribe();
+  }catch(e){}
 }
+
+/* ---- conflito ---- */
+let conflitoRow=null;
+function resumoDados(d,quando){const n=(d.historico||[]).length;return `${quando}\n${d.crianca||'—'} · Saldo ${fmt(d.saldo||0)} · ${n} lançamento${n!==1?'s':''}`;}
 function mostrarConflito(row){
-  conflitoRow=row;
-  const dt=new Date(row.atualizado_em);
+  conflitoRow=row;const dt=new Date(row.atualizado_em);
   document.getElementById('cfNuvem').textContent='☁ Usar a NUVEM — '+resumoDados(row.dados,'salvo em '+dt.toLocaleDateString('pt-BR')+' '+dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));
   document.getElementById('cfLocal').textContent='📱 Usar ESTE APARELHO — '+resumoDados(S,'dados atuais daqui');
-  document.getElementById('nuvemTela').hidden=true;
+  document.getElementById('loginTela').hidden=true;
   document.getElementById('conflitoTela').hidden=false;
 }
-document.getElementById('cfNuvem').addEventListener('click',async()=>{
-  document.getElementById('conflitoTela').hidden=true;
-  aplicarDaNuvem(conflitoRow);nuvemOk=true;S.modoLocal=false;chipNuvem();gateLocal();
-  toast('☁ Placar da nuvem aplicado neste aparelho','gol');
+document.getElementById('cfNuvem').addEventListener('click',()=>{
+  document.getElementById('conflitoTela').hidden=true;nuvemOk=true;
+  aplicarDaNuvem(conflitoRow);chipNuvem();assinarRealtime();entrarNoApp();toast('☁ Placar da nuvem aplicado','gol');
 });
 document.getElementById('cfLocal').addEventListener('click',async()=>{
-  document.getElementById('conflitoTela').hidden=true;
-  nuvemOk=true;S.modoLocal=false;await enviarParaNuvem();chipNuvem();gateLocal();
-  toast('📱 Placar deste aparelho enviado para a nuvem','gol');
+  document.getElementById('conflitoTela').hidden=true;nuvemOk=true;
+  await enviarParaNuvem();chipNuvem();assinarRealtime();entrarNoApp();toast('📱 Placar deste aparelho enviado à nuvem','gol');
 });
-document.getElementById('cfCancelar').addEventListener('click',async()=>{
-  document.getElementById('conflitoTela').hidden=true;
-  if(supa){await supa.auth.signOut();}
-  nuvemOk=false;familiaId=null;S.modoLocal=true;save();chipNuvem();gateLocal();
-});
-async function iniciarNuvem(){
-  try{if(window.supabase&&window.supabase.createClient)supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);}catch(e){}
-  chipNuvem();
-  if(!supa){return;} // offline / CDN indisponível → segue local
-  const {data:{session}}=await supa.auth.getSession();
-  if(session){await conectarFamilia(session);return;}
-  if(!S.modoLocal){document.getElementById('nuvemTela').hidden=false;}
-}
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&nuvemOk)puxarDaNuvem();});
+document.getElementById('cfCancelar').addEventListener('click',()=>sair(''));
 
-document.getElementById('nvEntrar').addEventListener('click',async()=>{
-  const email=document.getElementById('nvEmail').value.trim(),senha=document.getElementById('nvSenha').value;
-  if(!email||!senha){nvMsg('Preencha e-mail e senha');return;}
-  nvMsg('','Entrando...');
+/* ---- início: SEMPRE começa na tela de login ---- */
+async function iniciarSessao(){
+  try{if(window.supabase&&window.supabase.createClient)supa=criarCliente(manterPref());}catch(e){}
+  chipNuvem();
+  mostrarLogin('');
+  if(!supa){msgLogin('Sem conexão com a internet.','');return;}
+  supa.auth.onAuthStateChange((ev)=>{if(ev==='PASSWORD_RECOVERY'){document.getElementById('novaSenhaTela').hidden=false;}});
+  if(manterPref()){
+    const {data:{session}}=await supa.auth.getSession();
+    if(session){msgLogin('','Entrando...');await entrar(session);}
+  }
+}
+
+/* ---- botões da tela de login ---- */
+document.getElementById('loginEntrar').addEventListener('click',async()=>{
+  const id=document.getElementById('loginUser').value.trim(),senha=document.getElementById('loginSenha').value;
+  if(!id||!senha){msgLogin('Preencha usuário e senha');return;}
+  if(!supa){msgLogin('Sem conexão com a internet');return;}
+  const manter=document.getElementById('loginManter').checked;
+  if(manter!==manterPref()){setManter(manter);supa=criarCliente(manter);}
+  const email=id.includes('@')?id.toLowerCase():id.toLowerCase().replace(/[^a-z0-9._-]/g,'')+DOM_CRI;
+  msgLogin('','Entrando...');
   const {data,error}=await supa.auth.signInWithPassword({email,password:senha});
-  if(error){nvMsg(error.message.includes('Invalid')?'E-mail ou senha incorretos':error.message.includes('confirm')?'Confirme seu e-mail antes de entrar':'Erro: '+error.message);return;}
-  if(await conectarFamilia(data.session)){document.getElementById('nuvemTela').hidden=true;toast('☁ Família conectada','gol');}
+  if(error){
+    const m=error.message||'';
+    msgLogin(m.includes('Invalid')?'Usuário/e-mail ou senha incorretos':m.includes('confirm')?'Confirme o e-mail antes de entrar':'Erro: '+m);
+    const box=document.querySelector('#loginTela .login-box');box.classList.add('erro');setTimeout(()=>box.classList.remove('erro'),350);
+    return;
+  }
+  await entrar(data.session);
 });
-document.getElementById('nvCriar').addEventListener('click',async()=>{
-  const email=document.getElementById('nvEmail').value.trim(),senha=document.getElementById('nvSenha').value;
-  if(!email||senha.length<6){nvMsg('E-mail válido e senha com 6+ caracteres');return;}
-  nvMsg('','Criando conta...');
-  const {data,error}=await supa.auth.signUp({email,password:senha});
-  if(error){nvMsg('Erro: '+error.message);return;}
-  if(data.session){if(await conectarFamilia(data.session)){document.getElementById('nuvemTela').hidden=true;toast('☁ Conta da família criada','gol');}}
-  else nvMsg('','Conta criada! Confirme pelo link enviado ao seu e-mail e depois toque em Entrar.');
+document.getElementById('loginSenha').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('loginEntrar').click();});
+document.getElementById('loginCriar').addEventListener('click',()=>{
+  document.getElementById('loginTela').hidden=true;
+  document.getElementById('cadErro').textContent='';document.getElementById('cadOk').textContent='';
+  document.getElementById('cadCriNome').value=S.crianca&&S.crianca!=='Leo'?S.crianca:(S.crianca||'');
+  document.getElementById('cadastroTela').hidden=false;
 });
-document.getElementById('nvEsqueci').addEventListener('click',async()=>{
-  const email=document.getElementById('nvEmail').value.trim();
-  if(!email){nvMsg('Digite o e-mail primeiro');return;}
-  const {error}=await supa.auth.resetPasswordForEmail(email,{redirectTo:location.href});
-  nvMsg(error?'Erro: '+error.message:'','Enviamos um link de redefinição para '+email);
+document.getElementById('cadVoltar').addEventListener('click',()=>mostrarLogin(''));
+document.getElementById('loginEsqueci').addEventListener('click',async()=>{
+  const id=document.getElementById('loginUser').value.trim();
+  if(!id.includes('@')){msgLogin('Digite o e-mail dos pais para recuperar a senha (a senha da criança é redefinida pelos pais nos Ajustes)');return;}
+  if(!supa){msgLogin('Sem conexão');return;}
+  const {error}=await supa.auth.resetPasswordForEmail(id,{redirectTo:location.origin+location.pathname});
+  msgLogin(error?'Erro: '+error.message:'',error?'':'Link de redefinição enviado para '+id);
 });
-document.getElementById('nvLocal').addEventListener('click',()=>{S.modoLocal=true;save();document.getElementById('nuvemTela').hidden=true;chipNuvem();gateLocal();});
-document.getElementById('nuvemChip').addEventListener('click',()=>{
-  if(nuvemOk){toast('☁ Conectado como '+emailNuvem);}
-  else if(supa){document.getElementById('nuvemTela').hidden=false;}
-  else toast('Sem conexão com a internet');
+document.getElementById('loginOffline').addEventListener('click',()=>{
+  familiaId=S.familiaId;nuvemOk=false;chipNuvem();entrarNoApp();toast('Modo offline — sincroniza ao entrar online');
 });
-document.getElementById('nvDesconectar').addEventListener('click',async()=>{
-  if(supa){await supa.auth.signOut();}
-  nuvemOk=false;familiaId=null;emailNuvem='';S.modoLocal=false;chipNuvem();save();
-  perfilMenu.hidden=true;toast('Aparelho desconectado da nuvem');
+
+/* ---- criar conta da família (pais + criança) ---- */
+document.getElementById('cadSalvar').addEventListener('click',async()=>{
+  const pe=document.getElementById('cadPaisEmail').value.trim().toLowerCase(),ps=document.getElementById('cadPaisSenha').value;
+  const cn=document.getElementById('cadCriNome').value.trim(),cu=document.getElementById('cadCriUser').value.trim().toLowerCase(),cs=document.getElementById('cadCriSenha').value;
+  const erro=document.getElementById('cadErro'),ok=document.getElementById('cadOk');erro.textContent='';ok.textContent='';
+  if(!pe.includes('@')){erro.textContent='E-mail dos pais inválido';return;}
+  if(ps.length<6){erro.textContent='Senha dos pais: mínimo 6 caracteres';return;}
+  if(!cn){erro.textContent='Diga o nome da criança';return;}
+  if(!/^[a-z0-9._-]{3,20}$/.test(cu)){erro.textContent='Usuário da criança: 3–20 letras/números, sem espaços';return;}
+  if(cs.length<6){erro.textContent='Senha da criança: mínimo 6 caracteres';return;}
+  if(!supa){erro.textContent='Sem conexão';return;}
+  ok.textContent='Criando a conta dos pais...';
+  let {data,error}=await supa.auth.signUp({email:pe,password:ps});
+  if(error){erro.textContent=error.message.includes('registered')?'Este e-mail já tem conta — use "Entrar"':'Erro: '+error.message;ok.textContent='';return;}
+  if(!data.session){erro.textContent='Confirme o e-mail recebido e depois entre. Depois crie a conta da criança nos Ajustes.';ok.textContent='';return;}
+  const {data:fid,error:e2}=await supa.rpc('criar_familia');
+  if(e2||!fid){erro.textContent='Banco não configurado: rode o SQL da Fase 2';ok.textContent='';return;}
+  ok.textContent='Criando a conta da criança...';
+  const alt=criarCliente(false);
+  const {data:dc,error:e3}=await alt.auth.signUp({email:cu+DOM_CRI,password:cs});
+  if(e3||!dc.user){erro.textContent=(e3&&e3.message.includes('registered'))?'Usuário "'+cu+'" já está em uso — escolha outro':'Erro ao criar a criança: '+(e3?e3.message:'');ok.textContent='';return;}
+  const {error:e4}=await supa.rpc('vincular_crianca',{p_user_id:dc.user.id,p_nome:cn});
+  if(e4){erro.textContent='Erro ao vincular a criança: '+e4.message;ok.textContent='';return;}
+  S.crianca=cn;S.criUser=cu;
+  logCfg('Família criada: pais '+pe+' · criança "'+cn+'" (usuário '+cu+')');
+  document.getElementById('cadastroTela').hidden=true;
+  await entrar(data.session);
+  onbIdx=0;mostrarOnb();document.getElementById('onboarding').hidden=false;
 });
+
+/* ---- nova senha (link "esqueci") ---- */
+document.getElementById('nsSalvar').addEventListener('click',async()=>{
+  const n=document.getElementById('nsNova').value,c=document.getElementById('nsConf').value,erro=document.getElementById('nsErro');
+  if(n.length<6){erro.textContent='Mínimo 6 caracteres';return;}
+  if(n!==c){erro.textContent='A confirmação não confere';return;}
+  const {data,error}=await supa.auth.updateUser({password:n});
+  if(error){erro.textContent='Erro: '+error.message;return;}
+  document.getElementById('novaSenhaTela').hidden=true;
+  const {data:{session}}=await supa.auth.getSession();
+  if(session)await entrar(session);else mostrarLogin(data&&data.user?data.user.email:'');
+  toast('🔒 Senha redefinida','gol');
+});
+
+/* ---- LGPD: excluir família ---- */
 let excluirArmado=false;
 document.getElementById('btnExcluirNuvem').addEventListener('click',async function(){
-  if(!nuvemOk){toast('Este aparelho não está conectado à nuvem');return;}
-  if(!excluirArmado){excluirArmado=true;this.textContent='Tem certeza? Apaga TUDO na nuvem. Toque de novo';setTimeout(()=>{excluirArmado=false;this.textContent='Excluir família e dados da nuvem (LGPD)';},5000);return;}
+  if(!nuvemOk){toast('Sem conexão com a nuvem');return;}
+  if(!excluirArmado){excluirArmado=true;this.textContent='Tem certeza? Apaga TUDO na nuvem e as contas. Toque de novo';setTimeout(()=>{excluirArmado=false;this.textContent='Excluir família e dados da nuvem (LGPD)';},5000);return;}
   excluirArmado=false;
   const {error}=await supa.rpc('excluir_familia');
   if(error){toast('Erro ao excluir: '+error.message);return;}
-  await supa.auth.signOut();nuvemOk=false;familiaId=null;chipNuvem();
-  toast('Dados da nuvem excluídos. Os dados locais permanecem neste aparelho.');
+  S=clone(DEFAULT);save();
+  await sair('');toast('Família excluída da nuvem.');
 });
 
 /* ---------- Backup local (salvar e restaurar) ---------- */
@@ -1544,7 +1496,9 @@ document.getElementById('arquivoBackup').addEventListener('change',e=>{
       if(typeof dados.saldo!=='number'||!Array.isArray(dados.historico)){
         toast('⚠️ Arquivo inválido — não é um backup da mesada');return;
       }
-      S={...clone(DEFAULT),...dados};
+      const locais={};LOCAIS.forEach(k=>locais[k]=S[k]);
+      S={...clone(DEFAULT),...dados,...locais};
+      ['contas','pin','login','logado','cadastroOk','modoLocal'].forEach(k=>delete S[k]);
       S.config={...clone(DEFAULT.config),...(dados.config||{})};
       cfgBase=clone(S.config);
       logCfg('Backup restaurado ('+f.name+')');
@@ -1558,7 +1512,7 @@ document.getElementById('arquivoBackup').addEventListener('change',e=>{
 
 document.getElementById('btnAddGanho').addEventListener('click',()=>{S.config.ganhos.push({n:'Novo item',v:1});renderConfig();});
 document.getElementById('btnAddPena').addEventListener('click',()=>{S.config.penas.push({n:'Novo item',v:1});renderConfig();});
-document.getElementById('btnSalvarCfg').addEventListener('click',()=>{
+document.getElementById('btnSalvarCfg').addEventListener('click',async()=>{
   const antes=clone(S.config);
   const novoNome=document.getElementById('cfgCrianca').value.trim();
   if(novoNome&&novoNome!==S.crianca){S.crianca=novoNome;mudancas.push('Nome da criança: "'+novoNome+'"');}
@@ -1570,24 +1524,16 @@ document.getElementById('btnSalvarCfg').addEventListener('click',()=>{
     if(S.config[t]&&S.config[t][i])S.config[t][i][f]=f==='v'?(parseFloat(inp.value)||0):(f==='x'?Math.min(7,Math.max(1,parseInt(inp.value)||1)):inp.value);
   });
   const mudancas=diffConfig(cfgBase||antes,S.config);
-  const novoPin=document.getElementById('cfgPin').value.trim();
-  if(novoPin){
-    if(/^\d{4}$/.test(novoPin)){S.pin=btoa(novoPin);mudancas.push('Senha dos ajustes alterada');}
-    else{toast('⚠️ A senha deve ter 4 números');return;}
+  const novaSenhaCri=document.getElementById('cfgCriSenha').value;
+  if(novaSenhaCri){
+    if(novaSenhaCri.length<6){toast('⚠️ Senha da criança: mínimo 6 caracteres');return;}
+    if(!supa||!nuvemOk){toast('⚠️ Sem conexão — a senha só pode ser redefinida online');return;}
+    const {error}=await supa.rpc('redefinir_senha_crianca',{p_nova:novaSenhaCri});
+    if(error){toast('Erro ao redefinir: '+error.message);return;}
+    mudancas.push('Senha da criança redefinida pelos pais');
+    document.getElementById('cfgCriSenha').value='';
   }
-  [['Pais','pais'],['Cri','cri']].forEach(([id,ch])=>{
-    const nu=document.getElementById('cfg'+id+'User').value.trim();
-    const ns=document.getElementById('cfg'+id+'Senha').value;
-    const rot=ch==='pais'?'pais':'criança';
-    if(nu&&nu.toLowerCase()!==S.contas[ch].u.toLowerCase()){S.contas[ch].u=nu;mudancas.push('Usuário ('+rot+') alterado para "'+nu+'"');}
-    if(ns){
-      if(ns.length<4){toast('⚠️ Senhas com pelo menos 4 caracteres');return;}
-      S.contas[ch].s=btoa(ns);mudancas.push('Senha ('+rot+') alterada');
-    }
-    document.getElementById('cfg'+id+'Senha').value='';
-  });
   aplicarPerfil();
-  document.getElementById('cfgPin').value='';
   mudancas.forEach(m=>logCfg(m));
   cfgBase=clone(S.config);
   render();renderConfig();save();

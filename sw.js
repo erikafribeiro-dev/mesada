@@ -1,4 +1,4 @@
-const CACHE = 'mesada-leo-v19';
+const CACHE = 'mesada-leo-v20';
 const ARQUIVOS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
