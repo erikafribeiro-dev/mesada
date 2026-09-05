@@ -144,6 +144,8 @@ details[open].config summary::after{content:"▴"}
 #cadastroTela{position:fixed;inset:0;background:linear-gradient(160deg,#0F2C1E,#063D25);display:flex;align-items:center;justify-content:center;z-index:210;padding:20px;overflow-y:auto}
 #cadastroTela[hidden]{display:none}
 #cadastroTela button{width:100%;background:var(--ouro);color:#063D25;border:none;border-radius:12px;padding:14px;font-family:'Archivo Black';font-size:15px;cursor:pointer;margin-top:6px}
+#conflitoTela{position:fixed;inset:0;background:linear-gradient(160deg,#0F2C1E,#063D25);display:flex;align-items:center;justify-content:center;z-index:240;padding:20px;overflow-y:auto}
+#conflitoTela[hidden]{display:none}
 #nuvemTela{position:fixed;inset:0;background:linear-gradient(160deg,#0F2C1E,#063D25);display:flex;align-items:center;justify-content:center;z-index:230;padding:20px;overflow-y:auto}
 #nuvemTela[hidden]{display:none}
 #nuvemTela #nvEntrar{width:100%;background:var(--ouro);color:#063D25;border:none;border-radius:12px;padding:14px;font-family:'Archivo';font-weight:700;font-size:15px;cursor:pointer;margin-top:6px}
@@ -305,6 +307,18 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid
 </style>
 </head>
 <body>
+
+<div id="conflitoTela" hidden>
+  <div class="login-box">
+    <div class="escudo escudo-login">⚖️</div>
+    <h2>Dados em dois lugares</h2>
+    <p>Há um placar salvo na nuvem e outro neste aparelho. Qual deles deve valer? O outro será substituído.</p>
+    <button type="button" class="menu-item" id="cfNuvem" style="text-align:left;margin-bottom:8px"></button>
+    <button type="button" class="menu-item" id="cfLocal" style="text-align:left"></button>
+    <p style="margin-top:14px;font-size:11.5px">Dica: antes de decidir, você pode cancelar e salvar um backup na aba Semana.</p>
+    <button type="button" class="nv-link nv-local" id="cfCancelar">Decidir depois (continuar sem nuvem por enquanto)</button>
+  </div>
+</div>
 
 <div id="nuvemTela" hidden>
   <div class="login-box">
@@ -729,8 +743,8 @@ async function load(){
   if(!S.semIni)S.semIni=new Date().toISOString();
   checarAvancoFase();
   cfgBase=clone(S.config);
-  gateLocal();
   await iniciarNuvem();
+  if(document.getElementById('nuvemTela').hidden&&document.getElementById('conflitoTela').hidden)gateLocal();
 }
 // fluxo local: cadastro (1º uso) → login → app; mantém conectado até "Sair"
 function gateLocal(){
@@ -1394,12 +1408,18 @@ async function conectarFamilia(session){
   familiaId=fid;
   const {data:row}=await supa.from('estados').select('dados,atualizado_em').eq('familia_id',fid).maybeSingle();
   const temLocalDados=S.cadastroOk||S.historico.length>0||S.saldo!==0;
-  if(row&&row.dados&&(new Date(row.atualizado_em).getTime()>(S.syncTs||0)||!temLocalDados)){
+  const temNuvem=!!(row&&row.dados);
+  const nuvemTemConteudo=temNuvem&&(row.dados.cadastroOk||(row.dados.historico||[]).length>0||row.dados.saldo);
+  if(temNuvem&&temLocalDados&&!(S.syncTs>0)&&nuvemTemConteudo){
+    // 1ª conexão deste aparelho e já existe placar na nuvem: deixa a família escolher
+    mostrarConflito(row);return true;
+  }
+  if(temNuvem&&(new Date(row.atualizado_em).getTime()>(S.syncTs||0)||!temLocalDados)&&(nuvemTemConteudo||!temLocalDados)){
     aplicarDaNuvem(row);            // nuvem mais nova (ou aparelho novo) → baixa
   }else if(temLocalDados){
-    nuvemOk=true;await enviarParaNuvem(); // 1ª conexão com dados locais → sobe
+    nuvemOk=true;await enviarParaNuvem(); // sobe o local (nuvem vazia ou mais antiga)
   }
-  nuvemOk=true;S.modoLocal=false;chipNuvem();
+  nuvemOk=true;S.modoLocal=false;chipNuvem();gateLocal();
   try{ // tempo real: outro aparelho salvou → atualiza aqui
     if(canalRT)supa.removeChannel(canalRT);
     canalRT=supa.channel('estados-'+fid).on('postgres_changes',{event:'*',schema:'public',table:'estados',filter:'familia_id=eq.'+fid},
@@ -1407,6 +1427,34 @@ async function conectarFamilia(session){
   }catch(e){}
   return true;
 }
+let conflitoRow=null;
+function resumoDados(d,quando){
+  const n=(d.historico||[]).length;const nome=d.crianca||'—';
+  return `${quando}\nCriança: ${nome} · Saldo ${fmt(d.saldo||0)} · ${n} lançamento${n!==1?'s':''}`;
+}
+function mostrarConflito(row){
+  conflitoRow=row;
+  const dt=new Date(row.atualizado_em);
+  document.getElementById('cfNuvem').textContent='☁ Usar a NUVEM — '+resumoDados(row.dados,'salvo em '+dt.toLocaleDateString('pt-BR')+' '+dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));
+  document.getElementById('cfLocal').textContent='📱 Usar ESTE APARELHO — '+resumoDados(S,'dados atuais daqui');
+  document.getElementById('nuvemTela').hidden=true;
+  document.getElementById('conflitoTela').hidden=false;
+}
+document.getElementById('cfNuvem').addEventListener('click',async()=>{
+  document.getElementById('conflitoTela').hidden=true;
+  aplicarDaNuvem(conflitoRow);nuvemOk=true;S.modoLocal=false;chipNuvem();gateLocal();
+  toast('☁ Placar da nuvem aplicado neste aparelho','gol');
+});
+document.getElementById('cfLocal').addEventListener('click',async()=>{
+  document.getElementById('conflitoTela').hidden=true;
+  nuvemOk=true;S.modoLocal=false;await enviarParaNuvem();chipNuvem();gateLocal();
+  toast('📱 Placar deste aparelho enviado para a nuvem','gol');
+});
+document.getElementById('cfCancelar').addEventListener('click',async()=>{
+  document.getElementById('conflitoTela').hidden=true;
+  if(supa){await supa.auth.signOut();}
+  nuvemOk=false;familiaId=null;S.modoLocal=true;save();chipNuvem();gateLocal();
+});
 async function iniciarNuvem(){
   try{if(window.supabase&&window.supabase.createClient)supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);}catch(e){}
   chipNuvem();
@@ -1440,7 +1488,7 @@ document.getElementById('nvEsqueci').addEventListener('click',async()=>{
   const {error}=await supa.auth.resetPasswordForEmail(email,{redirectTo:location.href});
   nvMsg(error?'Erro: '+error.message:'','Enviamos um link de redefinição para '+email);
 });
-document.getElementById('nvLocal').addEventListener('click',()=>{S.modoLocal=true;save();document.getElementById('nuvemTela').hidden=true;chipNuvem();});
+document.getElementById('nvLocal').addEventListener('click',()=>{S.modoLocal=true;save();document.getElementById('nuvemTela').hidden=true;chipNuvem();gateLocal();});
 document.getElementById('nuvemChip').addEventListener('click',()=>{
   if(nuvemOk){toast('☁ Conectado como '+emailNuvem);}
   else if(supa){document.getElementById('nuvemTela').hidden=false;}
